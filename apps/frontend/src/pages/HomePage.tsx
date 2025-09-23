@@ -9,13 +9,11 @@ export default function HomePage() {
   // Efecto máquina de escribir para el hero
   const dynamicTexts = [
     'vendiendo 24/7',
-    'activo todo el tiempo',
     'trabajando por ti',
     'siempre disponible',
-    'nunca descansa',
+    'nunca descansan',
     'en piloto automático',
-    'sin descanso',
-    'round the clock'
+    'las 24 horas'
   ]
   
   const [displayedText, setDisplayedText] = useState('')
@@ -142,10 +140,10 @@ export default function HomePage() {
               <br />
               <span className="text-brand-100 dark:text-brand-300 bg-gradient-to-r from-brand-100 to-white bg-clip-text text-transparent">
                 {displayedText}
-                <span className="inline-block w-0.5 h-[0.9em] bg-current ml-1" style={{animation: 'blink 1s infinite'}}></span>
+                <span className="inline-block w-0.5 h-[0.9em] bg-white dark:bg-brand-100 ml-1" style={{animation: 'blink 1s infinite'}}></span>
               </span>
               <br className="hidden sm:block" />
-              <span className="block sm:inline text-white/90">sin escribir todo el día</span>
+              <span className="block sm:inline text-brand-accent dark:text-orange-300 font-medium mt-2 sm:mt-0 bg-white/10 dark:bg-orange-500/10 px-4 py-1 rounded-full backdrop-blur-sm border border-white/20 dark:border-orange-400/20">automatizado y sin complicaciones</span>
             </h1>
             <p className="text-xl sm:text-2xl md:text-3xl text-brand-100/90 dark:text-brand-200/90 mb-8 md:mb-12 max-w-4xl mx-auto px-2 leading-relaxed">
               Crea tu tienda en minutos, conecta tu WhatsApp y automatiza lo repetido. 
