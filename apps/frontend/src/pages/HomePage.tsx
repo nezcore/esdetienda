@@ -9,38 +9,42 @@ export default function HomePage() {
   return (
     <div className="min-h-screen">
       {/* Navegación */}
-      <nav className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-b border-brand-100 dark:border-gray-800 sticky top-0 z-50">
+      <nav className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-b border-brand-100/50 dark:border-gray-800/50 sticky top-0 z-50 shadow-lg shadow-brand-500/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+          <div className="flex justify-between items-center h-20">
             <div className="flex items-center">
-              <span className="text-2xl font-bold bg-brand-gradient bg-clip-text text-transparent">
-                EsDeTienda
-              </span>
+              <div className="relative">
+                <span className="text-3xl font-bold bg-brand-gradient bg-clip-text text-transparent drop-shadow-sm">
+                  EsDeTienda
+                </span>
+                <div className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-brand-500 to-brand-900 rounded-full transform scale-x-0 group-hover:scale-x-100 transition-transform"></div>
+              </div>
             </div>
             
             {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-4">
+            <div className="hidden md:flex items-center space-x-6">
               <ThemeToggle />
               <Link 
                 to="/login" 
-                className="text-gray-700 dark:text-gray-300 hover:text-brand-500 transition-colors"
+                className="text-gray-700 dark:text-gray-300 hover:text-brand-500 transition-all hover:scale-105 font-medium px-3 py-2 rounded-lg hover:bg-brand-50 dark:hover:bg-gray-800"
               >
                 Iniciar sesión
               </Link>
               <Link 
                 to="/registro" 
-                className="bg-brand-900 text-white px-4 py-2 rounded-xl hover:bg-brand-700 transition-colors"
+                className="bg-gradient-to-r from-brand-900 to-brand-700 text-white px-6 py-3 rounded-xl hover:shadow-lg hover:shadow-brand-500/25 transition-all hover:scale-105 font-semibold relative overflow-hidden group"
               >
-                Crear mi tienda
+                <span className="relative z-10">Crear mi tienda</span>
+                <div className="absolute inset-0 bg-gradient-to-r from-brand-700 to-brand-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
               </Link>
             </div>
 
             {/* Mobile menu button */}
-            <div className="md:hidden flex items-center space-x-2">
+            <div className="md:hidden flex items-center space-x-3">
               <ThemeToggle />
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="p-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                className="p-3 rounded-xl bg-gradient-to-br from-brand-500/10 to-brand-600/10 border border-brand-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-brand-50 dark:hover:bg-gray-800 transition-all hover:scale-105"
               >
                 {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
               </button>
@@ -49,22 +53,24 @@ export default function HomePage() {
 
           {/* Mobile menu */}
           {mobileMenuOpen && (
-            <div className="md:hidden border-t border-gray-200 dark:border-gray-700 py-4">
-              <div className="flex flex-col space-y-4">
-                <Link 
-                  to="/login" 
-                  className="text-gray-700 dark:text-gray-300 hover:text-brand-500 transition-colors px-4 py-2"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Iniciar sesión
-                </Link>
-                <Link 
-                  to="/registro" 
-                  className="bg-brand-900 text-white px-4 py-2 rounded-xl hover:bg-brand-700 transition-colors mx-4"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Crear mi tienda
-                </Link>
+            <div className="md:hidden border-t border-gray-200/50 dark:border-gray-700/50 backdrop-blur-lg">
+              <div className="bg-white/95 dark:bg-gray-900/95 py-6">
+                <div className="flex flex-col space-y-4 px-4">
+                  <Link 
+                    to="/login" 
+                    className="text-gray-700 dark:text-gray-300 hover:text-brand-500 transition-all hover:scale-105 px-4 py-3 rounded-xl hover:bg-brand-50 dark:hover:bg-gray-800 font-medium"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Iniciar sesión
+                  </Link>
+                  <Link 
+                    to="/registro" 
+                    className="bg-gradient-to-r from-brand-900 to-brand-700 text-white px-6 py-3 rounded-xl hover:shadow-lg hover:shadow-brand-500/25 transition-all hover:scale-105 font-semibold text-center"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Crear mi tienda
+                  </Link>
+                </div>
               </div>
             </div>
           )}
@@ -72,54 +78,72 @@ export default function HomePage() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative bg-hero-gradient dark:from-brand-700 dark:to-brand-900 text-white py-12 md:py-20 lg:py-32">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="relative bg-hero-gradient dark:from-brand-700 dark:to-brand-900 text-white py-16 md:py-24 lg:py-32 overflow-hidden">
+        {/* Background decoration */}
+        <div className="absolute inset-0">
+          <div className="absolute top-20 left-10 w-32 h-32 bg-white/5 rounded-full blur-xl"></div>
+          <div className="absolute bottom-20 right-10 w-40 h-40 bg-brand-accent/10 rounded-full blur-2xl"></div>
+          <div className="absolute top-1/2 left-1/3 w-24 h-24 bg-white/3 rounded-full blur-lg"></div>
+        </div>
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-4 md:mb-6">
+            <div className="mb-6">
+              <div className="inline-flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20 text-brand-100 text-sm font-medium mb-6">
+                ✨ Automatiza tu negocio con WhatsApp
+              </div>
+            </div>
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-6 md:mb-8">
               Tu tienda y tu WhatsApp
               <br />
-              <span className="text-brand-100 dark:text-brand-300">vendiendo 24/7</span>
+              <span className="text-brand-100 dark:text-brand-300 bg-gradient-to-r from-brand-100 to-white bg-clip-text text-transparent">vendiendo 24/7</span>
               <br className="hidden sm:block" />
-              <span className="block sm:inline">sin escribir todo el día</span>
+              <span className="block sm:inline text-white/90">sin escribir todo el día</span>
             </h1>
-            <p className="text-lg sm:text-xl md:text-2xl text-brand-100 dark:text-brand-200 mb-6 md:mb-8 max-w-3xl mx-auto px-2">
+            <p className="text-xl sm:text-2xl md:text-3xl text-brand-100/90 dark:text-brand-200/90 mb-8 md:mb-12 max-w-4xl mx-auto px-2 leading-relaxed">
               Crea tu tienda en minutos, conecta tu WhatsApp y automatiza lo repetido. 
-              IA solo cuando hace falta.
+              <span className="block mt-2 text-lg md:text-xl text-white/80">Inteligencia artificial solo cuando hace falta.</span>
             </p>
             
             {/* CTAs */}
-            <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center mb-8 md:mb-12 px-4">
+            <div className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center mb-12 md:mb-16 px-4">
               <Link 
                 to="#pricing" 
-                className="bg-brand-accent text-white px-6 md:px-8 py-3 md:py-4 rounded-xl font-semibold hover:bg-orange-600 transition-colors flex items-center justify-center text-sm md:text-base"
+                className="group bg-gradient-to-r from-brand-accent to-orange-500 text-white px-8 md:px-10 py-4 md:py-5 rounded-2xl font-bold hover:from-orange-600 hover:to-red-500 hover:shadow-2xl hover:shadow-brand-accent/25 transition-all duration-300 transform hover:scale-105 flex items-center justify-center text-lg md:text-xl"
               >
-                Crear mi tienda
-                <ArrowRight className="ml-2 h-4 w-4 md:h-5 md:w-5" />
+                <span>Crear mi tienda</span>
+                <ArrowRight className="ml-3 h-5 w-5 md:h-6 md:w-6 group-hover:translate-x-1 transition-transform" />
               </Link>
               <Link 
                 to="/login" 
-                className="border-2 border-white text-white px-6 md:px-8 py-3 md:py-4 rounded-xl font-semibold hover:bg-white hover:text-brand-900 transition-colors text-sm md:text-base"
+                className="border-2 border-white/60 text-white px-8 md:px-10 py-4 md:py-5 rounded-2xl font-bold hover:bg-white/10 hover:border-white transition-all duration-300 backdrop-blur-sm text-lg md:text-xl"
               >
                 Iniciar sesión
               </Link>
             </div>
 
             {/* Beneficios rápidos */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 text-center px-4">
-              <div className="flex flex-col items-center p-4 bg-white/10 dark:bg-gray-800/30 rounded-xl backdrop-blur-sm">
-                <MessageCircle className="h-10 w-10 md:h-12 md:w-12 text-brand-100 dark:text-brand-300 mb-3" />
-                <h3 className="font-semibold mb-2 text-sm md:text-base">Ahorra tiempo</h3>
-                <p className="text-brand-100 dark:text-brand-200 text-xs md:text-sm">Bot responde automáticamente las preguntas frecuentes</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8 text-center px-4">
+              <div className="group flex flex-col items-center p-6 md:p-8 bg-white/15 dark:bg-gray-800/40 rounded-2xl backdrop-blur-md border border-white/20 hover:bg-white/20 hover:border-white/30 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-white/10">
+                <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-white/20 to-white/10 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <MessageCircle className="h-8 w-8 md:h-10 md:w-10 text-white" />
+                </div>
+                <h3 className="font-bold mb-3 text-lg md:text-xl text-white">Ahorra tiempo</h3>
+                <p className="text-white/80 text-sm md:text-base leading-relaxed">Bot responde automáticamente las preguntas frecuentes</p>
               </div>
-              <div className="flex flex-col items-center p-4 bg-white/10 dark:bg-gray-800/30 rounded-xl backdrop-blur-sm">
-                <ShoppingBag className="h-10 w-10 md:h-12 md:w-12 text-brand-100 dark:text-brand-300 mb-3" />
-                <h3 className="font-semibold mb-2 text-sm md:text-base">Más ventas desde WhatsApp</h3>
-                <p className="text-brand-100 dark:text-brand-200 text-xs md:text-sm">Catálogo integrado con carrito directo a WhatsApp</p>
+              <div className="group flex flex-col items-center p-6 md:p-8 bg-white/15 dark:bg-gray-800/40 rounded-2xl backdrop-blur-md border border-white/20 hover:bg-white/20 hover:border-white/30 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-white/10">
+                <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-white/20 to-white/10 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <ShoppingBag className="h-8 w-8 md:h-10 md:w-10 text-white" />
+                </div>
+                <h3 className="font-bold mb-3 text-lg md:text-xl text-white">Más ventas desde WhatsApp</h3>
+                <p className="text-white/80 text-sm md:text-base leading-relaxed">Catálogo integrado con carrito directo a WhatsApp</p>
               </div>
-              <div className="flex flex-col items-center p-4 bg-white/10 dark:bg-gray-800/30 rounded-xl backdrop-blur-sm sm:col-span-2 md:col-span-1">
-                <BarChart3 className="h-10 w-10 md:h-12 md:w-12 text-brand-100 dark:text-brand-300 mb-3" />
-                <h3 className="font-semibold mb-2 text-sm md:text-base">Sin sorpresas de costo</h3>
-                <p className="text-brand-100 dark:text-brand-200 text-xs md:text-sm">Plan fijo mensual, caps claros en IA</p>
+              <div className="group flex flex-col items-center p-6 md:p-8 bg-white/15 dark:bg-gray-800/40 rounded-2xl backdrop-blur-md border border-white/20 hover:bg-white/20 hover:border-white/30 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-white/10 sm:col-span-2 md:col-span-1">
+                <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-white/20 to-white/10 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <BarChart3 className="h-8 w-8 md:h-10 md:w-10 text-white" />
+                </div>
+                <h3 className="font-bold mb-3 text-lg md:text-xl text-white">Sin sorpresas de costo</h3>
+                <p className="text-white/80 text-sm md:text-base leading-relaxed">Plan fijo mensual, caps claros en IA</p>
               </div>
             </div>
           </div>
@@ -133,20 +157,29 @@ export default function HomePage() {
             Cómo funciona
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-            <div className="text-center p-6 bg-white dark:bg-gray-800 rounded-2xl shadow-sm">
-              <div className="bg-brand-500 text-white w-12 h-12 md:w-16 md:h-16 rounded-full flex items-center justify-center text-lg md:text-2xl font-bold mx-auto mb-4">1</div>
-              <h3 className="text-lg md:text-xl font-semibold mb-3 text-gray-900 dark:text-white">Regístrate</h3>
-              <p className="text-gray-600 dark:text-gray-300 text-sm md:text-base">Crea tu cuenta y elige tu plan. Setup en menos de 5 minutos.</p>
+            <div className="group text-center p-8 bg-gradient-to-br from-white to-gray-50/80 dark:from-gray-800 dark:to-gray-700/80 rounded-3xl shadow-lg hover:shadow-2xl hover:shadow-brand-500/10 transition-all duration-300 hover:-translate-y-1 relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-brand-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div className="relative z-10">
+                <div className="bg-gradient-to-br from-brand-500 to-brand-600 text-white w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center text-xl md:text-3xl font-bold mx-auto mb-6 shadow-lg shadow-brand-500/30 group-hover:shadow-xl group-hover:shadow-brand-500/40 group-hover:scale-110 transition-all duration-300">1</div>
+                <h3 className="text-xl md:text-2xl font-bold mb-4 text-gray-900 dark:text-white group-hover:text-brand-700 dark:group-hover:text-brand-300 transition-colors">Regístrate</h3>
+                <p className="text-gray-600 dark:text-gray-300 leading-relaxed">Crea tu cuenta y elige tu plan. Setup en menos de 5 minutos.</p>
+              </div>
             </div>
-            <div className="text-center p-6 bg-white dark:bg-gray-800 rounded-2xl shadow-sm">
-              <div className="bg-brand-500 text-white w-12 h-12 md:w-16 md:h-16 rounded-full flex items-center justify-center text-lg md:text-2xl font-bold mx-auto mb-4">2</div>
-              <h3 className="text-lg md:text-xl font-semibold mb-3 text-gray-900 dark:text-white">Sube productos</h3>
-              <p className="text-gray-600 dark:text-gray-300 text-sm md:text-base">Importa desde CSV, Google Sheets o sube manualmente tu catálogo.</p>
+            <div className="group text-center p-8 bg-gradient-to-br from-white to-gray-50/80 dark:from-gray-800 dark:to-gray-700/80 rounded-3xl shadow-lg hover:shadow-2xl hover:shadow-brand-500/10 transition-all duration-300 hover:-translate-y-1 relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-brand-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div className="relative z-10">
+                <div className="bg-gradient-to-br from-brand-500 to-brand-600 text-white w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center text-xl md:text-3xl font-bold mx-auto mb-6 shadow-lg shadow-brand-500/30 group-hover:shadow-xl group-hover:shadow-brand-500/40 group-hover:scale-110 transition-all duration-300">2</div>
+                <h3 className="text-xl md:text-2xl font-bold mb-4 text-gray-900 dark:text-white group-hover:text-brand-700 dark:group-hover:text-brand-300 transition-colors">Sube productos</h3>
+                <p className="text-gray-600 dark:text-gray-300 leading-relaxed">Importa desde CSV, Google Sheets o sube manualmente tu catálogo.</p>
+              </div>
             </div>
-            <div className="text-center p-6 bg-white dark:bg-gray-800 rounded-2xl shadow-sm">
-              <div className="bg-brand-500 text-white w-12 h-12 md:w-16 md:h-16 rounded-full flex items-center justify-center text-lg md:text-2xl font-bold mx-auto mb-4">3</div>
-              <h3 className="text-lg md:text-xl font-semibold mb-3 text-gray-900 dark:text-white">Activa tu WhatsApp</h3>
-              <p className="text-gray-600 dark:text-gray-300 text-sm md:text-base">Configuramos tu bot en 24 horas. Empieza a vender automatizado.</p>
+            <div className="group text-center p-8 bg-gradient-to-br from-white to-gray-50/80 dark:from-gray-800 dark:to-gray-700/80 rounded-3xl shadow-lg hover:shadow-2xl hover:shadow-brand-500/10 transition-all duration-300 hover:-translate-y-1 relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-brand-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div className="relative z-10">
+                <div className="bg-gradient-to-br from-brand-500 to-brand-600 text-white w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center text-xl md:text-3xl font-bold mx-auto mb-6 shadow-lg shadow-brand-500/30 group-hover:shadow-xl group-hover:shadow-brand-500/40 group-hover:scale-110 transition-all duration-300">3</div>
+                <h3 className="text-xl md:text-2xl font-bold mb-4 text-gray-900 dark:text-white group-hover:text-brand-700 dark:group-hover:text-brand-300 transition-colors">Activa tu WhatsApp</h3>
+                <p className="text-gray-600 dark:text-gray-300 leading-relaxed">Configuramos tu bot en 24 horas. Empieza a vender automatizado.</p>
+              </div>
             </div>
           </div>
         </div>
@@ -167,19 +200,24 @@ export default function HomePage() {
               },
               {
                 icon: MessageCircle,
-                title: "Bot de botones",
-                desc: "Flujo guiado con botones para consultas frecuentes"
+                title: "Bot de WhatsApp",
+                desc: "Respuestas automáticas inteligentes las 24 horas"
               },
               {
                 icon: Bot,
-                title: "IA fallback",
-                desc: "IA entra cuando el cliente escribe libre o manda foto"
+                title: "Asistente inteligente",
+                desc: "Entiende fotos, audios y preguntas de tus clientes"
               }
             ].map((feature, index) => (
-              <div key={index} className="bg-gray-50 dark:bg-gray-700 p-6 rounded-2xl border border-brand-100 dark:border-gray-600 hover:shadow-lg transition-all hover:scale-105">
-                <feature.icon className="h-10 w-10 md:h-12 md:w-12 text-brand-500 dark:text-brand-400 mb-4" />
-                <h3 className="text-lg md:text-xl font-semibold mb-3 text-gray-900 dark:text-white">{feature.title}</h3>
-                <p className="text-gray-600 dark:text-gray-300 text-sm md:text-base">{feature.desc}</p>
+              <div key={index} className="group relative bg-gradient-to-br from-white to-gray-50/80 dark:from-gray-800 dark:to-gray-700/80 p-8 rounded-3xl border border-brand-100/60 dark:border-gray-600/60 hover:border-brand-300 dark:hover:border-brand-400 hover:shadow-2xl hover:shadow-brand-500/10 transition-all duration-300 hover:-translate-y-1 backdrop-blur-sm">
+                <div className="absolute inset-0 bg-gradient-to-br from-brand-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-3xl"></div>
+                <div className="relative z-10">
+                  <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-brand-500 to-brand-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-brand-500/25 group-hover:shadow-xl group-hover:shadow-brand-500/30 transition-all duration-300">
+                    <feature.icon className="h-8 w-8 md:h-9 md:w-9 text-white" />
+                  </div>
+                  <h3 className="text-xl md:text-2xl font-bold mb-3 text-gray-900 dark:text-white group-hover:text-brand-700 dark:group-hover:text-brand-300 transition-colors">{feature.title}</h3>
+                  <p className="text-gray-600 dark:text-gray-300 text-base leading-relaxed">{feature.desc}</p>
+                </div>
               </div>
             ))}
           </div>
@@ -196,65 +234,95 @@ export default function HomePage() {
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 max-w-4xl mx-auto">
             {/* Plan Esencial */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 md:p-8 border-2 border-brand-100 dark:border-gray-600 hover:border-brand-500 dark:hover:border-brand-400 transition-colors">
-              <h3 className="text-xl md:text-2xl font-bold text-brand-900 dark:text-brand-300 mb-2">Plan Esencial</h3>
-              <div className="text-3xl md:text-4xl font-bold text-brand-900 dark:text-brand-300 mb-4 md:mb-6">
-                RD$1,000<span className="text-base md:text-lg text-gray-600 dark:text-gray-400">/mes</span>
+            <div className="group relative bg-gradient-to-br from-white to-gray-50/50 dark:from-gray-800 dark:to-gray-700/50 rounded-3xl p-8 border-2 border-brand-100/60 dark:border-gray-600/60 hover:border-brand-400 dark:hover:border-brand-400 hover:shadow-2xl hover:shadow-brand-500/15 transition-all duration-300 hover:-translate-y-2 backdrop-blur-sm overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-brand-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div className="relative z-10">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-2xl md:text-3xl font-bold text-brand-900 dark:text-brand-300 group-hover:text-brand-700 dark:group-hover:text-brand-200 transition-colors">Plan Esencial</h3>
+                  <div className="w-12 h-12 bg-gradient-to-br from-brand-500 to-brand-600 rounded-xl flex items-center justify-center shadow-lg">
+                    <ShoppingBag className="h-6 w-6 text-white" />
+                  </div>
+                </div>
+                <div className="mb-6">
+                  <div className="flex items-baseline">
+                    <span className="text-4xl md:text-5xl font-bold text-brand-900 dark:text-brand-300">RD$1,000</span>
+                    <span className="text-lg text-gray-600 dark:text-gray-400 ml-1">/mes</span>
+                  </div>
+                  <p className="text-gray-600 dark:text-gray-400 mt-2">Perfecto para empezar</p>
+                </div>
+                <ul className="space-y-4 mb-8">
+                  {[
+                    "Tienda + catálogo (hasta 500 SKUs)",
+                    "Bot de botones + FAQs",
+                    "IA texto 10,000 turnos/mes",
+                    "Audios→texto 100 min/mes",
+                    "Analytics básicos",
+                    "1 usuario admin"
+                  ].map((feature, index) => (
+                    <li key={index} className="flex items-start group/item">
+                      <div className="w-5 h-5 bg-gradient-to-br from-brand-500 to-brand-600 rounded-full flex items-center justify-center mr-3 flex-shrink-0 mt-0.5 shadow-sm">
+                        <CheckCircle className="h-3 w-3 text-white" />
+                      </div>
+                      <span className="text-gray-700 dark:text-gray-300 leading-relaxed group-hover/item:text-gray-900 dark:group-hover/item:text-white transition-colors">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+                <Link 
+                  to="/registro?plan=esencial" 
+                  className="block w-full bg-gradient-to-r from-brand-500 to-brand-600 text-white text-center py-4 rounded-2xl font-bold hover:from-brand-600 hover:to-brand-700 hover:shadow-xl hover:shadow-brand-500/30 transition-all duration-300 transform hover:scale-105 text-lg"
+                >
+                  Empezar con Esencial
+                </Link>
               </div>
-              <ul className="space-y-2 md:space-y-3 mb-6 md:mb-8">
-                {[
-                  "Tienda + catálogo (hasta 500 SKUs)",
-                  "Bot de botones + FAQs",
-                  "IA texto 10,000 turnos/mes",
-                  "Audios→texto 100 min/mes",
-                  "Analytics básicos",
-                  "1 usuario admin"
-                ].map((feature, index) => (
-                  <li key={index} className="flex items-start">
-                    <CheckCircle className="h-4 w-4 md:h-5 md:w-5 text-brand-500 dark:text-brand-400 mr-3 flex-shrink-0 mt-0.5" />
-                    <span className="text-gray-700 dark:text-gray-300 text-sm md:text-base">{feature}</span>
-                  </li>
-                ))}
-              </ul>
-              <Link 
-                to="/registro?plan=esencial" 
-                className="block w-full bg-brand-500 text-white text-center py-3 rounded-xl font-semibold hover:bg-brand-700 transition-colors text-sm md:text-base"
-              >
-                Empezar con Esencial
-              </Link>
             </div>
 
             {/* Plan Pro */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 md:p-8 border-2 border-brand-accent dark:border-brand-accent relative">
-              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                <span className="bg-brand-accent text-white px-3 md:px-4 py-1 rounded-full text-xs md:text-sm font-semibold">Recomendado</span>
+            <div className="group relative bg-gradient-to-br from-white to-orange-50/30 dark:from-gray-800 dark:to-orange-900/10 rounded-3xl p-8 border-2 border-brand-accent/60 hover:border-brand-accent hover:shadow-2xl hover:shadow-brand-accent/20 transition-all duration-300 hover:-translate-y-2 backdrop-blur-sm overflow-hidden">
+              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-20">
+                <div className="bg-gradient-to-r from-brand-accent to-orange-500 text-white px-6 py-2 rounded-full font-bold shadow-lg shadow-brand-accent/30 text-sm">
+                  ⭐ Recomendado
+                </div>
               </div>
-              <h3 className="text-xl md:text-2xl font-bold text-brand-900 dark:text-brand-300 mb-2">Plan Pro</h3>
-              <div className="text-3xl md:text-4xl font-bold text-brand-900 dark:text-brand-300 mb-4 md:mb-6">
-                RD$2,000<span className="text-base md:text-lg text-gray-600 dark:text-gray-400">/mes</span>
+              <div className="absolute inset-0 bg-gradient-to-br from-brand-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div className="relative z-10 pt-4">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-2xl md:text-3xl font-bold text-brand-900 dark:text-brand-300 group-hover:text-orange-700 dark:group-hover:text-orange-200 transition-colors">Plan Pro</h3>
+                  <div className="w-12 h-12 bg-gradient-to-br from-brand-accent to-orange-500 rounded-xl flex items-center justify-center shadow-lg">
+                    <Bot className="h-6 w-6 text-white" />
+                  </div>
+                </div>
+                <div className="mb-6">
+                  <div className="flex items-baseline">
+                    <span className="text-4xl md:text-5xl font-bold text-brand-900 dark:text-brand-300">RD$2,000</span>
+                    <span className="text-lg text-gray-600 dark:text-gray-400 ml-1">/mes</span>
+                  </div>
+                  <p className="text-orange-600 dark:text-orange-400 mt-2 font-medium">Máximo rendimiento</p>
+                </div>
+                <ul className="space-y-4 mb-8">
+                  {[
+                    "Todo del Plan Esencial +",
+                    "Búsqueda mejorada (Typesense)",
+                    "IA texto 20,000 turnos/mes",
+                    "IA visión 1,000 imágenes/mes",
+                    "Audios→texto 300 min/mes",
+                    "3 usuarios admin",
+                    "Subdominio de marca (opcional)"
+                  ].map((feature, index) => (
+                    <li key={index} className="flex items-start group/item">
+                      <div className="w-5 h-5 bg-gradient-to-br from-brand-accent to-orange-500 rounded-full flex items-center justify-center mr-3 flex-shrink-0 mt-0.5 shadow-sm">
+                        <CheckCircle className="h-3 w-3 text-white" />
+                      </div>
+                      <span className="text-gray-700 dark:text-gray-300 leading-relaxed group-hover/item:text-gray-900 dark:group-hover/item:text-white transition-colors">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+                <Link 
+                  to="/registro?plan=pro" 
+                  className="block w-full bg-gradient-to-r from-brand-accent to-orange-500 text-white text-center py-4 rounded-2xl font-bold hover:from-orange-600 hover:to-red-500 hover:shadow-xl hover:shadow-brand-accent/30 transition-all duration-300 transform hover:scale-105 text-lg"
+                >
+                  Empezar con Pro
+                </Link>
               </div>
-              <ul className="space-y-2 md:space-y-3 mb-6 md:mb-8">
-                {[
-                  "Todo del Plan Esencial +",
-                  "Búsqueda mejorada (Typesense)",
-                  "IA texto 20,000 turnos/mes",
-                  "IA visión 1,000 imágenes/mes",
-                  "Audios→texto 300 min/mes",
-                  "3 usuarios admin",
-                  "Subdominio de marca (opcional)"
-                ].map((feature, index) => (
-                  <li key={index} className="flex items-start">
-                    <CheckCircle className="h-4 w-4 md:h-5 md:w-5 text-brand-accent mr-3 flex-shrink-0 mt-0.5" />
-                    <span className="text-gray-700 dark:text-gray-300 text-sm md:text-base">{feature}</span>
-                  </li>
-                ))}
-              </ul>
-              <Link 
-                to="/registro?plan=pro" 
-                className="block w-full bg-brand-accent text-white text-center py-3 rounded-xl font-semibold hover:bg-orange-600 transition-colors text-sm md:text-base"
-              >
-                Empezar con Pro
-              </Link>
             </div>
           </div>
         </div>
