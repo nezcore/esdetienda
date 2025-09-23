@@ -13,8 +13,9 @@ if %errorlevel%==0 (
     git diff --cached --quiet
     if %errorlevel%==0 (
         echo ✅ No hay cambios para subir.
-        timeout /t 2 > nul
-        exit /b 0
+        echo ⏱️  Cerrando en 5 segundos...
+        timeout /t 5 > nul
+        exit
     )
 )
 
@@ -42,8 +43,9 @@ echo 📁 Agregando archivos...
 git add .
 if %errorlevel% neq 0 (
     echo ❌ Error al agregar archivos.
-    timeout /t 3 > nul
-    exit /b 1
+    echo ⏱️  Cerrando en 5 segundos...
+    timeout /t 5 > nul
+    exit
 )
 
 :: Crear commit
@@ -51,8 +53,9 @@ echo 💾 Creando commit #%NEXT_NUM%...
 git commit -m "%COMMIT_MSG%"
 if %errorlevel% neq 0 (
     echo ❌ Error al crear commit.
-    timeout /t 3 > nul
-    exit /b 1
+    echo ⏱️  Cerrando en 5 segundos...
+    timeout /t 5 > nul
+    exit
 )
 
 :: Subir a GitHub
@@ -61,8 +64,9 @@ git push origin main
 if %errorlevel% neq 0 (
     echo ❌ Error al subir a GitHub.
     echo    Verifica tu conexión e intenta de nuevo.
-    timeout /t 3 > nul
-    exit /b 1
+    echo ⏱️  Cerrando en 5 segundos...
+    timeout /t 5 > nul
+    exit
 )
 
 echo.
@@ -73,4 +77,6 @@ echo.
 echo 🔗 https://github.com/nezcore/esdetienda
 echo 📝 "%COMMIT_MSG%"
 echo.
-timeout /t 2 > nul
+echo ⏱️  Cerrando en 5 segundos...
+timeout /t 5 > nul
+exit
