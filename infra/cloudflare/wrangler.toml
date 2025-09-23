@@ -1,0 +1,48 @@
+# Configuración de Wrangler para EsDeTienda
+
+# Para usar este archivo:
+# 1. Copiar a apps/worker-api/wrangler.toml
+# 2. Reemplazar los IDs con los valores reales de tu cuenta de Cloudflare
+# 3. Configurar las variables de entorno en el Dashboard
+
+name = "esdetienda-api"
+main = "src/index.ts" 
+compatibility_date = "2025-09-23"
+compatibility_flags = ["nodejs_compat"]
+
+# Variables de entorno (configurar en Dashboard para mayor seguridad)
+[vars]
+NODE_ENV = "production"
+OPENROUTER_API_URL = "https://openrouter.ai/api/v1"
+OPENROUTER_APP_NAME = "EsDeTienda-Bot"
+OPENROUTER_SITE_URL = "https://esdetienda.com"
+STT_PROVIDER = "assemblyai"
+
+# KV Namespace para caps y contadores
+# Crear con: wrangler kv:namespace create "KV" 
+[[kv_namespaces]]
+binding = "KV"
+id = "REEMPLAZAR_CON_KV_NAMESPACE_ID"
+preview_id = "REEMPLAZAR_CON_KV_PREVIEW_ID"
+
+# R2 Bucket para medios
+# Crear con: wrangler r2 bucket create esdetienda-media
+[[r2_buckets]]
+binding = "R2"
+bucket_name = "esdetienda-media"
+
+# Hyperdrive para MongoDB Atlas
+# Crear con: wrangler hyperdrive create esdetienda-db --connection-string="mongodb+srv://..."
+[[hyperdrive]]
+binding = "DB"
+id = "REEMPLAZAR_CON_HYPERDRIVE_ID"
+
+# Configuración de development
+[env.development]
+vars = { NODE_ENV = "development" }
+
+# Configuración para dominio custom (opcional)
+# Descomentar después de configurar el dominio en Cloudflare
+# [[routes]]
+# pattern = "api.esdetienda.com/*"
+# zone_id = "REEMPLAZAR_CON_ZONE_ID"

@@ -1,0 +1,28 @@
+{
+  "name": "esdetienda",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Plataforma SaaS multi-tenant para tiendas virtuales con WhatsApp Bot",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:frontend": "cd apps/frontend && npm run dev",
+    "dev:api": "cd apps/worker-api && wrangler dev",
+    "build:frontend": "cd apps/frontend && npm run build",
+    "build:api": "cd apps/worker-api && npm run build",
+    "deploy:api": "cd apps/worker-api && wrangler deploy",
+    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:api\"",
+    "lint": "eslint . --ext .ts,.tsx,.js,.jsx",
+    "type-check": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "concurrently": "^8.2.0",
+    "eslint": "^8.0.0",
+    "typescript": "^5.0.0"
+  }
+}

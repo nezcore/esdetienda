@@ -1,0 +1,196 @@
+import { Hono } from 'hono'
+import { z } from 'zod'
+import { Env } from '../index'
+
+const tenants = new Hono<{ Bindings: Env }>()
+
+// Schema para crear tenant
+const createTenantSchema = z.object({
+  slug: z.string().regex(/^[a-z0-9-]+$/, 'Slug debe contener solo letras minúsculas, números y guiones'),
+  businessName: z.string().min(2, 'Nombre de negocio requerido'),
+  plan: z.enum(['esencial', 'pro']),
+  ownerEmail: z.string().email('Email inválido'),
+  settings: z.object({
+    primaryColor: z.string().optional(),
+    secondaryColor: z.string().optional(),
+    whatsappNumber: z.string().optional(),
+    description: z.string().optional()
+  }).optional()
+})
+
+// POST /tenants - Crear nuevo tenant (solo admin)
+tenants.post('/', async (c) => {
+  try {
+    const body = await c.req.json()
+    const validatedData = createTenantSchema.parse(body)
+    
+    // TODO: Verificar autenticación de admin
+    // TODO: Verificar que el slug no exista en MongoDB
+    
+    // Verificar slug único en KV (cache rápido)
+    const existingSlug = await c.env.KV.get(`tenant:slug:${validatedData.slug}`)
+    if (existingSlug) {
+      return c.json({
+        error: 'Slug ya existe',
+        message: `El slug '${validatedData.slug}' ya está en uso`
+      }, 409)
+    }
+    
+    // TODO: Crear tenant en MongoDB
+    const newTenant = {
+      id: `tenant_${validatedData.slug}`,
+      slug: validatedData.slug,
+      businessName: validatedData.businessName,
+      plan: validatedData.plan,
+      status: 'active',
+      settings: {
+        primaryColor: '#134572',
+        secondaryColor: '#27A3A4',
+        whatsappNumber: '',
+        description: validatedData.businessName,
+        ...validatedData.settings
+      },
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    }
+    
+    // Guardar en KV para acceso rápido
+    await c.env.KV.put(`tenant:slug:${validatedData.slug}`, JSON.stringify(newTenant))
+    await c.env.KV.put(`tenant:${newTenant.id}`, JSON.stringify(newTenant))
+    
+    return c.json({
+      success: true,
+      message: 'Tenant creado exitosamente',
+      tenant: newTenant
+    }, 201)
+    
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return c.json({
+        error: 'Datos inválidos',
+        details: error.errors
+      }, 400)
+    }
+    
+    console.error('Create tenant error:', error)
+    return c.json({
+      error: 'Error al crear tenant'
+    }, 500)
+  }
+})
+
+// GET /tenants/:slug - Obtener información pública del tenant
+tenants.get('/:slug', async (c) => {
+  try {
+    const slug = c.req.param('slug')
+    
+    if (!slug) {
+      return c.json({
+        error: 'Slug requerido'
+      }, 400)
+    }
+    
+    // Buscar en KV primero (más rápido)
+    let tenantData = await c.env.KV.get(`tenant:slug:${slug}`, 'json')
+    
+    if (!tenantData) {
+      // TODO: Buscar en MongoDB si no está en cache
+      // Por ahora, devolver tenant demo si es 'demo'
+      if (slug === 'demo') {
+        tenantData = {
+          id: 'tenant_demo',
+          slug: 'demo',
+          businessName: 'Tienda Demo',
+          plan: 'pro',
+          status: 'active',
+          settings: {
+            primaryColor: '#134572',
+            secondaryColor: '#27A3A4',
+            whatsappNumber: '+1-809-555-0123',
+            description: 'Tienda de demostración para EsDeTienda'
+          }
+        }
+      }
+    }
+    
+    if (!tenantData) {
+      return c.json({
+        error: 'Tienda no encontrada',
+        message: `La tienda '${slug}' no existe`
+      }, 404)
+    }
+    
+    // Solo devolver información pública
+    const publicTenantInfo = {
+      slug: (tenantData as any).slug,
+      businessName: (tenantData as any).businessName,
+      description: (tenantData as any).settings?.description,
+      colors: {
+        primary: (tenantData as any).settings?.primaryColor || '#134572',
+        secondary: (tenantData as any).settings?.secondaryColor || '#27A3A4'
+      },
+      whatsappNumber: (tenantData as any).settings?.whatsappNumber,
+      status: (tenantData as any).status
+    }
+    
+    return c.json({
+      success: true,
+      tenant: publicTenantInfo
+    })
+    
+  } catch (error) {
+    console.error('Get tenant error:', error)
+    return c.json({
+      error: 'Error al obtener información del tenant'
+    }, 500)
+  }
+})
+
+// PUT /tenants/:slug - Actualizar configuración del tenant (solo owner)
+tenants.put('/:slug', async (c) => {
+  try {
+    const slug = c.req.param('slug')
+    const body = await c.req.json()
+    
+    // TODO: Verificar autenticación y permisos
+    // TODO: Validar datos de entrada
+    // TODO: Actualizar en MongoDB
+    // TODO: Actualizar cache en KV
+    
+    return c.json({
+      success: true,
+      message: 'Tenant actualizado exitosamente'
+    })
+    
+  } catch (error) {
+    console.error('Update tenant error:', error)
+    return c.json({
+      error: 'Error al actualizar tenant'
+    }, 500)
+  }
+})
+
+// DELETE /tenants/:slug - Eliminar tenant (solo admin)
+tenants.delete('/:slug', async (c) => {
+  try {
+    const slug = c.req.param('slug')
+    
+    // TODO: Verificar autenticación de admin
+    // TODO: Eliminar de MongoDB
+    // TODO: Limpiar cache de KV
+    // TODO: Limpiar archivos de R2
+    
+    return c.json({
+      success: true,
+      message: 'Tenant eliminado exitosamente'
+    })
+    
+  } catch (error) {
+    console.error('Delete tenant error:', error)
+    return c.json({
+      error: 'Error al eliminar tenant'
+    }, 500)
+  }
+})
+
+export default tenants

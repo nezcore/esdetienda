@@ -1,0 +1,36 @@
+name = "esdetienda-api"
+main = "src/index.ts"
+compatibility_date = "2025-09-23"
+compatibility_flags = ["nodejs_compat"]
+
+# Variables de entorno (configurar en Cloudflare Dashboard)
+[vars]
+NODE_ENV = "production"
+OPENROUTER_API_URL = "https://openrouter.ai/api/v1"
+OPENROUTER_APP_NAME = "EsDeTienda-Bot"
+OPENROUTER_SITE_URL = "https://esdetienda.com"
+STT_PROVIDER = "assemblyai"
+
+# KV Namespace para caps y contadores
+[[kv_namespaces]]
+binding = "KV"
+# id = "<KV_NAMESPACE_ID>"  # Configurar después de crear el namespace
+
+# R2 Bucket para medios
+[[r2_buckets]]
+binding = "R2"
+bucket_name = "esdetienda-media"
+
+# Hyperdrive para MongoDB
+[[hyperdrive]]
+binding = "DB"
+# id = "<HYPERDRIVE_ID>"  # Configurar después de crear hyperdrive
+
+# Configuración de development
+[env.development]
+vars = { NODE_ENV = "development" }
+
+# Configuración opcional para dominio custom
+# [[routes]]
+# pattern = "api.esdetienda.com/*"  
+# zone_id = "<ZONE_ID>"
