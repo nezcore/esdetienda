@@ -1,10 +1,59 @@
 import { Link } from 'react-router-dom'
 import { ArrowRight, CheckCircle, MessageCircle, ShoppingBag, Bot, BarChart3, Menu, X } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import ThemeToggle from '../components/ThemeToggle'
 
 export default function HomePage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  
+  // Efecto máquina de escribir para el hero
+  const dynamicTexts = [
+    'vendiendo 24/7',
+    'activo todo el tiempo',
+    'trabajando por ti',
+    'siempre disponible',
+    'nunca descansa',
+    'en piloto automático',
+    'sin descanso',
+    'round the clock'
+  ]
+  
+  const [displayedText, setDisplayedText] = useState('')
+  const [currentTextIndex, setCurrentTextIndex] = useState(0)
+  const [isDeleting, setIsDeleting] = useState(false)
+  const [charIndex, setCharIndex] = useState(0)
+  
+  useEffect(() => {
+    const currentText = dynamicTexts[currentTextIndex]
+    let timeout: NodeJS.Timeout | undefined
+    
+    if (!isDeleting && charIndex < currentText.length) {
+      // Escribiendo - agregar siguiente carácter
+      timeout = setTimeout(() => {
+        setDisplayedText(currentText.slice(0, charIndex + 1))
+        setCharIndex(charIndex + 1)
+      }, 100) // Velocidad de escritura - 100ms por carácter
+    } else if (!isDeleting && charIndex === currentText.length) {
+      // Texto completo - pausar antes de borrar
+      timeout = setTimeout(() => {
+        setIsDeleting(true)
+      }, 2000) // Pausa de 2 segundos cuando termina de escribir
+    } else if (isDeleting && charIndex > 0) {
+      // Borrando - quitar carácter
+      timeout = setTimeout(() => {
+        setDisplayedText(currentText.slice(0, charIndex - 1))
+        setCharIndex(charIndex - 1)
+      }, 50) // Velocidad de borrado - 50ms por carácter (más rápido)
+    } else if (isDeleting && charIndex === 0) {
+      // Terminó de borrar - cambiar al siguiente texto
+      setIsDeleting(false)
+      setCurrentTextIndex((prevIndex) => (prevIndex + 1) % dynamicTexts.length)
+    }
+    
+    return () => {
+      if (timeout) clearTimeout(timeout)
+    }
+  }, [charIndex, isDeleting, currentTextIndex, dynamicTexts])
 
   return (
     <div className="min-h-screen">
@@ -88,15 +137,13 @@ export default function HomePage() {
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center">
-            <div className="mb-6">
-              <div className="inline-flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20 text-brand-100 text-sm font-medium mb-6">
-                ✨ Automatiza tu negocio con WhatsApp
-              </div>
-            </div>
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-6 md:mb-8">
               Tu tienda y tu WhatsApp
               <br />
-              <span className="text-brand-100 dark:text-brand-300 bg-gradient-to-r from-brand-100 to-white bg-clip-text text-transparent">vendiendo 24/7</span>
+              <span className="text-brand-100 dark:text-brand-300 bg-gradient-to-r from-brand-100 to-white bg-clip-text text-transparent">
+                {displayedText}
+                <span className="inline-block w-0.5 h-[0.9em] bg-current ml-1" style={{animation: 'blink 1s infinite'}}></span>
+              </span>
               <br className="hidden sm:block" />
               <span className="block sm:inline text-white/90">sin escribir todo el día</span>
             </h1>
