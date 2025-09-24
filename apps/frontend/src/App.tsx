@@ -17,6 +17,9 @@ import DashboardPage from './pages/DashboardPage'
 import StorePage from './pages/StorePage'
 import ProductPage from './pages/ProductPage'
 import TermsPage from './pages/TermsPage'
+import AddProductPage from './pages/AddProductPage'
+import PublicStorePage from './pages/PublicStorePage'
+import ImportGuidePage from './pages/ImportGuidePage'
 
 function App() {
   useEffect(() => {
@@ -53,16 +56,24 @@ function App() {
               } 
             />
             <Route 
-              path="/panel/*" 
+              path="/panel/agregar-producto" 
               element={
                 <ProtectedRoute>
-                  <DashboardPage />
+                  <AddProductPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/panel/guia-importacion" 
+              element={
+                <ProtectedRoute>
+                  <ImportGuidePage />
                 </ProtectedRoute>
               } 
             />
             
             {/* Tiendas públicas multi-tenant */}
-            <Route path="/str/:tenantSlug" element={<StorePage />} />
+            <Route path="/str/:tenantSlug" element={<PublicStorePage />} />
             <Route path="/str/:tenantSlug/producto/:productId" element={<ProductPage />} />
           </Routes>
         </div>

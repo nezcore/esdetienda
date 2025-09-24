@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useSearchParams, useNavigate } from 'react-router-dom'
+import { useSearchParams, useNavigate, Link } from 'react-router-dom'
 import { 
   BarChart3, 
   Package, 
@@ -9,7 +9,8 @@ import {
   ExternalLink,
   Plus,
   LogOut,
-  User
+  User,
+  FileText
 } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 
@@ -52,10 +53,14 @@ export default function DashboardPage() {
             </div>
             <div className="flex items-center space-x-4">
               {tenant && (
-                <button className="text-brand-500 hover:text-brand-700 flex items-center">
+                <Link 
+                  to={`/str/${tenant.slug}`}
+                  target="_blank"
+                  className="text-brand-500 hover:text-brand-700 flex items-center"
+                >
                   <ExternalLink className="h-5 w-5" />
                   <span className="ml-1 text-sm">Ver mi tienda</span>
-                </button>
+                </Link>
               )}
               <div className="flex items-center space-x-3">
                 <div className="text-right">
@@ -157,13 +162,19 @@ export default function DashboardPage() {
                   Sube tu primer producto o importa un catálogo completo desde CSV/Excel
                 </p>
                 <div className="space-y-2">
-                  <button className="bg-brand-500 text-white px-6 py-2 rounded-xl hover:bg-brand-600 transition-colors">
+                  <Link 
+                    to="/panel/agregar-producto"
+                    className="inline-block bg-brand-500 text-white px-6 py-2 rounded-xl hover:bg-brand-600 transition-colors"
+                  >
                     Agregar producto
-                  </button>
+                  </Link>
                   <br />
-                  <button className="text-brand-500 hover:text-brand-700 text-sm">
+                  <Link 
+                    to="/panel/guia-importacion"
+                    className="text-brand-500 hover:text-brand-700 text-sm"
+                  >
                     Ver guía de importación →
-                  </button>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -199,7 +210,10 @@ export default function DashboardPage() {
                       <p className="text-sm text-gray-600">Datos del negocio, colores</p>
                     </div>
                   </div>
-                  <button className="text-brand-500 hover:text-brand-700 text-sm">
+                  <button 
+                    onClick={() => alert('Función de configuración próximamente disponible')}
+                    className="text-brand-500 hover:text-brand-700 text-sm"
+                  >
                     Configurar
                   </button>
                 </div>
