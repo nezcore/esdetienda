@@ -40,8 +40,8 @@ export default function DashboardPage() {
   ]
 
   const secondaryNav = [
-    { label: 'Guía de importación', to: '/panel/guia-importacion', icon: FileText, disabled: false, external: false, iconColor: 'text-indigo-500', disabledColor: 'text-indigo-300 dark:text-indigo-400' },
-    { label: 'Personalizar marca', to: '#', icon: Palette, disabled: true, external: false, iconColor: 'text-pink-500', disabledColor: 'text-pink-300 dark:text-pink-400' }
+    { label: 'Guía de inicio', to: '/panel/guia-importacion', icon: FileText, disabled: false, external: false, iconColor: 'text-indigo-500', disabledColor: 'text-indigo-300 dark:text-indigo-400' },
+    { label: 'Personalizar', to: '#', icon: Palette, disabled: true, external: false, iconColor: 'text-pink-500', disabledColor: 'text-pink-300 dark:text-pink-400' }
   ]
 
   const handleLogout = () => {
@@ -241,14 +241,11 @@ export default function DashboardPage() {
           </div>
 
           <div className="space-y-3">
-            <div className="flex items-center justify-center py-2">
-              <ThemeToggle />
-            </div>
             <button
               onClick={handleLogout}
-              className="flex items-center w-full justify-center px-3 py-2 text-sm font-semibold text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-500/10 rounded-lg transition-colors"
+              className="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-red-500/25 flex items-center justify-center gap-2"
             >
-              <LogOut className="h-4 w-4 mr-2" />
+              <LogOut className="h-5 w-5" />
               Cerrar sesión
             </button>
           </div>
@@ -282,7 +279,9 @@ export default function DashboardPage() {
                 </div>
               </div>
 
-              <div className="flex items-center space-x-4" />
+              <div className="flex items-center space-x-4">
+                <ThemeToggle />
+              </div>
             </div>
           </div>
         </header>
@@ -382,7 +381,7 @@ export default function DashboardPage() {
                       to="/panel/guia-importacion"
                       className="text-brand-500 hover:text-brand-700 text-sm"
                     >
-                      Ver guía de importación →
+                      Ver guía de inicio →
                     </Link>
                   </div>
                 </div>
