@@ -10,6 +10,7 @@ import { AuthProvider } from './contexts/AuthContext'
 import ProtectedRoute from './components/ProtectedRoute'
 import DashboardLayout from './components/DashboardLayout'
 import DashboardHome from './components/DashboardHome'
+import ResourcesPage from './pages/ResourcesPage'
 
 // Páginas
 import HomePage from './pages/HomePage'
@@ -56,6 +57,7 @@ function App() {
               } 
             >
               <Route index element={<DashboardHome />} />
+              <Route path="recursos" element={<ResourcesPage />} />
               <Route path="agregar-producto" element={<AddProductPage />} />
               <Route path="guia-importacion" element={<ImportGuidePage />} />
             </Route>

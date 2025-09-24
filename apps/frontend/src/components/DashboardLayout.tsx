@@ -11,6 +11,7 @@ import {
   ShoppingCart,
   Users,
   Palette,
+  Gauge,
   X,
   LogOut
 } from 'lucide-react'
@@ -27,6 +28,7 @@ export default function DashboardLayout() {
 
   const mainNav = [
     { label: 'Resumen', to: '/panel', icon: Home, disabled: false, external: false, iconColor: 'text-blue-500', disabledColor: 'text-blue-300 dark:text-blue-400' },
+    { label: 'Recursos', to: '/panel/recursos', icon: Gauge, disabled: false, external: false, iconColor: 'text-sky-500', disabledColor: 'text-sky-300 dark:text-sky-400' },
     { label: 'Productos', to: '/panel/agregar-producto', icon: ShoppingCart, disabled: false, external: false, iconColor: 'text-emerald-500', disabledColor: 'text-emerald-300 dark:text-emerald-400' },
     { label: 'Pedidos', to: '#', icon: Package, disabled: true, external: false, iconColor: 'text-orange-500', disabledColor: 'text-orange-300 dark:text-orange-400' },
     { label: 'Clientes', to: '#', icon: Users, disabled: true, external: false, iconColor: 'text-purple-500', disabledColor: 'text-purple-300 dark:text-purple-400' },
@@ -38,6 +40,29 @@ export default function DashboardLayout() {
     { label: 'Guía de inicio', to: '/panel/guia-importacion', icon: FileText, disabled: false, external: false, iconColor: 'text-indigo-500', disabledColor: 'text-indigo-300 dark:text-indigo-400' },
     { label: 'Personalizar', to: '#', icon: Palette, disabled: true, external: false, iconColor: 'text-pink-500', disabledColor: 'text-pink-300 dark:text-pink-400' }
   ]
+
+  const planStyles: Record<string, { label: string; badgeClass: string; textClass: string }> = {
+    esencial: {
+      label: 'Starter',
+      badgeClass: 'bg-gradient-to-r from-emerald-500/15 to-emerald-400/20 border border-emerald-400/40',
+      textClass: 'text-emerald-700 dark:text-emerald-200'
+    },
+    grow: {
+      label: 'Grow',
+      badgeClass: 'bg-gradient-to-r from-blue-500/15 to-slate-500/20 border border-blue-400/40',
+      textClass: 'text-blue-700 dark:text-blue-200'
+    },
+    pro: {
+      label: 'Pro',
+      badgeClass: 'bg-gradient-to-r from-orange-500/15 to-red-500/20 border border-orange-400/40',
+      textClass: 'text-orange-700 dark:text-orange-200'
+    },
+    default: {
+      label: 'Plan sin asignar',
+      badgeClass: 'bg-gray-200/50 border border-gray-300/60 dark:bg-gray-700/40 dark:border-gray-600/60',
+      textClass: 'text-gray-700 dark:text-gray-200'
+    }
+  }
 
   const handleLogout = () => {
     logout()
@@ -213,12 +238,19 @@ export default function DashboardLayout() {
         </div>
 
         <div className="border-t border-gray-200 p-4 dark:border-gray-800">
-          <div className="flex items-center space-x-3 mb-3">
+          <div className="flex items-center justify-between mb-3">
             <div className="h-10 w-10 rounded-full bg-brand-500 flex items-center justify-center text-white font-semibold">
               {user?.email?.[0]?.toUpperCase() ?? 'U'}
             </div>
-            <div>
-              <p className="text-sm font-semibold text-gray-900 dark:text-white">
+            <div className="flex-1 ml-3 relative">
+              {tenant && (
+                <span
+                  className={`absolute -top-2 right-0 rounded-full px-3 py-1 text-xs font-semibold ${(planStyles[tenant.plan]?.badgeClass ?? planStyles.default.badgeClass)} ${(planStyles[tenant.plan]?.textClass ?? planStyles.default.textClass)}`}
+                >
+                  {planStyles[tenant.plan]?.label ?? planStyles.default.label}
+                </span>
+              )}
+              <p className="text-sm font-semibold text-gray-900 dark:text-white pr-16">
                 {user?.email}
               </p>
               {tenant && (
