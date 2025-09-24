@@ -1,12 +1,21 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
-import { Eye, EyeOff, Check } from 'lucide-react'
+import { Eye, EyeOff, Check, CheckCircle, Loader2, XCircle } from 'lucide-react'
 import ThemeToggle from '../components/ThemeToggle'
 
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [email, setEmail] = useState('')
   const [emailError, setEmailError] = useState('')
+  const [businessName, setBusinessName] = useState('')
+  const [businessNameTouched, setBusinessNameTouched] = useState(false)
+  const [tenantSlug, setTenantSlug] = useState('')
+  const [slugStatus, setSlugStatus] = useState<'idle' | 'checking' | 'available' | 'taken' | 'invalid'>(
+    'idle'
+  )
+  const isBusinessNameValid = businessName.trim().length >= 4
+  const slugPattern = /^[a-z0-9-]+$/
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
 
@@ -67,11 +76,54 @@ export default function RegisterPage() {
     'mac.com'
   ]
 
+  useEffect(() => {
+    const value = tenantSlug.trim().toLowerCase()
+
+    if (!value) {
+      setSlugStatus('idle')
+      return
+    }
+
+    if (!slugPattern.test(value) || value.length < 4) {
+      setSlugStatus('invalid')
+      return
+    }
+
+    setSlugStatus('checking')
+
+    const delay = setTimeout(() => {
+      const reservedSlugs = new Set(['demo', 'starter', 'grow', 'pro', 'tienda', 'store'])
+      setSlugStatus(reservedSlugs.has(value) ? 'taken' : 'available')
+    }, 400)
+
+    return () => clearTimeout(delay)
+  }, [tenantSlug])
+
+  const emailHasAt = email.includes('@')
+  const emailDomainPart = (email.split('@')[1] ?? '').toLowerCase()
+  const emailMatchesPrefix = emailDomainPart
+    ? allowedDomainList.some((allowed) => allowed.startsWith(emailDomainPart))
+    : true
+  const emailValid = emailHasAt && allowedDomainList.includes(emailDomainPart)
+
   const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
-    const email = (formData.get('email') as string) || ''
     const domain = (email.split('@')[1] ?? '').toLowerCase()
+
+    if (!isBusinessNameValid) {
+      setBusinessNameTouched(true)
+      return
+    }
+
+    if (tenantSlug.length < 4 || !slugPattern.test(tenantSlug)) {
+      setSlugStatus('invalid')
+      return
+    }
+
+    if (slugStatus !== 'available') {
+      return
+    }
 
     if (email.includes('@') && domain && !allowedDomainList.includes(domain)) {
       setEmailError('Solo admitimos correos de Gmail, Outlook (incluye Hotmail/Live/MSN), Yahoo o Apple.')
@@ -84,8 +136,8 @@ export default function RegisterPage() {
     const data = {
       email,
       password: formData.get('password') as string,
-      businessName: formData.get('businessName') as string,
-      tenantSlug: formData.get('tenantSlug') as string,
+      businessName,
+      tenantSlug,
       plan: selectedPlan
     }
 
@@ -152,59 +204,131 @@ export default function RegisterPage() {
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Nombre del negocio
                     </label>
-                    <input
-                      name="businessName"
-                      type="text"
-                      required
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-xl focus:ring-brand-500 focus:border-brand-500 dark:bg-gray-900 dark:text-gray-100"
-                      placeholder="Ferretería El Martillo"
-                    />
+                  <div className="space-y-2">
+                    <div className="relative">
+                      <input
+                        name="businessName"
+                        type="text"
+                        required
+                        value={businessName}
+                        onChange={(event) => setBusinessName(event.target.value)}
+                        onBlur={() => setBusinessNameTouched(true)}
+                        className={`w-full px-3 py-2 pr-10 border rounded-xl focus:ring-brand-500 focus:border-brand-500 dark:bg-gray-900 dark:text-gray-100 ${
+                          businessNameTouched && !isBusinessNameValid
+                            ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
+                            : 'border-gray-300 dark:border-gray-700'
+                        }`}
+                        placeholder="Ferretería El Martillo"
+                      />
+                      {businessNameTouched && businessName && (
+                        <span className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
+                          {isBusinessNameValid ? (
+                            <CheckCircle className="h-5 w-5 text-emerald-500" />
+                          ) : (
+                            <XCircle className="h-5 w-5 text-red-500" />
+                          )}
+                        </span>
+                      )}
+                    </div>
+                    {businessNameTouched && !isBusinessNameValid && (
+                      <p className="text-sm text-red-500">
+                        El nombre del negocio debe tener al menos 4 caracteres.
+                      </p>
+                    )}
                   </div>
+                </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Slug de tu tienda
-                    </label>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Slug de tu tienda
+                  </label>
+                  <div className="space-y-2">
                     <div className="flex">
                       <span className="inline-flex items-center px-3 rounded-l-xl border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
                         esdetienda.com/str/
                       </span>
-                      <input
-                        name="tenantSlug"
-                        type="text"
-                        required
-                        pattern="[a-z0-9-]+"
-                        className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-r-xl focus:ring-brand-500 focus:border-brand-500 dark:bg-gray-900 dark:text-gray-100"
-                        placeholder="ferremax"
-                      />
+                      <div className="relative flex-1">
+                        <input
+                          name="tenantSlug"
+                          type="text"
+                          required
+                          pattern="[a-z0-9-]+"
+                          value={tenantSlug}
+                          onChange={(event) => setTenantSlug(event.target.value.toLowerCase())}
+                          className={`w-full px-3 py-2 pr-10 border rounded-r-xl focus:ring-brand-500 focus:border-brand-500 dark:bg-gray-900 dark:text-gray-100 ${
+                            slugStatus === 'invalid' || slugStatus === 'taken'
+                              ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
+                              : 'border-gray-300 dark:border-gray-700'
+                          }`}
+                          placeholder="ferremax"
+                        />
+                        <span className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
+                          {slugStatus === 'checking' && (
+                            <Loader2 className="h-5 w-5 text-brand-500 animate-spin" />
+                          )}
+                          {slugStatus === 'available' && tenantSlug && (
+                            <CheckCircle className="h-5 w-5 text-emerald-500" />
+                          )}
+                          {(slugStatus === 'taken' || slugStatus === 'invalid') && tenantSlug && (
+                            <XCircle className="h-5 w-5 text-red-500" />
+                          )}
+                        </span>
+                      </div>
                     </div>
-                    <p className="text-xs text-gray-500 mt-1">Solo minúsculas, números y guiones</p>
+                    {slugStatus === 'invalid' && tenantSlug && (
+                      <p className="text-sm text-red-500">
+                        Usa al menos 4 caracteres en minúsculas, números o guiones.
+                      </p>
+                    )}
+                    {slugStatus === 'taken' && (
+                      <p className="text-sm text-red-500">
+                        Ese nombre ya está en uso. Intenta con otra variación.
+                      </p>
+                    )}
                   </div>
+                  <p className="text-xs text-gray-500 mt-1">Solo minúsculas, números y guiones</p>
+                </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Email
-                    </label>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Email
+                  </label>
                   <div className="space-y-3">
-                    <input
-                      name="email"
-                      type="email"
-                      required
-                      className={`w-full px-3 py-2 border rounded-xl focus:ring-brand-500 focus:border-brand-500 dark:bg-gray-900 dark:text-gray-100 ${emailError ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 dark:border-gray-700'}`}
-                      placeholder="tu@email.com"
-                      onInput={(event) => {
-                        const value = (event.target as HTMLInputElement).value
-                        const hasAt = value.includes('@')
-                        const domainPart = (value.split('@')[1] ?? '').toLowerCase()
-                        const matchesPrefix = allowedDomainList.some((allowed) => allowed.startsWith(domainPart))
+                    <div className="relative">
+                      <input
+                        name="email"
+                        type="email"
+                        required
+                        value={email}
+                        className={`w-full px-3 py-2 pr-10 border rounded-xl focus:ring-brand-500 focus:border-brand-500 dark:bg-gray-900 dark:text-gray-100 ${
+                          emailError ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 dark:border-gray-700'
+                        }`}
+                        placeholder="tu@email.com"
+                        onChange={(event) => {
+                          const value = event.target.value
+                          setEmail(value)
+                          const hasAt = value.includes('@')
+                          const domainPart = (value.split('@')[1] ?? '').toLowerCase()
+                          const matchesPrefix = domainPart
+                            ? allowedDomainList.some((allowed) => allowed.startsWith(domainPart))
+                            : true
 
-                        if (hasAt && domainPart && !matchesPrefix) {
-                          setEmailError('Solo admitimos correos de Gmail, Outlook (incluye Hotmail/Live/MSN), Yahoo o Apple.')
-                        } else {
-                          setEmailError('')
-                        }
-                      }}
-                    />
+                          if (hasAt && domainPart && !matchesPrefix) {
+                            setEmailError('Solo admitimos correos de Gmail, Outlook (incluye Hotmail/Live/MSN), Yahoo o Apple.')
+                          } else {
+                            setEmailError('')
+                          }
+                        }}
+                      />
+                      <span className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
+                        {emailError && emailHasAt && (
+                          <XCircle className="h-5 w-5 text-red-500" />
+                        )}
+                        {!emailError && emailValid && (
+                          <CheckCircle className="h-5 w-5 text-emerald-500" />
+                        )}
+                      </span>
+                    </div>
                     {emailError && (
                       <div className="animate-slide-up-fade">
                         <div className="rounded-2xl border border-red-200/80 bg-red-50/90 dark:bg-red-500/10 dark:border-red-500/40 px-4 py-3 shadow-md shadow-red-500/10 backdrop-blur">
@@ -215,7 +339,7 @@ export default function RegisterPage() {
                       </div>
                     )}
                   </div>
-                  </div>
+                </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
