@@ -377,14 +377,14 @@ export default function HomePage() {
             </div>
 
             {/* Plan Pro */}
-            <div className="group relative bg-gradient-to-br from-orange-50 to-red-50/80 dark:from-orange-900/60 dark:to-red-900/40 rounded-3xl p-8 border-2 border-orange-200/60 dark:border-orange-600/60 hover:border-orange-400 dark:hover:border-orange-400 hover:shadow-2xl hover:shadow-orange-500/25 transition-all duration-300 hover:-translate-y-2 backdrop-blur-sm overflow-hidden">
-              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-20">
+            <div className="group relative bg-gradient-to-br from-orange-50 to-red-50/80 dark:from-orange-900/60 dark:to-red-900/40 rounded-3xl p-8 border-2 border-orange-200/60 dark:border-orange-600/60 hover:border-orange-400 dark:hover:border-orange-400 hover:shadow-2xl hover:shadow-orange-500/25 transition-all duración-300 hover:-translate-y-2 backdrop-blur-sm overflow-visible">
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
                 <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-6 py-2 rounded-full font-bold shadow-lg shadow-orange-500/40 text-sm">
-                  ⭐ Recomendado
+                  <span className="relative -top-0.5 inline-block">⭐ Recomendado</span>
                 </div>
               </div>
               <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-red-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              <div className="relative z-10 pt-4">
+              <div className="relative z-10">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-2xl md:text-3xl font-bold text-orange-900 dark:text-orange-200 group-hover:text-red-700 dark:group-hover:text-red-300 transition-colors">Plan Pro</h3>
                   <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex items-center justify-center shadow-lg shadow-orange-500/25">
