@@ -63,13 +63,10 @@ const app = new Hono<{ Bindings: Env }>()
 // Middleware global
 app.use('*', logger())
 app.use('*', cors({
-  origin: [
-    'https://esdetienda.com',
-    'https://www.esdetienda.com'
-  ],
+  origin: '*', // Permitir todos los orígenes en desarrollo
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
+  credentials: false // Deshabilitar credentials para permitir origin: *
 }))
 
 // Manejador de errores

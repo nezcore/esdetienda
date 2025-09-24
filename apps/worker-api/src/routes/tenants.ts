@@ -79,6 +79,53 @@ tenants.post('/', async (c) => {
   }
 })
 
+// GET /tenants/slug/:slug - Verificar si un slug está disponible
+tenants.get('/slug/:slug', async (c) => {
+  try {
+    const slug = c.req.param('slug')
+    
+    if (!slug) {
+      return c.json({
+        error: 'Slug requerido'
+      }, 400)
+    }
+    
+    const supabase = c.get('supabase')
+    
+    // Verificar si el slug existe en la base de datos
+    const { data: existingTenant, error } = await supabase
+      .from('tenants')
+      .select('id')
+      .eq('slug', slug)
+      .maybeSingle()
+    
+    if (error) {
+      console.error('Supabase slug check error:', error)
+      return c.json({ error: 'Error al verificar slug' }, 500)
+    }
+    
+    // Si existe, no está disponible
+    if (existingTenant) {
+      return c.json({
+        available: false,
+        message: 'Slug no disponible'
+      })
+    }
+    
+    // Si no existe, está disponible
+    return c.json({
+      available: true,
+      message: 'Slug disponible'
+    })
+    
+  } catch (error) {
+    console.error('Check slug error:', error)
+    return c.json({
+      error: 'Error al verificar slug'
+    }, 500)
+  }
+})
+
 // GET /tenants/:slug - Obtener información pública del tenant
 tenants.get('/:slug', async (c) => {
   try {
