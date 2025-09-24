@@ -297,7 +297,7 @@ export default function HomePage() {
           </h2>
           <p className="text-center text-gray-600 dark:text-gray-300 mb-8 md:mb-16 text-sm md:text-base">Sin freemium. Elige el plan que mejor se adapte a tu negocio.</p>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 max-w-6xl mx-auto">
             {/* Plan Starter */}
             <div className="group relative bg-gradient-to-br from-brand-50 to-emerald-50/70 dark:from-slate-900 dark:to-emerald-900/40 rounded-3xl p-8 border-2 border-brand-100/60 dark:border-emerald-700/60 hover:border-emerald-400 dark:hover:border-emerald-400 hover:shadow-2xl hover:shadow-emerald-500/20 transition-all duration-300 hover:-translate-y-2 backdrop-blur-sm overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-brand-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -379,8 +379,8 @@ export default function HomePage() {
             {/* Plan Pro */}
             <div className="group relative bg-gradient-to-br from-orange-50 to-red-50/80 dark:from-orange-900/60 dark:to-red-900/40 rounded-3xl p-8 border-2 border-orange-200/60 dark:border-orange-600/60 hover:border-orange-400 dark:hover:border-orange-400 hover:shadow-2xl hover:shadow-orange-500/25 transition-all duración-300 hover:-translate-y-2 backdrop-blur-sm overflow-visible">
               <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
-                <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-6 py-2 rounded-full font-bold shadow-lg shadow-orange-500/40 text-sm">
-                  <span className="relative -top-0.5 inline-block">⭐ Recomendado</span>
+                <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-6 py-2 rounded-full font-bold shadow-lg shadow-orange-500/40 text-sm leading-none whitespace-nowrap">
+                  ⭐ Recomendado
                 </div>
               </div>
               <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-red-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
