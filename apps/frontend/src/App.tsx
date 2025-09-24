@@ -12,6 +12,7 @@ import RegisterPage from './pages/RegisterPage'
 import DashboardPage from './pages/DashboardPage'
 import StorePage from './pages/StorePage'
 import ProductPage from './pages/ProductPage'
+import TermsPage from './pages/TermsPage'
 
 function App() {
   useEffect(() => {
@@ -35,6 +36,7 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/registro" element={<RegisterPage />} />
+          <Route path="/terminos" element={<TermsPage />} />
           
           {/* Panel de administración */}
           <Route path="/panel" element={<DashboardPage />} />
