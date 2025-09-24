@@ -167,7 +167,7 @@ export default function HomePage() {
             </div>
 
             {/* Beneficios rápidos */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8 text-center px-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8 text-center px-1 sm:px-4">
               <div className="group flex flex-col items-center p-6 md:p-8 bg-gradient-to-br from-purple-500/20 to-pink-500/20 dark:from-purple-600/30 dark:to-pink-600/30 rounded-2xl backdrop-blur-md border border-purple-300/30 dark:border-purple-400/40 hover:from-purple-500/30 hover:to-pink-500/30 dark:hover:from-purple-600/40 dark:hover:to-pink-600/40 hover:border-purple-300/50 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-purple-500/20">
                 <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-purple-400 to-pink-500 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-purple-500/25">
                   <MessageCircle className="h-8 w-8 md:h-10 md:w-10 text-white" />
