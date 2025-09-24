@@ -172,22 +172,22 @@ export default function HomePage() {
                 <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-purple-400 to-pink-500 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-purple-500/25">
                   <MessageCircle className="h-8 w-8 md:h-10 md:w-10 text-white" />
                 </div>
-                <h3 className="font-bold mb-3 text-lg md:text-xl text-white">Ahorra tiempo</h3>
-                <p className="text-white/90 text-sm md:text-base leading-relaxed">Bot responde automáticamente las preguntas frecuentes</p>
+                <h3 className="font-bold mb-3 text-2xl md:text-3xl text-white">Ahorra tiempo</h3>
+                <p className="text-white text-lg md:text-xl leading-relaxed">Bot responde automáticamente las preguntas frecuentes</p>
               </div>
               <div className="group flex flex-col items-center p-6 md:p-8 bg-gradient-to-br from-emerald-500/20 to-teal-500/20 dark:from-emerald-600/30 dark:to-teal-600/30 rounded-2xl backdrop-blur-md border border-emerald-300/30 dark:border-emerald-400/40 hover:from-emerald-500/30 hover:to-teal-500/30 dark:hover:from-emerald-600/40 dark:hover:to-teal-600/40 hover:border-emerald-300/50 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-emerald-500/20">
                 <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-emerald-500/25">
                   <ShoppingBag className="h-8 w-8 md:h-10 md:w-10 text-white" />
                 </div>
-                <h3 className="font-bold mb-3 text-lg md:text-xl text-white">Más ventas desde WhatsApp</h3>
-                <p className="text-white/90 text-sm md:text-base leading-relaxed">Catálogo integrado con carrito directo a WhatsApp</p>
+                <h3 className="font-bold mb-3 text-2xl md:text-3xl text-white">Más ventas desde WhatsApp</h3>
+                <p className="text-white text-lg md:text-xl leading-relaxed">Catálogo integrado con carrito directo a WhatsApp</p>
               </div>
               <div className="group flex flex-col items-center p-6 md:p-8 bg-gradient-to-br from-orange-500/20 to-red-500/20 dark:from-orange-600/30 dark:to-red-600/30 rounded-2xl backdrop-blur-md border border-orange-300/30 dark:border-orange-400/40 hover:from-orange-500/30 hover:to-red-500/30 dark:hover:from-orange-600/40 dark:hover:to-red-600/40 hover:border-orange-300/50 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-orange-500/20 sm:col-span-2 md:col-span-1">
                 <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-orange-400 to-red-500 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-orange-500/25">
                   <BarChart3 className="h-8 w-8 md:h-10 md:w-10 text-white" />
                 </div>
-                <h3 className="font-bold mb-3 text-lg md:text-xl text-white">Sin sorpresas de costo</h3>
-                <p className="text-white/90 text-sm md:text-base leading-relaxed">Plan fijo mensual, caps claros en IA</p>
+                <h3 className="font-bold mb-3 text-2xl md:text-3xl text-white">Sin sorpresas de costo</h3>
+                <p className="text-white text-lg md:text-xl leading-relaxed">Plan fijo mensual, caps claros en IA</p>
               </div>
             </div>
           </div>
@@ -196,7 +196,7 @@ export default function HomePage() {
 
       {/* Cómo funciona */}
       <section className="py-12 md:py-20 bg-gray-50 dark:bg-gray-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
           <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center text-brand-900 dark:text-brand-300 mb-8 md:mb-16">
             Cómo funciona
           </h2>
@@ -205,24 +205,24 @@ export default function HomePage() {
               <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-indigo-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               <div className="relative z-10">
                 <div className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center text-xl md:text-3xl font-bold mx-auto mb-6 shadow-lg shadow-blue-500/30 group-hover:shadow-xl group-hover:shadow-blue-500/40 group-hover:scale-110 transition-all duration-300">1</div>
-                <h3 className="text-xl md:text-2xl font-bold mb-4 text-gray-900 dark:text-white group-hover:text-blue-700 dark:group-hover:text-blue-300 transition-colors">Regístrate</h3>
-                <p className="text-gray-600 dark:text-gray-300 leading-relaxed">Crea tu cuenta y elige tu plan. Setup en menos de 5 minutos.</p>
+                <h3 className="text-2xl md:text-3xl font-bold mb-4 text-gray-900 dark:text-white group-hover:text-blue-700 dark:group-hover:text-blue-300 transition-colors">Regístrate</h3>
+                <p className="text-gray-800 dark:text-gray-200 text-lg md:text-xl leading-relaxed">Crea tu cuenta y elige tu plan. Setup en menos de 5 minutos.</p>
               </div>
             </div>
             <div className="group text-center p-8 bg-gradient-to-br from-emerald-50 to-green-100/60 dark:from-emerald-900/40 dark:to-green-900/60 rounded-3xl shadow-lg hover:shadow-2xl hover:shadow-emerald-500/20 transition-all duration-300 hover:-translate-y-1 relative overflow-hidden border border-emerald-200/50 dark:border-emerald-700/50">
               <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-green-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               <div className="relative z-10">
                 <div className="bg-gradient-to-br from-emerald-500 to-green-600 text-white w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center text-xl md:text-3xl font-bold mx-auto mb-6 shadow-lg shadow-emerald-500/30 group-hover:shadow-xl group-hover:shadow-emerald-500/40 group-hover:scale-110 transition-all duration-300">2</div>
-                <h3 className="text-xl md:text-2xl font-bold mb-4 text-gray-900 dark:text-white group-hover:text-emerald-700 dark:group-hover:text-emerald-300 transition-colors">Sube productos</h3>
-                <p className="text-gray-600 dark:text-gray-300 leading-relaxed">Importa desde CSV, Google Sheets o sube manualmente tu catálogo.</p>
+                <h3 className="text-2xl md:text-3xl font-bold mb-4 text-gray-900 dark:text-white group-hover:text-emerald-700 dark:group-hover:text-emerald-300 transition-colors">Sube productos</h3>
+                <p className="text-gray-800 dark:text-gray-200 text-lg md:text-xl leading-relaxed">Importa desde CSV, Google Sheets o sube manualmente tu catálogo.</p>
               </div>
             </div>
             <div className="group text-center p-8 bg-gradient-to-br from-violet-50 to-purple-100/60 dark:from-violet-900/40 dark:to-purple-900/60 rounded-3xl shadow-lg hover:shadow-2xl hover:shadow-violet-500/20 transition-all duration-300 hover:-translate-y-1 relative overflow-hidden border border-violet-200/50 dark:border-violet-700/50">
               <div className="absolute inset-0 bg-gradient-to-br from-violet-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               <div className="relative z-10">
                 <div className="bg-gradient-to-br from-violet-500 to-purple-600 text-white w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center text-xl md:text-3xl font-bold mx-auto mb-6 shadow-lg shadow-violet-500/30 group-hover:shadow-xl group-hover:shadow-violet-500/40 group-hover:scale-110 transition-all duration-300">3</div>
-                <h3 className="text-xl md:text-2xl font-bold mb-4 text-gray-900 dark:text-white group-hover:text-violet-700 dark:group-hover:text-violet-300 transition-colors">Activa tu WhatsApp</h3>
-                <p className="text-gray-600 dark:text-gray-300 leading-relaxed">Configuramos tu bot en 24 horas. Empieza a vender automatizado.</p>
+                <h3 className="text-2xl md:text-3xl font-bold mb-4 text-gray-900 dark:text-white group-hover:text-violet-700 dark:group-hover:text-violet-300 transition-colors">Activa tu WhatsApp</h3>
+                <p className="text-gray-800 dark:text-gray-200 text-lg md:text-xl leading-relaxed">Configuramos tu bot en 24 horas. Empieza a vender automatizado.</p>
               </div>
             </div>
           </div>
@@ -231,7 +231,7 @@ export default function HomePage() {
 
       {/* Características */}
       <section className="py-12 md:py-20 bg-white dark:bg-gray-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
           <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center text-brand-900 dark:text-brand-300 mb-8 md:mb-16">
             Todo lo que necesitas
           </h2>
@@ -280,8 +280,8 @@ export default function HomePage() {
                   <div className={`w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br ${feature.iconGradient} rounded-2xl flex items-center justify-center mb-6 shadow-lg ${feature.iconShadow} group-hover:shadow-xl group-hover:scale-110 transition-all duration-300`}>
                     <feature.icon className="h-8 w-8 md:h-9 md:w-9 text-white" />
                   </div>
-                  <h3 className={`text-xl md:text-2xl font-bold mb-3 text-gray-900 dark:text-white ${feature.hoverText} transition-colors`}>{feature.title}</h3>
-                  <p className="text-gray-600 dark:text-gray-300 text-base leading-relaxed">{feature.desc}</p>
+                  <h3 className={`text-2xl md:text-3xl font-bold mb-3 text-gray-900 dark:text-white ${feature.hoverText} transition-colors`}>{feature.title}</h3>
+                  <p className="text-gray-800 dark:text-gray-200 text-lg md:text-xl leading-relaxed">{feature.desc}</p>
                 </div>
               </div>
             ))}
@@ -291,7 +291,7 @@ export default function HomePage() {
 
       {/* Pricing */}
       <section id="pricing" className="py-12 md:py-20 bg-gray-50 dark:bg-gray-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
           <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center text-brand-900 dark:text-brand-300 mb-4">
             Planes de pago
           </h2>
