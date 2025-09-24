@@ -146,7 +146,7 @@ export default function HomePage() {
             </h1>
             <p className="text-xl sm:text-2xl md:text-3xl text-white/95 dark:text-brand-200/90 mb-8 md:mb-12 max-w-4xl mx-auto px-2 leading-relaxed">
               Crea tu tienda en minutos, conecta tu WhatsApp y automatiza lo repetido. 
-              <span className="block mt-2 text-lg md:text-xl text-white/85 dark:text-white/80">Inteligencia artificial solo cuando hace falta.</span>
+              <span className="block mt-2 text-lg md:text-xl text-white/85 dark:text-white/80">Con ayuda de la inteligencia artificial para mejores resultados.</span>
             </p>
             
             {/* CTAs */}
