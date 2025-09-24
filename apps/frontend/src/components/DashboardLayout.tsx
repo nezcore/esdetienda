@@ -18,12 +18,14 @@ import {
 } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import ThemeToggle from './ThemeToggle'
+import PlanModal from './PlanModal'
 
 export default function DashboardLayout() {
   const location = useLocation()
   const [searchParams] = useSearchParams()
   const [showWelcome, setShowWelcome] = useState(searchParams.get('welcome') === 'true')
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+  const [isPlanModalOpen, setIsPlanModalOpen] = useState(false)
   const navigate = useNavigate()
   const { user, tenant, logout } = useAuth()
 
@@ -252,11 +254,13 @@ export default function DashboardLayout() {
             </div>
             <div className="flex-1 ml-3 relative">
               {tenant && (
-                <span
-                  className={`absolute -top-2 right-0 rounded-full px-3 py-1 text-xs font-semibold ${(planStyles[tenant.plan]?.badgeClass ?? planStyles.default.badgeClass)} ${(planStyles[tenant.plan]?.textClass ?? planStyles.default.textClass)}`}
+                <button
+                  onClick={() => setIsPlanModalOpen(true)}
+                  className={`absolute -top-2 right-0 rounded-full px-3 py-1 text-xs font-semibold transition-all duration-200 hover:scale-105 hover:shadow-md cursor-pointer transform hover:-translate-y-0.5 active:scale-95 ${(planStyles[tenant.plan]?.badgeClass ?? planStyles.default.badgeClass)} ${(planStyles[tenant.plan]?.textClass ?? planStyles.default.textClass)}`}
+                  title="Ver detalles del plan"
                 >
                   {planStyles[tenant.plan]?.label ?? planStyles.default.label}
-                </span>
+                </button>
               )}
               <p className="text-sm font-semibold text-gray-900 dark:text-white pr-16">
                 {user?.email}
@@ -366,6 +370,13 @@ export default function DashboardLayout() {
           <Outlet />
         </main>
       </div>
+
+      {/* Plan Modal */}
+      <PlanModal
+        isOpen={isPlanModalOpen}
+        onClose={() => setIsPlanModalOpen(false)}
+        tenant={tenant}
+      />
     </div>
   )
 }
