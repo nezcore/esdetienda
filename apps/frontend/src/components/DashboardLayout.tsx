@@ -104,7 +104,7 @@ export default function DashboardLayout() {
     <div className="min-h-screen flex bg-background text-foreground transition-colors">
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-40 w-64 transform bg-white border-r border-gray-200 shadow-sm transition-transform duration-300 ease-in-out ${
+        className={`fixed inset-y-0 left-0 z-40 w-64 flex flex-col transform bg-white border-r border-gray-200 shadow-sm transition-transform duration-300 ease-in-out ${
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
         } dark:bg-gray-900 dark:border-gray-800`}
       >
@@ -119,7 +119,7 @@ export default function DashboardLayout() {
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto py-6 px-4 space-y-8">
+        <div className="flex-1 min-h-0 overflow-y-auto py-6 px-4 space-y-8">
           <nav className="space-y-2">
             <p className="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider dark:text-gray-400 mb-4">
               Principal
@@ -245,9 +245,7 @@ export default function DashboardLayout() {
               )
             })}
           </nav>
-        </div>
-
-        <div className="border-t border-gray-200 p-4 dark:border-gray-800">
+          <div className="border-t border-gray-200 p-4 dark:border-gray-800">
           <div className="flex items-center justify-between mb-3">
             <div className="h-10 w-10 rounded-full bg-brand-500 flex items-center justify-center text-white font-semibold">
               {user?.email?.[0]?.toUpperCase() ?? 'U'}
@@ -279,6 +277,7 @@ export default function DashboardLayout() {
               <LogOut className="h-4 w-4" />
               Cerrar sesión
             </button>
+          </div>
           </div>
         </div>
       </aside>

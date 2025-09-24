@@ -167,3 +167,42 @@
   background: #303136;
   box-shadow: inset -3px -2px 5px -2px #8983f7, inset -10px -4px 0 0 #a3dafb;
 }
+
+/* Scrollbars - estilos coherentes en claro/oscuro */
+@layer base {
+  /* Firefox */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--muted-foreground)) transparent;
+  }
+  .dark * {
+    scrollbar-color: rgba(148, 163, 184, 0.5) transparent; /* slate-400 */
+  }
+
+  /* WebKit (Chrome/Edge/Safari) */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: rgba(100, 116, 139, 0.35); /* slate-500 */
+    border-radius: 8px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(100, 116, 139, 0.55);
+  }
+  .dark ::-webkit-scrollbar-thumb {
+    background-color: rgba(148, 163, 184, 0.35); /* slate-400 */
+  }
+  .dark ::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(148, 163, 184, 0.55);
+  }
+  .dark ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
