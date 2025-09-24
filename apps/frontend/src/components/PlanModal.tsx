@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { X, Crown, Rocket, CheckCircle, Calendar, CreditCard, Sparkles } from 'lucide-react'
+import { X, Crown, Rocket, CheckCircle, Calendar, CreditCard, Sparkles, AlertTriangle } from 'lucide-react'
 
 interface Tenant {
   id: string
@@ -34,9 +34,9 @@ const planConfig: Record<string, PlanInfo> = {
   esencial: {
     name: 'esencial',
     displayName: 'Starter',
-    color: 'text-emerald-600 dark:text-emerald-400',
-    bgGradient: 'from-emerald-50 to-green-50 dark:from-emerald-950/30 dark:to-green-950/30',
-    borderColor: 'border-emerald-200 dark:border-emerald-800',
+    color: 'text-emerald-700 dark:text-emerald-300',
+    bgGradient: 'from-emerald-100 to-green-100 dark:from-emerald-900/80 dark:to-green-900/80',
+    borderColor: 'border-emerald-300 dark:border-emerald-600',
     icon: Sparkles,
     isPaid: false,
     nextPlan: 'grow',
@@ -47,9 +47,9 @@ const planConfig: Record<string, PlanInfo> = {
   grow: {
     name: 'grow',
     displayName: 'Grow',
-    color: 'text-blue-600 dark:text-blue-400',
-    bgGradient: 'from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30',
-    borderColor: 'border-blue-200 dark:border-blue-800',
+    color: 'text-blue-700 dark:text-blue-300',
+    bgGradient: 'from-blue-100 to-indigo-100 dark:from-blue-900/80 dark:to-indigo-900/80',
+    borderColor: 'border-blue-300 dark:border-blue-600',
     icon: Rocket,
     isPaid: true,
     nextPlan: 'pro',
@@ -60,9 +60,9 @@ const planConfig: Record<string, PlanInfo> = {
   pro: {
     name: 'pro',
     displayName: 'Pro',
-    color: 'text-orange-600 dark:text-orange-400',
-    bgGradient: 'from-orange-50 to-red-50 dark:from-orange-950/30 dark:to-red-950/30',
-    borderColor: 'border-orange-200 dark:border-orange-800',
+    color: 'text-orange-700 dark:text-orange-300',
+    bgGradient: 'from-orange-100 to-red-100 dark:from-orange-900/80 dark:to-red-900/80',
+    borderColor: 'border-orange-300 dark:border-orange-600',
     icon: Crown,
     isPaid: true,
     features: ['Usuarios ilimitados', 'Productos ilimitados', 'Consultas AI ilimitadas', 'Audios ilimitados'],
@@ -72,12 +72,16 @@ const planConfig: Record<string, PlanInfo> = {
 
 export default function PlanModal({ isOpen, onClose, tenant }: PlanModalProps) {
   const [isVisible, setIsVisible] = useState(false)
+  const [showContent, setShowContent] = useState(false)
 
   useEffect(() => {
     if (isOpen) {
       setIsVisible(true)
+      // Mostrar contenido con un ligero retraso para mejor animación
+      setTimeout(() => setShowContent(true), 50)
     } else {
-      const timer = setTimeout(() => setIsVisible(false), 200)
+      setShowContent(false)
+      const timer = setTimeout(() => setIsVisible(false), 300)
       return () => clearTimeout(timer)
     }
   }, [isOpen])
@@ -111,25 +115,36 @@ export default function PlanModal({ isOpen, onClose, tenant }: PlanModalProps) {
     onClose()
   }
 
+  const handleCancelPlan = () => {
+    // TODO: Implementar lógica de cancelación de plan/cuenta
+    console.log('Cancel plan for tenant:', tenant?.id)
+    if (window.confirm('¿Estás seguro de que deseas cancelar tu plan? Esta acción eliminará tu cuenta y todos tus datos.')) {
+      // Aquí iría la lógica de cancelación
+      console.log('Plan cancelled')
+      onClose()
+    }
+  }
+
   return (
     <>
       {/* Overlay */}
       <div 
-        className={`fixed inset-0 bg-black/50 z-50 transition-opacity duration-200 ${
-          isOpen ? 'opacity-100' : 'opacity-0'
+        className={`fixed inset-0 bg-black/60 backdrop-blur-sm z-50 transition-all duration-300 ${
+          showContent ? 'opacity-100' : 'opacity-0'
         }`}
         onClick={onClose}
       />
       
       {/* Modal */}
-      <div 
-        className={`fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-md mx-4 transition-all duration-200 ${
-          isOpen ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
-        }`}
-      >
-        <div className={`bg-gradient-to-br ${currentPlan.bgGradient} border-2 ${currentPlan.borderColor} rounded-2xl shadow-2xl overflow-hidden`}>
-          {/* Header */}
-          <div className="relative p-6 pb-4">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4">
+        <div 
+          className={`w-full sm:max-w-md h-full sm:h-auto transition-all duration-300 ease-out ${
+            showContent ? 'scale-100 opacity-100' : 'scale-90 opacity-0'
+          }`}
+        >
+          <div className={`bg-gradient-to-br ${currentPlan.bgGradient} border-2 ${currentPlan.borderColor} rounded-none sm:rounded-2xl shadow-2xl overflow-hidden backdrop-blur-md h-full sm:h-auto max-h-screen sm:max-h-[90vh] overflow-y-auto`}>
+            {/* Header */}
+            <div className="relative p-6 pb-4">
             <button
               onClick={onClose}
               className="absolute top-4 right-4 p-1 rounded-full hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
@@ -138,27 +153,27 @@ export default function PlanModal({ isOpen, onClose, tenant }: PlanModalProps) {
             </button>
             
             <div className="flex items-center space-x-4 mb-4">
-              <div className={`p-3 rounded-2xl bg-white/60 dark:bg-black/20 ${currentPlan.borderColor} border`}>
+              <div className={`p-3 rounded-2xl bg-white/80 dark:bg-gray-800/90 ${currentPlan.borderColor} border shadow-lg`}>
                 <Icon className={`h-8 w-8 ${currentPlan.color}`} />
               </div>
               <div>
                 <h2 className={`text-2xl font-bold ${currentPlan.color}`}>
                   Plan {currentPlan.displayName}
                 </h2>
-                <p className="text-sm text-gray-600 dark:text-gray-300">
+                <p className="text-sm font-bold text-gray-800 dark:text-gray-100">
                   {currentPlan.price}
                 </p>
               </div>
             </div>
 
             {currentPlan.isPaid ? (
-              <div className="flex items-center space-x-2 text-green-700 dark:text-green-300 bg-green-100/60 dark:bg-green-900/30 px-3 py-2 rounded-lg">
+              <div className="flex items-center space-x-2 text-green-800 dark:text-green-200 bg-green-200/80 dark:bg-green-800/90 px-3 py-2 rounded-lg shadow-sm">
                 <CheckCircle className="h-5 w-5" />
-                <span className="font-semibold text-sm">¡Felicidades! Eres usuario premium</span>
+                <span className="font-bold text-sm">¡Felicidades! Eres usuario premium</span>
               </div>
             ) : (
-              <div className="text-gray-700 dark:text-gray-300 bg-white/40 dark:bg-black/20 px-3 py-2 rounded-lg">
-                <span className="text-sm">Estás usando nuestro plan gratuito</span>
+              <div className="text-gray-800 dark:text-gray-100 bg-white/70 dark:bg-gray-800/90 px-3 py-2 rounded-lg shadow-sm">
+                <span className="text-sm font-semibold">Estás usando nuestro plan gratuito</span>
               </div>
             )}
           </div>
@@ -166,13 +181,13 @@ export default function PlanModal({ isOpen, onClose, tenant }: PlanModalProps) {
           {/* Content */}
           <div className="px-6 pb-6 space-y-4">
             {/* Plan Details */}
-            <div className="bg-white/50 dark:bg-black/20 rounded-xl p-4 space-y-3">
+            <div className="bg-white/80 dark:bg-gray-800/90 rounded-xl p-4 space-y-3 shadow-sm border border-white/30 dark:border-gray-700/50">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
-                  <Calendar className="h-4 w-4 text-gray-500 dark:text-gray-400" />
-                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Activado</span>
+                  <Calendar className="h-4 w-4 text-gray-600 dark:text-gray-300" />
+                  <span className="text-sm font-bold text-gray-800 dark:text-gray-100">Activado</span>
                 </div>
-                <span className="text-sm text-gray-600 dark:text-gray-400">
+                <span className="text-sm font-semibold text-gray-700 dark:text-gray-200">
                   {formatDate(activationDate)}
                 </span>
               </div>
@@ -180,10 +195,10 @@ export default function PlanModal({ isOpen, onClose, tenant }: PlanModalProps) {
               {currentPlan.isPaid && (
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    <CreditCard className="h-4 w-4 text-gray-500 dark:text-gray-400" />
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Renovación</span>
+                    <CreditCard className="h-4 w-4 text-gray-600 dark:text-gray-300" />
+                    <span className="text-sm font-bold text-gray-800 dark:text-gray-100">Renovación</span>
                   </div>
-                  <span className="text-sm text-gray-600 dark:text-gray-400">
+                  <span className="text-sm font-semibold text-gray-700 dark:text-gray-200">
                     {formatDate(renewalDate)}
                   </span>
                 </div>
@@ -191,44 +206,57 @@ export default function PlanModal({ isOpen, onClose, tenant }: PlanModalProps) {
             </div>
 
             {/* Features */}
-            <div className="bg-white/50 dark:bg-black/20 rounded-xl p-4">
-              <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-3 text-sm">
+            <div className="bg-white/80 dark:bg-gray-800/90 rounded-xl p-4 shadow-sm border border-white/30 dark:border-gray-700/50">
+              <h3 className="font-bold text-gray-900 dark:text-gray-50 mb-3 text-sm">
                 Características incluidas
               </h3>
               <div className="space-y-2">
                 {currentPlan.features.map((feature, index) => (
                   <div key={index} className="flex items-center space-x-2">
-                    <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0" />
-                    <span className="text-sm text-gray-600 dark:text-gray-300">{feature}</span>
+                    <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400 flex-shrink-0" />
+                    <span className="text-sm font-semibold text-gray-800 dark:text-gray-100">{feature}</span>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Upgrade Button */}
-            {currentPlan.nextPlan && (
+            {/* Action Buttons */}
+            <div className="space-y-3">
+              {/* Upgrade Button */}
+              {currentPlan.nextPlan && (
+                <button
+                  onClick={handleUpgrade}
+                  className={`w-full bg-gradient-to-r ${
+                    currentPlan.name === 'esencial' 
+                      ? 'from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700' 
+                      : 'from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700'
+                  } text-white font-bold py-3 px-4 rounded-xl transition-all duration-200 transform hover:scale-[1.02] hover:shadow-lg flex items-center justify-center space-x-2 shadow-md`}
+                >
+                  <Rocket className="h-5 w-5" />
+                  <span>Actualizar a {currentPlan.nextPlanDisplayName}</span>
+                </button>
+              )}
+              
+              {!currentPlan.nextPlan && currentPlan.isPaid && (
+                <div className="text-center py-2 bg-white/60 dark:bg-gray-800/60 rounded-xl">
+                  <span className="text-sm text-gray-800 dark:text-gray-200 font-bold">
+                    🎉 ¡Tienes el plan más avanzado!
+                  </span>
+                </div>
+              )}
+
+              {/* Cancel Plan Button */}
               <button
-                onClick={handleUpgrade}
-                className={`w-full bg-gradient-to-r ${
-                  currentPlan.name === 'esencial' 
-                    ? 'from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700' 
-                    : 'from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700'
-                } text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 transform hover:scale-[1.02] hover:shadow-lg flex items-center justify-center space-x-2`}
+                onClick={handleCancelPlan}
+                className="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-3 px-4 rounded-xl transition-all duration-200 transform hover:scale-[1.02] hover:shadow-lg flex items-center justify-center space-x-2 shadow-md"
               >
-                <Rocket className="h-5 w-5" />
-                <span>Actualizar a {currentPlan.nextPlanDisplayName}</span>
+                <AlertTriangle className="h-5 w-5" />
+                <span>Cancelar Plan / Cerrar Cuenta</span>
               </button>
-            )}
-            
-            {!currentPlan.nextPlan && currentPlan.isPaid && (
-              <div className="text-center py-2">
-                <span className="text-sm text-gray-600 dark:text-gray-300 font-medium">
-                  🎉 ¡Tienes el plan más avanzado!
-                </span>
-              </div>
-            )}
+            </div>
           </div>
         </div>
+      </div>
       </div>
     </>
   )
