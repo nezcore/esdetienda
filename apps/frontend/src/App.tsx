@@ -43,8 +43,8 @@ function App() {
           <Route path="/panel/*" element={<DashboardPage />} />
           
           {/* Tiendas públicas multi-tenant */}
-          <Route path="/:tenantSlug" element={<StorePage />} />
-          <Route path="/:tenantSlug/producto/:productId" element={<ProductPage />} />
+          <Route path="/str/:tenantSlug" element={<StorePage />} />
+          <Route path="/str/:tenantSlug/producto/:productId" element={<ProductPage />} />
         </Routes>
       </div>
     </ThemeProvider>
