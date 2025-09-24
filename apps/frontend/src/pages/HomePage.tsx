@@ -135,19 +135,19 @@ export default function HomePage() {
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-6 md:mb-8">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-6 md:mb-8 text-white">
               Tu tienda y tu WhatsApp
               <br />
-              <span className="text-brand-100 dark:text-brand-300 bg-gradient-to-r from-brand-100 to-white bg-clip-text text-transparent">
+              <span className="text-white">
                 {displayedText}
-                <span className="inline-block w-0.5 h-[0.9em] bg-white dark:bg-brand-100 ml-1" style={{animation: 'blink 1s infinite'}}></span>
+                <span className="inline-block w-0.5 h-[0.9em] bg-white ml-1" style={{animation: 'blink 1s infinite'}}></span>
               </span>
               <br className="hidden sm:block" />
-              <span className="block sm:inline text-brand-accent dark:text-orange-300 font-medium mt-2 sm:mt-0 bg-white/10 dark:bg-orange-500/10 px-4 py-1 rounded-full backdrop-blur-sm border border-white/20 dark:border-orange-400/20">automatizado y sin complicaciones</span>
+              <span className="block sm:inline text-gray-800 dark:text-orange-300 font-semibold mt-3 sm:mt-1 bg-white/90 dark:bg-orange-500/15 px-8 py-4 rounded-full backdrop-blur-sm border border-gray-300/60 dark:border-orange-400/30 text-lg sm:text-2xl shadow-lg whitespace-nowrap">Automatizado y sin complicaciones</span>
             </h1>
-            <p className="text-xl sm:text-2xl md:text-3xl text-brand-100/90 dark:text-brand-200/90 mb-8 md:mb-12 max-w-4xl mx-auto px-2 leading-relaxed">
+            <p className="text-xl sm:text-2xl md:text-3xl text-white/95 dark:text-brand-200/90 mb-8 md:mb-12 max-w-4xl mx-auto px-2 leading-relaxed">
               Crea tu tienda en minutos, conecta tu WhatsApp y automatiza lo repetido. 
-              <span className="block mt-2 text-lg md:text-xl text-white/80">Inteligencia artificial solo cuando hace falta.</span>
+              <span className="block mt-2 text-lg md:text-xl text-white/85 dark:text-white/80">Inteligencia artificial solo cuando hace falta.</span>
             </p>
             
             {/* CTAs */}
