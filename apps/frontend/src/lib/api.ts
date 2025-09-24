@@ -1,5 +1,41 @@
 // Configuración de la API
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8787'
+const resolveDefaultApiBaseUrl = () => {
+  const fallbackPort = import.meta.env.VITE_API_PORT || '8787'
+
+  if (typeof window === 'undefined') {
+    // SSR / build
+    return import.meta.env.VITE_API_URL || `http://127.0.0.1:${fallbackPort}`
+  }
+
+  // Intentar tomar desde localStorage primero (permite sobrescribir desde el dispositivo)
+  const storedUrl = localStorage.getItem('api_base_url')
+  if (storedUrl) {
+    return storedUrl
+  }
+
+  // Intentar desde variable de entorno de Vite
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL
+  }
+
+  // Construir usando el host y protocolo actual (para otros dispositivos en la red)
+  const protocol = window.location.protocol
+  const host = window.location.hostname
+
+  // Si estamos en localhost, usar puerto 8787 directo
+  if (host === 'localhost' || host === '127.0.0.1') {
+    return `${protocol}//${host}:8787`
+  }
+
+  // Para acceso desde red, usar puerto 8788 (proxy)
+  return `${protocol}//${host}:8788`
+}
+
+export const setApiBaseUrl = (url: string) => {
+  localStorage.setItem('api_base_url', url)
+}
+
+const API_BASE_URL = resolveDefaultApiBaseUrl()
 
 // Cliente HTTP básico
 class ApiClient {

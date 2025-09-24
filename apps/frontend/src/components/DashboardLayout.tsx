@@ -78,6 +78,22 @@ export default function DashboardLayout() {
     }
   }, [showWelcome])
 
+  useEffect(() => {
+    if (typeof window === 'undefined') return undefined
+
+    const unlock = () => {
+      document.body.style.removeProperty('overflow')
+    }
+
+    if (isSidebarOpen && window.innerWidth < 1024) {
+      document.body.style.overflow = 'hidden'
+      return () => unlock()
+    }
+
+    unlock()
+    return undefined
+  }, [isSidebarOpen])
+
   const isActive = (path: string) => {
     if (path === '#') return false
     if (path === '/panel' && location.pathname === '/panel') return true
@@ -290,7 +306,9 @@ export default function DashboardLayout() {
         ></div>
       )}
 
-      <div className={`flex-1 flex flex-col min-h-screen bg-background text-foreground transition-all duration-300 ${isSidebarOpen ? 'md:ml-64' : 'md:ml-0'}`}>
+      <div className={`flex-1 flex flex-col min-h-screen bg-background text-foreground transition-all duration-300 ${isSidebarOpen ? 'md:ml-64' : 'md:ml-0'} ${
+        isSidebarOpen ? 'lg:overflow-y-visible overflow-y-hidden' : 'overflow-y-visible'
+      }`}>
         {/* Top bar */}
         <header className="sticky top-0 z-10 bg-white shadow-sm border-b border-gray-200 dark:bg-gray-900 dark:border-gray-800">
           <div className="px-4 sm:px-6 lg:px-10">

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { Eye, EyeOff } from 'lucide-react'
 import { authApi, type AuthResponse } from '../lib/api'
@@ -10,15 +10,14 @@ export default function LoginPage() {
   const [error, setError] = useState('')
   const navigate = useNavigate()
   const location = useLocation()
-  const { login } = useAuth()
+  const { login, isAuthenticated } = useAuth()
 
-  // Redirigir si ya está autenticado
-  const { isAuthenticated } = useAuth()
-  if (isAuthenticated) {
-    const from = location.state?.from?.pathname || '/panel'
-    navigate(from, { replace: true })
-    return null
-  }
+  useEffect(() => {
+    if (isAuthenticated) {
+      const from = location.state?.from?.pathname || '/panel'
+      navigate(from, { replace: true })
+    }
+  }, [isAuthenticated, navigate, location.state])
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()

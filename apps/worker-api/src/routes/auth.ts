@@ -25,22 +25,72 @@ auth.post('/login', async (c) => {
     const body = await c.req.json()
     const validatedData = loginSchema.parse(body)
     
-    // TODO: Implementar autenticación real con MongoDB
-    // Por ahora, simular login exitoso
-    const mockUser = {
-      id: 'user_123',
-      email: validatedData.email,
-      tenantId: 'tenant_demo',
-      role: 'admin'
+    const supabase = c.get('supabase')
+
+    // Buscar usuario por email e incluir información del tenant
+    const { data: user, error: userError } = await supabase
+      .from('users')
+      .select(`
+        id,
+        email,
+        password_hash,
+        tenant_id,
+        role,
+        status,
+        tenants (
+          id,
+          slug,
+          business_name,
+          plan,
+          status
+        )
+      `)
+      .eq('email', validatedData.email)
+      .eq('status', 'active')
+      .maybeSingle()
+
+    if (userError) {
+      console.error('Supabase user lookup error:', userError)
+      return c.json({
+        error: 'Error de autenticación',
+        message: 'Email o contraseña incorrectos'
+      }, 401)
     }
-    
+
+    // Si no existe el usuario o no tiene tenant activo
+    if (!user || !user.tenants || user.tenants.status !== 'active') {
+      return c.json({
+        error: 'Error de autenticación',
+        message: 'Email o contraseña incorrectos'
+      }, 401)
+    }
+
+    // Verificar contraseña (por ahora comparación directa, TODO: hash real)
+    if (user.password_hash !== validatedData.password) {
+      return c.json({
+        error: 'Error de autenticación',
+        message: 'Email o contraseña incorrectos'
+      }, 401)
+    }
+
     // TODO: Generar JWT real
-    const token = 'mock_jwt_token'
+    const token = `jwt_${user.id}_${Date.now()}`
     
     return c.json({
       success: true,
       token,
-      user: mockUser
+      user: {
+        id: user.id,
+        email: user.email,
+        role: user.role
+      },
+      tenant: {
+        id: user.tenants.id,
+        slug: user.tenants.slug,
+        business_name: user.tenants.business_name,
+        plan: user.tenants.plan,
+        status: user.tenants.status
+      }
     })
     
   } catch (error) {
@@ -51,6 +101,7 @@ auth.post('/login', async (c) => {
       }, 400)
     }
     
+    console.error('Login error:', error)
     return c.json({
       error: 'Error de autenticación',
       message: 'Email o contraseña incorrectos'
