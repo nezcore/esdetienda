@@ -152,7 +152,7 @@ export default function HomePage() {
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center mb-12 md:mb-16 px-4">
               <Link 
-                to="#pricing" 
+                to="/registro?plan=starter" 
                 className="group bg-gradient-to-r from-brand-accent to-orange-500 text-white px-8 md:px-10 py-4 md:py-5 rounded-2xl font-bold hover:from-orange-600 hover:to-red-500 hover:shadow-2xl hover:shadow-brand-accent/25 transition-all duration-300 transform hover:scale-105 flex items-center justify-center text-lg md:text-xl"
               >
                 <span>Crear mi tienda</span>
