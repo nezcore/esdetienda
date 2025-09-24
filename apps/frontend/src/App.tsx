@@ -8,13 +8,13 @@ import { AuthProvider } from './contexts/AuthContext'
 
 // Componentes
 import ProtectedRoute from './components/ProtectedRoute'
+import DashboardLayout from './components/DashboardLayout'
+import DashboardHome from './components/DashboardHome'
 
 // Páginas
 import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
-import DashboardPage from './pages/DashboardPage'
-import StorePage from './pages/StorePage'
 import ProductPage from './pages/ProductPage'
 import TermsPage from './pages/TermsPage'
 import AddProductPage from './pages/AddProductPage'
@@ -51,26 +51,14 @@ function App() {
               path="/panel" 
               element={
                 <ProtectedRoute>
-                  <DashboardPage />
+                  <DashboardLayout />
                 </ProtectedRoute>
               } 
-            />
-            <Route 
-              path="/panel/agregar-producto" 
-              element={
-                <ProtectedRoute>
-                  <AddProductPage />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/panel/guia-importacion" 
-              element={
-                <ProtectedRoute>
-                  <ImportGuidePage />
-                </ProtectedRoute>
-              } 
-            />
+            >
+              <Route index element={<DashboardHome />} />
+              <Route path="agregar-producto" element={<AddProductPage />} />
+              <Route path="guia-importacion" element={<ImportGuidePage />} />
+            </Route>
             
             {/* Tiendas públicas multi-tenant */}
             <Route path="/str/:tenantSlug" element={<PublicStorePage />} />
