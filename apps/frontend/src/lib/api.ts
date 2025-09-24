@@ -22,12 +22,12 @@ const resolveDefaultApiBaseUrl = () => {
   const protocol = window.location.protocol
   const host = window.location.hostname
 
-  // Si estamos en localhost, usar puerto 8787 directo
+  // En localhost usa directamente el backend (8787)
   if (host === 'localhost' || host === '127.0.0.1') {
     return `${protocol}//${host}:8787`
   }
 
-  // Para acceso desde red, usar puerto 8788 (proxy)
+  // En otros dispositivos de la red usa el proxy (8788)
   return `${protocol}//${host}:8788`
 }
 
