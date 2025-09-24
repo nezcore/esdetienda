@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { ArrowRight, CheckCircle, MessageCircle, ShoppingBag, Bot, BarChart3, Menu, X } from 'lucide-react'
+import { ArrowRight, CheckCircle, MessageCircle, ShoppingBag, Bot, BarChart3, Menu, X, Sparkles } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import ThemeToggle from '../components/ThemeToggle'
 
@@ -297,7 +297,42 @@ export default function HomePage() {
           </h2>
           <p className="text-center text-gray-600 dark:text-gray-300 mb-8 md:mb-16 text-sm md:text-base">Sin freemium. Elige el plan que mejor se adapte a tu negocio.</p>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-6xl mx-auto">
+            {/* Plan Gratis */}
+            <div className="group relative bg-gradient-to-br from-brand-50 to-emerald-50/70 dark:from-slate-900 dark:to-emerald-900/40 rounded-3xl p-8 border-2 border-brand-100/60 dark:border-emerald-700/60 hover:border-emerald-400 dark:hover:border-emerald-400 hover:shadow-2xl hover:shadow-emerald-500/20 transition-all duration-300 hover:-translate-y-2 backdrop-blur-sm overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-brand-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div className="relative z-10">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-2xl md:text-3xl font-bold text-emerald-900 dark:text-emerald-200 group-hover:text-emerald-600 dark:group-hover:text-emerald-300 transition-colors">Plan Gratis</h3>
+                  <div className="w-12 h-12 bg-gradient-to-br from-brand-500 to-emerald-500 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/25">
+                    <Sparkles className="h-6 w-6 text-white" />
+                  </div>
+                </div>
+                <div className="mb-6">
+                  <div className="flex items-baseline">
+                    <span className="text-4xl md:text-5xl font-bold text-emerald-900 dark:text-emerald-200">RD$0</span>
+                    <span className="text-lg text-gray-600 dark:text-gray-400 ml-1">/mes</span>
+                  </div>
+                  <p className="text-gray-600 dark:text-gray-400 mt-2">Perfecto para probar lo esencial</p>
+                </div>
+                <ul className="space-y-4 mb-8">
+                  {["Catálogo simple (hasta 50 SKUs)", "Respuestas rápidas básicas", "IA texto 2,000 turnos/mes", "Audios→texto 20 min/mes", "Panel compartido", "1 usuario invitado"].map((feature, index) => (
+                    <li key={index} className="flex items-start group/item">
+                      <div className="w-5 h-5 bg-gradient-to-br from-brand-500 to-emerald-500 rounded-full flex items-center justify-center mr-3 flex-shrink-0 mt-0.5 shadow-sm">
+                        <CheckCircle className="h-3 w-3 text-white" />
+                      </div>
+                      <span className="text-gray-700 dark:text-gray-300 leading-relaxed group-hover/item:text-gray-900 dark:group-hover/item:text-white transition-colors">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+                <Link 
+                  to="/registro?plan=gratis" 
+                  className="block w-full bg-gradient-to-r from-brand-500 to-emerald-500 text-white text-center py-4 rounded-2xl font-bold hover:from-emerald-500 hover:to-emerald-600 hover:shadow-xl hover:shadow-emerald-500/30 transition-all duration-300 transform hover:scale-105 text-lg"
+                >
+                  Probar gratis
+                </Link>
+              </div>
+            </div>
             {/* Plan Esencial */}
             <div className="group relative bg-gradient-to-br from-slate-50 to-blue-50/80 dark:from-slate-800 dark:to-blue-900/50 rounded-3xl p-8 border-2 border-slate-200/60 dark:border-slate-600/60 hover:border-blue-400 dark:hover:border-blue-400 hover:shadow-2xl hover:shadow-blue-500/20 transition-all duration-300 hover:-translate-y-2 backdrop-blur-sm overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-slate-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
