@@ -1,24 +1,48 @@
 import { useState, useEffect } from 'react'
-import { useSearchParams, useNavigate, Link } from 'react-router-dom'
-import { 
-  BarChart3, 
-  Package, 
-  MessageCircle, 
-  Settings, 
+import { useSearchParams, useNavigate, Link, useLocation } from 'react-router-dom'
+import {
+  BarChart3,
+  Package,
+  MessageCircle,
+  Settings,
   Upload,
   ExternalLink,
   Plus,
   LogOut,
   User,
-  FileText
+  FileText,
+  Menu,
+  Home,
+  Store,
+  ShoppingCart,
+  Users,
+  Palette,
+  X
 } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
+import ThemeToggle from '../components/ThemeToggle'
 
 export default function DashboardPage() {
+  const location = useLocation()
   const [searchParams] = useSearchParams()
   const [showWelcome, setShowWelcome] = useState(searchParams.get('welcome') === 'true')
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
   const navigate = useNavigate()
   const { user, tenant, logout } = useAuth()
+
+  const mainNav = [
+    { label: 'Resumen', to: '/panel', icon: Home },
+    { label: 'Productos', to: '/panel/agregar-producto', icon: ShoppingCart },
+    { label: 'Pedidos', to: '#', icon: Package },
+    { label: 'Clientes', to: '#', icon: Users },
+    { label: 'Configuración', to: '#', icon: Settings }
+  ]
+
+  const secondaryNav = [
+    { label: 'Ver mi tienda', to: tenant ? `/str/${tenant.slug}` : '#', icon: Store, external: true },
+    { label: 'Guía de importación', to: '/panel/guia-importacion', icon: FileText },
+    { label: 'Personalizar marca', to: '#', icon: Palette }
+  ]
 
   const handleLogout = () => {
     logout()
@@ -39,204 +63,383 @@ export default function DashboardPage() {
     }
   }, [showWelcome])
 
+  const isActive = (path: string) => {
+    if (path === '#') return false
+    if (path === '/panel' && location.pathname === '/panel') return true
+    return location.pathname.startsWith(path) && path !== '/panel'
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <span className="text-2xl font-bold bg-brand-gradient bg-clip-text text-transparent">
-                EsDeTienda
-              </span>
-              <span className="ml-4 text-gray-600">/ Panel</span>
-            </div>
-            <div className="flex items-center space-x-4">
-              {tenant && (
-                <Link 
-                  to={`/str/${tenant.slug}`}
-                  target="_blank"
-                  className="text-brand-500 hover:text-brand-700 flex items-center"
+    <div className="min-h-screen bg-gray-100 flex">
+      {/* Sidebar */}
+      <aside
+        className={`fixed inset-y-0 left-0 z-40 w-64 transform bg-white border-r border-gray-200 shadow-sm transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-auto ${
+          isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        <div className="h-16 flex items-center justify-between px-4 border-b border-gray-200">
+          <div className="flex items-center space-x-3">
+            <span className="text-xl font-bold bg-brand-gradient bg-clip-text text-transparent">
+              EsDeTienda
+            </span>
+            <span className="px-2 py-1 text-xs font-semibold rounded-full bg-brand-100 text-brand-700">
+              Panel
+            </span>
+          </div>
+          <button
+            className="lg:hidden text-gray-500 hover:text-gray-800"
+            onClick={() => setIsSidebarOpen(false)}
+            aria-label="Cerrar menú"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        <div className="flex-1 overflow-y-auto py-6 px-4 space-y-6">
+          <nav className="space-y-1">
+            <p className="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+              Principal
+            </p>
+            {mainNav.map((item) => {
+              const Icon = item.icon
+              const active = isActive(item.to)
+              const commonClasses = 'group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-150'
+
+              if (item.to === '#') {
+                return (
+                  <button
+                    key={item.label}
+                    className={`${commonClasses} text-gray-400 cursor-not-allowed`}
+                    disabled
+                  >
+                    <Icon className="h-4 w-4 mr-3" />
+                    {item.label}
+                    <span className="ml-auto text-xs bg-gray-200 text-gray-500 px-2 py-0.5 rounded-full">
+                      Próximamente
+                    </span>
+                  </button>
+                )
+              }
+
+              return (
+                <Link
+                  key={item.label}
+                  to={item.to}
+                  className={`${commonClasses} ${
+                    active
+                      ? 'bg-brand-50 text-brand-700 border border-brand-200'
+                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                  }`}
                 >
-                  <ExternalLink className="h-5 w-5" />
-                  <span className="ml-1 text-sm">Ver mi tienda</span>
+                  <Icon className={`h-4 w-4 mr-3 ${active ? 'text-brand-600' : 'text-gray-400 group-hover:text-gray-500'}`} />
+                  {item.label}
                 </Link>
-              )}
-              <div className="flex items-center space-x-3">
-                <div className="text-right">
-                  <div className="text-sm font-medium text-gray-900">
-                    {user?.email}
-                  </div>
-                  {tenant && (
-                    <div className="text-xs text-gray-500">
-                      {tenant.business_name}
-                    </div>
-                  )}
-                </div>
-                <div className="h-8 w-8 bg-brand-500 rounded-full flex items-center justify-center">
-                  <User className="h-4 w-4 text-white" />
-                </div>
-                <button 
-                  onClick={handleLogout}
-                  className="text-gray-500 hover:text-red-600 flex items-center"
-                  title="Cerrar sesión"
+              )
+            })}
+          </nav>
+
+          <nav className="space-y-1">
+            <p className="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+              Gestión tienda
+            </p>
+            {secondaryNav.map((item) => {
+              const Icon = item.icon
+              const active = !item.external && isActive(item.to)
+              const commonClasses = 'group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-150'
+
+              if (item.external) {
+                return (
+                  <a
+                    key={item.label}
+                    href={item.to}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`${commonClasses} text-gray-600 hover:bg-gray-50 hover:text-gray-900`}
+                  >
+                    <Icon className="h-4 w-4 mr-3 text-gray-400 group-hover:text-gray-500" />
+                    {item.label}
+                    <ExternalLink className="h-3 w-3 ml-2 text-gray-400 group-hover:text-gray-500" />
+                  </a>
+                )
+              }
+
+              if (item.to === '#') {
+                return (
+                  <button
+                    key={item.label}
+                    className={`${commonClasses} text-gray-400 cursor-not-allowed`}
+                    disabled
+                  >
+                    <Icon className="h-4 w-4 mr-3" />
+                    {item.label}
+                    <span className="ml-auto text-xs bg-gray-200 text-gray-500 px-2 py-0.5 rounded-full">
+                      Próximamente
+                    </span>
+                  </button>
+                )
+              }
+
+              return (
+                <Link
+                  key={item.label}
+                  to={item.to}
+                  className={`${commonClasses} ${
+                    active
+                      ? 'bg-brand-50 text-brand-700 border border-brand-200'
+                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                  }`}
                 >
-                  <LogOut className="h-5 w-5" />
+                  <Icon className={`h-4 w-4 mr-3 ${active ? 'text-brand-600' : 'text-gray-400 group-hover:text-gray-500'}`} />
+                  {item.label}
+                </Link>
+              )
+            })}
+          </nav>
+        </div>
+
+        <div className="border-t border-gray-200 p-4">
+          <div className="flex items-center space-x-3 mb-3">
+            <div className="h-10 w-10 rounded-full bg-brand-500 flex items-center justify-center text-white font-semibold">
+              {user?.email?.[0]?.toUpperCase() ?? 'U'}
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-gray-900">
+                {user?.email}
+              </p>
+              {tenant && (
+                <p className="text-xs text-gray-500">
+                  {tenant.business_name}
+                </p>
+              )}
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <ThemeToggle />
+            <button
+              onClick={handleLogout}
+              className="flex items-center text-sm text-gray-600 hover:text-red-600"
+            >
+              <LogOut className="h-4 w-4 mr-2" />
+              Cerrar sesión
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      {/* Overlay */}
+      {isSidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-30 z-30 lg:hidden"
+          onClick={() => setIsSidebarOpen(false)}
+        ></div>
+      )}
+
+      <div className="flex-1 flex flex-col min-h-screen lg:ml-0">
+        {/* Top bar */}
+        <header className="sticky top-0 z-10 bg-white shadow-sm border-b border-gray-200">
+          <div className="px-4 sm:px-6 lg:px-10">
+            <div className="flex justify-between items-center h-16">
+              <div className="flex items-center space-x-3">
+                <button
+                  className="lg:hidden text-gray-600 hover:text-gray-900"
+                  onClick={() => setIsSidebarOpen(true)}
+                  aria-label="Abrir menú"
+                >
+                  <Menu className="h-5 w-5" />
+                </button>
+                <div>
+                  <h1 className="text-xl font-semibold text-gray-900">
+                    Panel de control
+                  </h1>
+                  <p className="text-sm text-gray-500">
+                    Gestiona tu tienda y productos
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center space-x-4">
+                {tenant && (
+                  <Link
+                    to={`/str/${tenant.slug}`}
+                    target="_blank"
+                    className="hidden sm:inline-flex items-center text-sm font-medium text-brand-600 hover:text-brand-700"
+                  >
+                    <Store className="h-4 w-4 mr-2" />
+                    Ver mi tienda
+                  </Link>
+                )}
+                <div className="hidden lg:flex items-center space-x-3">
+                  <div className="text-right">
+                    <p className="text-sm font-semibold text-gray-900">
+                      {user?.email}
+                    </p>
+                    {tenant && (
+                      <p className="text-xs text-gray-500">
+                        {tenant.business_name}
+                      </p>
+                    )}
+                  </div>
+                  <div className="h-8 w-8 rounded-full bg-brand-500 text-white flex items-center justify-center font-semibold">
+                    {user?.email?.[0]?.toUpperCase() ?? 'U'}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        {/* Welcome Banner */}
+        {showWelcome && (
+          <div className="bg-brand-gradient text-white">
+            <div className="px-4 sm:px-6 lg:px-10 py-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-lg font-semibold">
+                    ¡Bienvenido a EsDeTienda! 🎉
+                  </h2>
+                  <p className="text-brand-100">
+                    Configuraremos tu bot de WhatsApp en las próximas 24 horas. Mientras tanto, sube tus productos.
+                  </p>
+                </div>
+                <button
+                  onClick={() => setShowWelcome(false)}
+                  className="text-brand-100 hover:text-white"
+                  aria-label="Cerrar mensaje de bienvenida"
+                >
+                  ×
                 </button>
               </div>
             </div>
           </div>
-        </div>
-      </header>
+        )}
 
-      {/* Welcome Banner */}
-      {showWelcome && (
-        <div className="bg-brand-gradient text-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-lg font-semibold">
-                  ¡Bienvenido a EsDeTienda! 🎉
-                </h2>
-                <p className="text-brand-100">
-                  Configuraremos tu bot de WhatsApp en las próximas 24 horas. Mientras tanto, sube tus productos.
-                </p>
+        {/* Main content */}
+        <main className="flex-1 py-8 px-4 sm:px-6 lg:px-10">
+          {/* Stats */}
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
+            {stats.map((stat, index) => (
+              <div key={index} className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600">{stat.title}</p>
+                    <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+                  </div>
+                  <div className="h-12 w-12 bg-brand-100 rounded-lg flex items-center justify-center">
+                    <stat.icon className="h-6 w-6 text-brand-500" />
+                  </div>
+                </div>
+                <p className="text-xs text-green-600 mt-2">{stat.change} vs ayer</p>
               </div>
-              <button 
-                onClick={() => setShowWelcome(false)}
-                className="text-brand-100 hover:text-white"
-              >
-                ×
-              </button>
-            </div>
+            ))}
           </div>
-        </div>
-      )}
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          {stats.map((stat, index) => (
-            <div key={index} className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600">{stat.title}</p>
-                  <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
-                </div>
-                <div className="h-12 w-12 bg-brand-100 rounded-lg flex items-center justify-center">
-                  <stat.icon className="h-6 w-6 text-brand-500" />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Productos */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+              <div className="p-6 border-b border-gray-200">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Catálogo de productos
+                  </h3>
+                  <div className="flex space-x-2">
+                    <button className="bg-brand-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-brand-600 flex items-center">
+                      <Plus className="h-4 w-4 mr-1" />
+                      Agregar
+                    </button>
+                    <button className="border border-gray-300 text-gray-700 px-3 py-1 rounded-lg text-sm hover:bg-gray-50 flex items-center">
+                      <Upload className="h-4 w-4 mr-1" />
+                      Importar
+                    </button>
+                  </div>
                 </div>
               </div>
-              <p className="text-xs text-green-600 mt-2">{stat.change} vs ayer</p>
+              <div className="p-6">
+                <div className="text-center py-12">
+                  <Package className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+                  <h4 className="text-lg font-medium text-gray-900 mb-2">
+                    No tienes productos aún
+                  </h4>
+                  <p className="text-gray-600 mb-4">
+                    Sube tu primer producto o importa un catálogo completo desde CSV/Excel
+                  </p>
+                  <div className="space-y-2">
+                    <Link
+                      to="/panel/agregar-producto"
+                      className="inline-block bg-brand-500 text-white px-6 py-2 rounded-xl hover:bg-brand-600 transition-colors"
+                    >
+                      Agregar producto
+                    </Link>
+                    <br />
+                    <Link
+                      to="/panel/guia-importacion"
+                      className="text-brand-500 hover:text-brand-700 text-sm"
+                    >
+                      Ver guía de importación →
+                    </Link>
+                  </div>
+                </div>
+              </div>
             </div>
-          ))}
-        </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Productos */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-            <div className="p-6 border-b border-gray-200">
-              <div className="flex items-center justify-between">
+            {/* Configuración */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+              <div className="p-6 border-b border-gray-200">
                 <h3 className="text-lg font-semibold text-gray-900">
-                  Catálogo de productos
+                  Configuración
                 </h3>
-                <div className="flex space-x-2">
-                  <button className="bg-brand-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-brand-600 flex items-center">
-                    <Plus className="h-4 w-4 mr-1" />
-                    Agregar
-                  </button>
-                  <button className="border border-gray-300 text-gray-700 px-3 py-1 rounded-lg text-sm hover:bg-gray-50 flex items-center">
-                    <Upload className="h-4 w-4 mr-1" />
-                    Importar
-                  </button>
-                </div>
               </div>
-            </div>
-            <div className="p-6">
-              <div className="text-center py-12">
-                <Package className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-                <h4 className="text-lg font-medium text-gray-900 mb-2">
-                  No tienes productos aún
-                </h4>
-                <p className="text-gray-600 mb-4">
-                  Sube tu primer producto o importa un catálogo completo desde CSV/Excel
-                </p>
-                <div className="space-y-2">
-                  <Link 
-                    to="/panel/agregar-producto"
-                    className="inline-block bg-brand-500 text-white px-6 py-2 rounded-xl hover:bg-brand-600 transition-colors"
-                  >
-                    Agregar producto
-                  </Link>
-                  <br />
-                  <Link 
-                    to="/panel/guia-importacion"
-                    className="text-brand-500 hover:text-brand-700 text-sm"
-                  >
-                    Ver guía de importación →
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Configuración */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-            <div className="p-6 border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900">
-                Configuración
-              </h3>
-            </div>
-            <div className="p-6">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
-                  <div className="flex items-center">
-                    <MessageCircle className="h-5 w-5 text-brand-500 mr-3" />
-                    <div>
-                      <p className="font-medium text-gray-900">WhatsApp Bot</p>
-                      <p className="text-sm text-gray-600">Pendiente configuración</p>
+              <div className="p-6">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
+                    <div className="flex items-center">
+                      <MessageCircle className="h-5 w-5 text-brand-500 mr-3" />
+                      <div>
+                        <p className="font-medium text-gray-900">WhatsApp Bot</p>
+                        <p className="text-sm text-gray-600">Pendiente configuración</p>
+                      </div>
                     </div>
+                    <span className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs">
+                      Pendiente
+                    </span>
                   </div>
-                  <span className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs">
-                    Pendiente
-                  </span>
-                </div>
-                
-                <div className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
-                  <div className="flex items-center">
-                    <Settings className="h-5 w-5 text-brand-500 mr-3" />
-                    <div>
-                      <p className="font-medium text-gray-900">Configuración general</p>
-                      <p className="text-sm text-gray-600">Datos del negocio, colores</p>
-                    </div>
-                  </div>
-                  <button 
-                    onClick={() => alert('Función de configuración próximamente disponible')}
-                    className="text-brand-500 hover:text-brand-700 text-sm"
-                  >
-                    Configurar
-                  </button>
-                </div>
 
-                <div className="bg-brand-50 border border-brand-200 rounded-lg p-4">
-                  <div className="flex items-start">
-                    <div className="flex-shrink-0">
-                      <div className="h-2 w-2 bg-brand-500 rounded-full mt-2"></div>
+                  <div className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
+                    <div className="flex items-center">
+                      <Settings className="h-5 w-5 text-brand-500 mr-3" />
+                      <div>
+                        <p className="font-medium text-gray-900">Configuración general</p>
+                        <p className="text-sm text-gray-600">Datos del negocio, colores</p>
+                      </div>
                     </div>
-                    <div className="ml-3">
-                      <h4 className="text-sm font-medium text-brand-900">
-                        Tu bot estará listo en 24 horas
-                      </h4>
-                      <p className="text-sm text-brand-700 mt-1">
-                        Te enviaremos un email cuando esté configurado. Mientras tanto, sube tus productos.
-                      </p>
+                    <button
+                      onClick={() => alert('Función de configuración próximamente disponible')}
+                      className="text-brand-500 hover:text-brand-700 text-sm"
+                    >
+                      Configurar
+                    </button>
+                  </div>
+
+                  <div className="bg-brand-50 border border-brand-200 rounded-lg p-4">
+                    <div className="flex items-start">
+                      <div className="flex-shrink-0">
+                        <div className="h-2 w-2 bg-brand-500 rounded-full mt-2"></div>
+                      </div>
+                      <div className="ml-3">
+                        <h4 className="text-sm font-medium text-brand-900">
+                          Tu bot estará listo en 24 horas
+                        </h4>
+                        <p className="text-sm text-brand-700 mt-1">
+                          Te enviaremos un email cuando esté configurado. Mientras tanto, sube tus productos.
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        </main>
       </div>
     </div>
   )
