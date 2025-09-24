@@ -254,16 +254,16 @@ export default function DashboardPage() {
 
       {/* Toggle Button - Floating next to sidebar */}
       <button
-        className={`fixed top-1/2 -translate-y-1/2 z-50 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 shadow-lg hover:shadow-xl text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white p-3 transition-all duration-300 hover:scale-110 ${
+        className={`fixed top-1/2 -translate-y-1/2 z-50 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 shadow-lg hover:shadow-xl text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white p-2 transition-all duration-300 hover:scale-110 ${
           isSidebarOpen ? 'left-64 rounded-r-lg md:rounded-r-lg' : 'left-0 rounded-r-full'
         } md:block`}
         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
         aria-label={isSidebarOpen ? "Ocultar menú" : "Mostrar menú"}
       >
         {isSidebarOpen ? (
-          <X className="h-4 w-4" />
+          <X className="h-3.5 w-3.5" />
         ) : (
-          <Menu className="h-4 w-4" />
+          <Menu className="h-3.5 w-3.5" />
         )}
       </button>
 
