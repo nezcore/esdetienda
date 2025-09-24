@@ -316,12 +316,12 @@ export default function HomePage() {
                   <p className="text-gray-600 dark:text-gray-400 mt-2">Ideal para empezar</p>
                 </div>
                 <ul className="space-y-4 mb-8">
-                  {["Catálogo simple (hasta 50 SKUs)", "Respuestas rápidas básicas", "IA texto 2,000 turnos/mes", "Audios→texto 20 min/mes", "Panel compartido", "1 usuario invitado"].map((feature, index) => (
+                  {["Catálogo simple (hasta 50 productos)", "Respuestas rápidas básicas", "IA texto 2,000 turnos/mes", "Audios→texto 20 min/mes", "Panel compartido", "1 usuario invitado"].map((feature, index) => (
                     <li key={index} className="flex items-start group/item">
                       <div className="w-5 h-5 bg-gradient-to-br from-brand-500 to-emerald-500 rounded-full flex items-center justify-center mr-3 flex-shrink-0 mt-0.5 shadow-sm">
                         <CheckCircle className="h-3 w-3 text-white" />
                       </div>
-                      <span className="text-gray-700 dark:text-gray-300 leading-relaxed group-hover/item:text-gray-900 dark:group-hover/item:text-white transition-colors">{feature}</span>
+                      <span className="text-gray-700 dark:text-gray-300 leading-relaxed group-hover/item:text-gray-900 dark:group-hover/item:text-white transition-colors font-semibold">{feature}</span>
                     </li>
                   ))}
                 </ul>
@@ -352,7 +352,7 @@ export default function HomePage() {
                 </div>
                 <ul className="space-y-4 mb-8">
                   {[
-                    "Tienda + catálogo (hasta 500 SKUs)",
+                    "Tienda + catálogo (hasta 500 productos)",
                     "Bot de botones + FAQs",
                     "IA texto 10,000 turnos/mes",
                     "Audios→texto 100 min/mes",
@@ -363,7 +363,7 @@ export default function HomePage() {
                       <div className="w-5 h-5 bg-gradient-to-br from-blue-500 to-slate-600 rounded-full flex items-center justify-center mr-3 flex-shrink-0 mt-0.5 shadow-sm">
                         <CheckCircle className="h-3 w-3 text-white" />
                       </div>
-                      <span className="text-gray-700 dark:text-gray-300 leading-relaxed group-hover/item:text-gray-900 dark:group-hover/item:text-white transition-colors">{feature}</span>
+                      <span className="text-gray-700 dark:text-gray-300 leading-relaxed group-hover/item:text-gray-900 dark:group-hover/item:text-white transition-colors font-semibold">{feature}</span>
                     </li>
                   ))}
                 </ul>
@@ -412,7 +412,7 @@ export default function HomePage() {
                       <div className="w-5 h-5 bg-gradient-to-br from-orange-500 to-red-500 rounded-full flex items-center justify-center mr-3 flex-shrink-0 mt-0.5 shadow-sm">
                         <CheckCircle className="h-3 w-3 text-white" />
                       </div>
-                      <span className="text-gray-700 dark:text-gray-300 leading-relaxed group-hover/item:text-gray-900 dark:group-hover/item:text-white transition-colors">{feature}</span>
+                      <span className="text-gray-700 dark:text-gray-300 leading-relaxed group-hover/item:text-gray-900 dark:group-hover/item:text-white transition-colors font-semibold">{feature}</span>
                     </li>
                   ))}
                 </ul>

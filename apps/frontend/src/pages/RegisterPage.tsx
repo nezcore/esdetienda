@@ -29,7 +29,7 @@ export default function RegisterPage() {
       name: 'Plan Starter',
       price: 'RD$0/mes',
       features: [
-        'Catálogo simple (hasta 50 SKUs)',
+        'Catálogo simple (hasta 50 productos)',
         'Respuestas rápidas básicas',
         'IA texto 2,000 turnos/mes',
         'Audios→texto 20 min/mes',
@@ -41,7 +41,7 @@ export default function RegisterPage() {
       name: 'Plan Grow',
       price: 'RD$990/mes',
       features: [
-        'Tienda + catálogo (hasta 500 SKUs)',
+        'Tienda + catálogo (hasta 500 productos)',
         'Bot de botones + FAQs',
         'IA texto 10,000 turnos/mes',
         'Audios→texto 100 min/mes',
@@ -232,7 +232,7 @@ export default function RegisterPage() {
               <div className="lg:col-span-3 p-8 md:p-10">
                 <form onSubmit={handleRegister} className="space-y-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-gray-800 dark:text-gray-200 mb-1">
                       Nombre del negocio
                     </label>
                   <div className="space-y-2">
@@ -262,7 +262,7 @@ export default function RegisterPage() {
                       )}
                     </div>
                     {businessNameTouched && !isBusinessNameValid && (
-                      <p className="text-sm text-red-500">
+                      <p className="text-sm text-red-500 dark:text-red-400">
                         El nombre del negocio debe tener al menos 4 caracteres.
                       </p>
                     )}
@@ -270,12 +270,12 @@ export default function RegisterPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-800 dark:text-gray-200 mb-1">
                     Slug de tu tienda
                   </label>
                   <div className="space-y-2">
                     <div className="flex">
-                      <span className="inline-flex items-center px-3 rounded-l-xl border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
+                      <span className="inline-flex items-center px-3 rounded-l-xl border border-r-0 border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-300 text-sm">
                         esdetienda.com/str/
                       </span>
                       <div className="relative flex-1">
@@ -307,12 +307,12 @@ export default function RegisterPage() {
                       </div>
                     </div>
                     {slugStatus === 'invalid' && tenantSlug && (
-                      <p className="text-sm text-red-500">
+                      <p className="text-sm text-red-500 dark:text-red-400">
                         Usa al menos 4 caracteres en minúsculas, números o guiones.
                       </p>
                     )}
                     {slugStatus === 'taken' && (
-                      <p className="text-sm text-red-500">
+                      <p className="text-sm text-red-500 dark:text-red-400">
                         Ese nombre ya está en uso. Intenta con otra variación.
                       </p>
                     )}
@@ -321,7 +321,7 @@ export default function RegisterPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-800 dark:text-gray-200 mb-1">
                     Email
                   </label>
                   <div className="space-y-3">
@@ -373,7 +373,7 @@ export default function RegisterPage() {
                 </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-gray-800 dark:text-gray-200 mb-1">
                       Contraseña
                     </label>
                     <div className="relative">
@@ -433,7 +433,7 @@ export default function RegisterPage() {
                           style={{ width: `${Math.min(passwordStrength.score * 20, 100)}%` }}
                         />
                       </div>
-                      <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
+                      <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
                         {passwordStrength.label}
                       </p>
                     </div>
@@ -445,7 +445,7 @@ export default function RegisterPage() {
                       required
                       className="h-4 w-4 text-brand-500 focus:ring-brand-500 border-gray-300 rounded mt-1"
                     />
-                    <label className="ml-2 text-sm text-gray-600 dark:text-gray-400">
+                    <label className="ml-2 text-sm text-gray-700 dark:text-gray-200">
                       Acepto los{' '}
                       <Link to="/terminos" target="_blank" rel="noreferrer noopener" className="text-brand-500 hover:text-brand-700">
                         términos y condiciones
@@ -486,7 +486,7 @@ export default function RegisterPage() {
                   {currentPlan.features.map((feature, index) => (
                     <li key={index} className="flex items-start text-sm text-gray-700 dark:text-gray-300 gap-3">
                       <Check className="h-4 w-4 text-brand-500 mt-1 flex-shrink-0" />
-                      <span>{feature}</span>
+                      <span className="font-semibold">{feature}</span>
                     </li>
                   ))}
                 </ul>
