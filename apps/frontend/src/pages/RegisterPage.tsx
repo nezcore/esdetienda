@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { Eye, EyeOff, Check, CheckCircle, Loader2, RefreshCcw, XCircle } from 'lucide-react'
 import { authApi, type AuthResponse } from '../lib/api'
+import { useAuth } from '../contexts/AuthContext'
 import ThemeToggle from '../components/ThemeToggle'
 
 export default function RegisterPage() {
@@ -24,9 +25,16 @@ export default function RegisterPage() {
   const slugPattern = /^[a-z0-9-]+$/
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
+  const { login, isAuthenticated } = useAuth()
+
+  // Redirigir si ya está autenticado
+  if (isAuthenticated) {
+    navigate('/panel', { replace: true })
+    return null
+  }
 
   const planDetails = {
-    starter: {
+    esencial: {
       name: 'Plan Starter',
       price: 'RD$0/mes',
       features: [
@@ -66,7 +74,7 @@ export default function RegisterPage() {
 
   type PlanKey = keyof typeof planDetails
   const planParam = searchParams.get('plan') as PlanKey | null
-  const selectedPlan: PlanKey = planParam && planDetails[planParam] ? planParam : 'starter'
+  const selectedPlan: PlanKey = planParam && planDetails[planParam] ? planParam : 'esencial'
   const currentPlan = planDetails[selectedPlan]
 
   const allowedDomainList = [
@@ -183,12 +191,8 @@ export default function RegisterPage() {
       const response: AuthResponse = await authApi.register(data)
       
       if (response.success) {
-        // Guardar token y datos del usuario
-        localStorage.setItem('auth_token', response.token)
-        localStorage.setItem('user_data', JSON.stringify(response.user))
-        if (response.tenant) {
-          localStorage.setItem('tenant_data', JSON.stringify(response.tenant))
-        }
+        // Usar el contexto de autenticación
+        login(response.token, response.user, response.tenant)
         
         console.log('Registro exitoso:', response)
         setLoading(false)

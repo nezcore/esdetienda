@@ -1,16 +1,29 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { Eye, EyeOff } from 'lucide-react'
 import { authApi, type AuthResponse } from '../lib/api'
+import { useAuth } from '../contexts/AuthContext'
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
   const navigate = useNavigate()
+  const location = useLocation()
+  const { login } = useAuth()
+
+  // Redirigir si ya está autenticado
+  const { isAuthenticated } = useAuth()
+  if (isAuthenticated) {
+    const from = location.state?.from?.pathname || '/panel'
+    navigate(from, { replace: true })
+    return null
+  }
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setLoading(true)
+    setError('')
 
     const formData = new FormData(e.currentTarget)
     const email = formData.get('email') as string
@@ -22,22 +35,21 @@ export default function LoginPage() {
       const response: AuthResponse = await authApi.login(email, password)
       
       if (response.success) {
-        // Guardar token y datos del usuario
-        localStorage.setItem('auth_token', response.token)
-        localStorage.setItem('user_data', JSON.stringify(response.user))
-        if (response.tenant) {
-          localStorage.setItem('tenant_data', JSON.stringify(response.tenant))
-        }
+        // Usar el contexto de autenticación
+        login(response.token, response.user, response.tenant)
         
         console.log('Login exitoso:', response)
         setLoading(false)
-        navigate('/panel')
+        
+        // Redirigir a la página que intentaba acceder o al panel
+        const from = location.state?.from?.pathname || '/panel'
+        navigate(from, { replace: true })
       } else {
         throw new Error(response.message || 'Error en el login')
       }
     } catch (error: any) {
       console.error('Error en el login:', error)
-      alert(error.message || 'Error al iniciar sesión. Verifica tus credenciales.')
+      setError(error.message || 'Error al iniciar sesión. Verifica tus credenciales.')
       setLoading(false)
     }
   }
@@ -64,6 +76,11 @@ export default function LoginPage() {
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow-lg sm:rounded-2xl sm:px-10">
           <form onSubmit={handleLogin} className="space-y-6">
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                {error}
+              </div>
+            )}
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                 Email

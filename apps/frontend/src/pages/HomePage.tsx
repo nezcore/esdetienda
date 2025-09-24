@@ -1,10 +1,27 @@
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { ArrowRight, CheckCircle, MessageCircle, ShoppingBag, Bot, BarChart3, Menu, X, Sparkles } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import ThemeToggle from '../components/ThemeToggle'
 
 export default function HomePage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const location = useLocation()
+
+  // Efecto para scroll automático a la sección de precios
+  useEffect(() => {
+    if (location.hash === '#pricing') {
+      // Pequeño delay para asegurar que el DOM esté listo
+      setTimeout(() => {
+        const pricingSection = document.getElementById('pricing')
+        if (pricingSection) {
+          pricingSection.scrollIntoView({ 
+            behavior: 'smooth',
+            block: 'start'
+          })
+        }
+      }, 100)
+    }
+  }, [location.hash])
   
   // Efecto máquina de escribir para el hero
   const dynamicTexts = [
@@ -152,7 +169,7 @@ export default function HomePage() {
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center mb-12 md:mb-16 px-4">
               <Link 
-                to="/registro?plan=starter" 
+                to="/registro?plan=esencial" 
                 className="group bg-gradient-to-r from-brand-accent to-orange-500 text-white px-8 md:px-10 py-4 md:py-5 rounded-2xl font-bold hover:from-orange-600 hover:to-red-500 hover:shadow-2xl hover:shadow-brand-accent/25 transition-all duration-300 transform hover:scale-105 flex items-center justify-center text-lg md:text-xl"
               >
                 <span>Crear mi tienda</span>
@@ -326,7 +343,7 @@ export default function HomePage() {
                   ))}
                 </ul>
                 <Link 
-                  to="/registro?plan=starter" 
+                  to="/registro?plan=esencial" 
                   className="block w-full bg-gradient-to-r from-brand-500 to-emerald-500 text-white text-center py-4 rounded-2xl font-bold hover:from-emerald-500 hover:to-emerald-600 hover:shadow-xl hover:shadow-emerald-500/30 transition-all duration-300 transform hover:scale-105 text-lg"
                 >
                   Empezar Starter

@@ -2,8 +2,12 @@ import { Routes, Route } from 'react-router-dom'
 import { useEffect } from 'react'
 import posthog from 'posthog-js'
 
-// Contexto de tema
+// Contextos
 import { ThemeProvider } from './contexts/ThemeContext'
+import { AuthProvider } from './contexts/AuthContext'
+
+// Componentes
+import ProtectedRoute from './components/ProtectedRoute'
 
 // Páginas
 import HomePage from './pages/HomePage'
@@ -30,23 +34,39 @@ function App() {
 
   return (
     <ThemeProvider>
-      <div className="min-h-screen bg-background text-foreground transition-colors">
-        <Routes>
-          {/* Homepage y autenticación */}
-          <Route path="/" element={<HomePage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/registro" element={<RegisterPage />} />
-          <Route path="/terminos" element={<TermsPage />} />
-          
-          {/* Panel de administración */}
-          <Route path="/panel" element={<DashboardPage />} />
-          <Route path="/panel/*" element={<DashboardPage />} />
-          
-          {/* Tiendas públicas multi-tenant */}
-          <Route path="/str/:tenantSlug" element={<StorePage />} />
-          <Route path="/str/:tenantSlug/producto/:productId" element={<ProductPage />} />
-        </Routes>
-      </div>
+      <AuthProvider>
+        <div className="min-h-screen bg-background text-foreground transition-colors">
+          <Routes>
+            {/* Homepage y autenticación */}
+            <Route path="/" element={<HomePage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/registro" element={<RegisterPage />} />
+            <Route path="/terminos" element={<TermsPage />} />
+            
+            {/* Panel de administración - PROTEGIDO */}
+            <Route 
+              path="/panel" 
+              element={
+                <ProtectedRoute>
+                  <DashboardPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/panel/*" 
+              element={
+                <ProtectedRoute>
+                  <DashboardPage />
+                </ProtectedRoute>
+              } 
+            />
+            
+            {/* Tiendas públicas multi-tenant */}
+            <Route path="/str/:tenantSlug" element={<StorePage />} />
+            <Route path="/str/:tenantSlug/producto/:productId" element={<ProductPage />} />
+          </Routes>
+        </div>
+      </AuthProvider>
     </ThemeProvider>
   )
 }

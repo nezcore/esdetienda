@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useSearchParams, useNavigate } from 'react-router-dom'
 import { 
   BarChart3, 
   Package, 
@@ -7,12 +7,22 @@ import {
   Settings, 
   Upload,
   ExternalLink,
-  Plus
+  Plus,
+  LogOut,
+  User
 } from 'lucide-react'
+import { useAuth } from '../contexts/AuthContext'
 
 export default function DashboardPage() {
   const [searchParams] = useSearchParams()
   const [showWelcome, setShowWelcome] = useState(searchParams.get('welcome') === 'true')
+  const navigate = useNavigate()
+  const { user, tenant, logout } = useAuth()
+
+  const handleLogout = () => {
+    logout()
+    navigate('/login')
+  }
   
   const stats = [
     { title: 'Productos', value: '0', icon: Package, change: '+0%' },
@@ -41,12 +51,33 @@ export default function DashboardPage() {
               <span className="ml-4 text-gray-600">/ Panel</span>
             </div>
             <div className="flex items-center space-x-4">
-              <button className="text-brand-500 hover:text-brand-700">
-                <ExternalLink className="h-5 w-5" />
-                <span className="ml-1 text-sm">Ver mi tienda</span>
-              </button>
-              <div className="h-8 w-8 bg-brand-500 rounded-full flex items-center justify-center">
-                <span className="text-white text-sm font-semibold">U</span>
+              {tenant && (
+                <button className="text-brand-500 hover:text-brand-700 flex items-center">
+                  <ExternalLink className="h-5 w-5" />
+                  <span className="ml-1 text-sm">Ver mi tienda</span>
+                </button>
+              )}
+              <div className="flex items-center space-x-3">
+                <div className="text-right">
+                  <div className="text-sm font-medium text-gray-900">
+                    {user?.email}
+                  </div>
+                  {tenant && (
+                    <div className="text-xs text-gray-500">
+                      {tenant.business_name}
+                    </div>
+                  )}
+                </div>
+                <div className="h-8 w-8 bg-brand-500 rounded-full flex items-center justify-center">
+                  <User className="h-4 w-4 text-white" />
+                </div>
+                <button 
+                  onClick={handleLogout}
+                  className="text-gray-500 hover:text-red-600 flex items-center"
+                  title="Cerrar sesión"
+                >
+                  <LogOut className="h-5 w-5" />
+                </button>
               </div>
             </div>
           </div>
