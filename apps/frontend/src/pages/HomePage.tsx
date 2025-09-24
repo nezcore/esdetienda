@@ -293,9 +293,9 @@ export default function HomePage() {
       <section id="pricing" className="py-12 md:py-20 bg-gray-50 dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
           <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center text-brand-900 dark:text-brand-300 mb-4">
-            Planes de pago
+            Nuestros planes
           </h2>
-          <p className="text-center text-gray-600 dark:text-gray-300 mb-8 md:mb-16 text-sm md:text-base">Sin freemium. Elige el plan que mejor se adapte a tu negocio.</p>
+          <p className="text-center text-gray-600 dark:text-gray-300 mb-8 md:mb-16 text-sm md:text-base">Elige el plan que mejor se adapte a tu negocio.</p>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 max-w-6xl mx-auto">
             {/* Plan Starter */}
