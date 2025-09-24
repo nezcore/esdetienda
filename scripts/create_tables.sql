@@ -89,3 +89,28 @@ CREATE POLICY "Allow all operations on tenants" ON tenants FOR ALL USING (true);
 CREATE POLICY "Allow all operations on users" ON users FOR ALL USING (true);
 CREATE POLICY "Allow all operations on products" ON products FOR ALL USING (true);
 CREATE POLICY "Allow all operations on orders" ON orders FOR ALL USING (true);
+
+-- Tabla de uso mensual por tenant
+CREATE TABLE IF NOT EXISTS tenant_usage (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+    period_start DATE NOT NULL,
+    period_end DATE NOT NULL,
+    ia_text_used INTEGER DEFAULT 0,
+    audio_minutes_used INTEGER DEFAULT 0,
+    ia_vision_images_used INTEGER DEFAULT 0,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    CONSTRAINT uniq_tenant_period UNIQUE (tenant_id, period_start)
+);
+
+-- Índices para uso
+CREATE INDEX IF NOT EXISTS idx_usage_tenant ON tenant_usage(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_usage_period ON tenant_usage(period_start);
+
+-- Trigger de updated_at
+CREATE TRIGGER update_usage_updated_at BEFORE UPDATE ON tenant_usage FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- RLS para uso
+ALTER TABLE tenant_usage ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow all operations on tenant_usage" ON tenant_usage FOR ALL USING (true);

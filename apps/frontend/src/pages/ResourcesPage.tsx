@@ -1,6 +1,7 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
-import { CheckCircle, AlertTriangle } from 'lucide-react'
+import { CheckCircle, AlertTriangle, RefreshCw } from 'lucide-react'
+import { authApi } from '../lib/api'
 
 const planResources = {
   esencial: {
@@ -84,12 +85,38 @@ function ResourceProgress({ used, limit, color }: { used: number; limit: number;
   )
 }
 
+type UsageItem = { key: string; label: string; used: number; limit: number; renewableMonthly: boolean }
+
 export default function ResourcesPage() {
   const { tenant } = useAuth()
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [items, setItems] = useState<UsageItem[] | null>(null)
+  const [resetAt, setResetAt] = useState<string | null>(null)
 
   const planKey = (tenant?.plan as PlanKey) ?? 'esencial'
   const planData = useMemo(() => planResources[planKey] ?? planResources.esencial, [planKey])
   const colorTokens = colorMap[planData.color] ?? colorMap.emerald
+
+  useEffect(() => {
+    const fetchUsage = async () => {
+      if (!tenant?.id) return
+      setLoading(true)
+      setError(null)
+      try {
+        const res = await fetch(`${(window as any).API_BASE_URL ?? ''}/usage/tenant/${tenant.id}`)
+        if (!res.ok) throw new Error(`HTTP ${res.status}`)
+        const data = await res.json()
+        setItems(data.items)
+        setResetAt(data.resetAt)
+      } catch (err: any) {
+        setError(err.message || 'Error cargando uso')
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchUsage()
+  }, [tenant?.id])
 
   return (
     <section className="space-y-8">
@@ -113,24 +140,39 @@ export default function ResourcesPage() {
                 Recursos disponibles
               </h1>
               <p className="mt-2 text-gray-600 dark:text-gray-300 max-w-2xl">
-                {planData.description}. Aquí puedes monitorear tu consumo actual y cuánto te queda disponible. Actualizamos la información en tiempo real.
+                {planData.description}. Aquí puedes monitorear tu consumo actual y cuánto te queda disponible.
               </p>
             </div>
-
             <div className={`rounded-2xl px-6 py-5 bg-white/70 dark:bg-gray-800/60 border border-gray-200/70 dark:border-gray-700/60`}> 
-              <p className="text-sm text-gray-500 dark:text-gray-400">Sugerencia</p>
-              <p className="mt-1 text-sm font-semibold text-gray-800 dark:text-gray-100">
-                ¿Necesitas más capacidad? Cambia a un plan superior sin perder tus datos.
-              </p>
+              <div className="flex items-center gap-4">
+                <div>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Próximo reinicio</p>
+                  <p className="mt-1 text-sm font-semibold text-gray-800 dark:text-gray-100">
+                    {resetAt ? new Date(resetAt).toLocaleDateString() : '—'}
+                  </p>
+                </div>
+                {loading && (
+                  <div className="ml-auto inline-flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+                    <RefreshCw className="h-3.5 w-3.5 animate-spin" /> Actualizando
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
       </div>
 
+      {error && (
+        <div className="rounded-2xl border border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-900/20 p-4 text-red-700 dark:text-red-300">
+          {error}
+        </div>
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {planData.items.map((item) => {
+        {(items ?? planData.items).map((item) => {
           const percent = Math.min(Math.round((item.used / item.limit) * 100), 100)
           const isNearLimit = percent >= 90
+          const isOver = percent >= 100
 
           return (
             <div
@@ -146,10 +188,15 @@ export default function ResourcesPage() {
                     Consulta el uso actual y disponibilidad restante de este recurso.
                   </p>
                 </div>
-                {isNearLimit ? (
-                  <span className="inline-flex items-center text-xs font-semibold text-orange-500 dark:text-orange-300 bg-orange-500/10 dark:bg-orange-500/15 rounded-full px-3 py-1">
+                {isOver ? (
+                  <span className="inline-flex items-center text-xs font-semibold text-red-600 dark:text-red-300 bg-red-500/10 dark:bg-red-500/15 rounded-full px-3 py-1">
                     <AlertTriangle className="h-3 w-3 mr-1" />
-                    Atención
+                    Límite alcanzado
+                  </span>
+                ) : isNearLimit ? (
+                  <span className="inline-flex items-center text-xs font-semibold text-orange-600 dark:text-orange-300 bg-orange-500/10 dark:bg-orange-500/15 rounded-full px-3 py-1">
+                    <AlertTriangle className="h-3 w-3 mr-1" />
+                    Cerca del límite
                   </span>
                 ) : (
                   <span className="text-xs font-medium text-gray-400 dark:text-gray-500">
@@ -160,6 +207,11 @@ export default function ResourcesPage() {
 
               <div className="mt-6">
                 <ResourceProgress used={item.used} limit={item.limit} color={planData.color} />
+                {item.renewableMonthly && (
+                  <p className="mt-2 text-[11px] text-gray-500 dark:text-gray-400">
+                    Se reinicia mensualmente {resetAt ? `el ${new Date(resetAt).toLocaleDateString()}` : ''}
+                  </p>
+                )}
               </div>
             </div>
           )

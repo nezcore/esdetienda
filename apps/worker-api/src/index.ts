@@ -13,6 +13,7 @@ import visionRoutes from './routes/vision'
 import sttRoutes from './routes/stt'
 import webhookRoutes from './routes/webhooks'
 import orderRoutes from './routes/orders'
+import usageRoutes from './routes/usage'
 import { getSupabaseAdminClient } from './lib/supabase'
 
 // Middleware
@@ -95,6 +96,7 @@ app.route('/vision', visionRoutes)
 app.route('/stt', sttRoutes)
 app.route('/webhook', webhookRoutes)
 app.route('/orders', orderRoutes)
+app.route('/usage', usageRoutes)
 
 // Ruta de fallback
 app.all('*', (c) => {

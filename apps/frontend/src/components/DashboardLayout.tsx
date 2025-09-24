@@ -29,17 +29,17 @@ export default function DashboardLayout() {
 
   const mainNav = [
     { label: 'Resumen', to: '/panel', icon: Home, disabled: false, external: false, iconColor: 'text-blue-500', disabledColor: 'text-blue-300 dark:text-blue-400' },
-    { label: 'Recursos', to: '/panel/recursos', icon: Gauge, disabled: false, external: false, iconColor: 'text-sky-500', disabledColor: 'text-sky-300 dark:text-sky-400' },
     { label: 'Productos', to: '/panel/agregar-producto', icon: ShoppingCart, disabled: false, external: false, iconColor: 'text-emerald-500', disabledColor: 'text-emerald-300 dark:text-emerald-400' },
     { label: 'Pedidos', to: '#', icon: Package, disabled: true, external: false, iconColor: 'text-orange-500', disabledColor: 'text-orange-300 dark:text-orange-400' },
     { label: 'Clientes', to: '#', icon: Users, disabled: true, external: false, iconColor: 'text-purple-500', disabledColor: 'text-purple-300 dark:text-purple-400' },
-    { label: 'Configuración', to: '#', icon: Settings, disabled: true, external: false, iconColor: 'text-gray-500', disabledColor: 'text-gray-300 dark:text-gray-400' },
     { label: 'Ver mi tienda', to: tenant ? `/str/${tenant.slug}` : '#', icon: Store, disabled: !tenant, external: true, iconColor: 'text-teal-500', disabledColor: 'text-teal-300 dark:text-teal-400' }
   ]
 
   const secondaryNav = [
-    { label: 'Guía de inicio', to: '/panel/guia-importacion', icon: FileText, disabled: false, external: false, iconColor: 'text-indigo-500', disabledColor: 'text-indigo-300 dark:text-indigo-400' },
-    { label: 'Personalizar', to: '#', icon: Palette, disabled: true, external: false, iconColor: 'text-pink-500', disabledColor: 'text-pink-300 dark:text-pink-400' }
+    { label: 'Personalización', to: '#', icon: Palette, disabled: true, external: false, iconColor: 'text-pink-500', disabledColor: 'text-pink-300 dark:text-pink-400' },
+    { label: 'Configuración', to: '#', icon: Settings, disabled: true, external: false, iconColor: 'text-gray-500', disabledColor: 'text-gray-300 dark:text-gray-400' },
+    { label: 'Recursos', to: '/panel/recursos', icon: Gauge, disabled: false, external: false, iconColor: 'text-sky-500', disabledColor: 'text-sky-300 dark:text-sky-400' },
+    { label: 'Guía de inicio', to: '/panel/guia-importacion', icon: FileText, disabled: false, external: false, iconColor: 'text-indigo-500', disabledColor: 'text-indigo-300 dark:text-indigo-400' }
   ]
 
   const planStyles: Record<string, { label: string; badgeClass: string; textClass: string }> = {
@@ -185,7 +185,7 @@ export default function DashboardLayout() {
 
           <nav className="space-y-2">
             <p className="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider dark:text-gray-400 mb-4">
-              Recursos
+              Sistema
             </p>
             {secondaryNav.map((item) => {
               const Icon = item.icon

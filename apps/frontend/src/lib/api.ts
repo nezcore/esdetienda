@@ -35,7 +35,12 @@ export const setApiBaseUrl = (url: string) => {
   localStorage.setItem('api_base_url', url)
 }
 
-const API_BASE_URL = resolveDefaultApiBaseUrl()
+export const API_BASE_URL = resolveDefaultApiBaseUrl()
+
+// Exponer para depuración en navegador (p.ej., móvil)
+if (typeof window !== 'undefined') {
+  ;(window as any).API_BASE_URL = API_BASE_URL
+}
 
 // Cliente HTTP básico
 class ApiClient {
