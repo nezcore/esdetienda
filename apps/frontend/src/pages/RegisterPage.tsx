@@ -54,15 +54,26 @@ export default function RegisterPage() {
   const selectedPlan: PlanKey = planParam && planDetails[planParam] ? planParam : 'starter'
   const currentPlan = planDetails[selectedPlan]
 
+  const allowedDomainList = [
+    'gmail.com',
+    'googlemail.com',
+    'outlook.com',
+    'hotmail.com',
+    'live.com',
+    'msn.com',
+    'yahoo.com',
+    'icloud.com',
+    'me.com',
+    'mac.com'
+  ]
+
   const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
     const email = (formData.get('email') as string) || ''
-    const allowedDomains = /(gmail\.com|googlemail\.com|outlook\.com|hotmail\.com|live\.com|msn\.com|yahoo\.com|icloud\.com|me\.com|mac\.com)$/i
-    const domain = email.split('@')[1] ?? ''
+    const domain = (email.split('@')[1] ?? '').toLowerCase()
 
-    if (!allowedDomains.test(domain)) {
+    if (email.includes('@') && domain && !allowedDomainList.includes(domain)) {
       setEmailError('Solo admitimos correos de Gmail, Outlook (incluye Hotmail/Live/MSN), Yahoo o Apple.')
       return
     }
@@ -174,27 +185,36 @@ export default function RegisterPage() {
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Email
                     </label>
-                  <input
-                    name="email"
-                    type="email"
-                    required
-                    className={`w-full px-3 py-2 border rounded-xl focus:ring-brand-500 focus:border-brand-500 dark:bg-gray-900 dark:text-gray-100 ${emailError ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 dark:border-gray-700'}`}
-                    placeholder="tu@email.com"
-                    onInput={(event) => {
-                      const value = (event.target as HTMLInputElement).value
-                      const allowedDomains = /(gmail\.com|googlemail\.com|outlook\.com|hotmail\.com|live\.com|msn\.com|yahoo\.com|icloud\.com|me\.com|mac\.com)$/i
-                      if (value && !allowedDomains.test(value.split('@')[1] ?? '')) {
-                        setEmailError('Solo admitimos correos de Gmail, Outlook (incluye Hotmail/Live/MSN), Yahoo o Apple.');
-                      } else {
-                        setEmailError('');
-                      }
-                    }}
-                  />
-                  {emailError && (
-                    <p className="mt-2 text-sm text-red-500">
-                      {emailError}
-                    </p>
-                  )}
+                  <div className="space-y-3">
+                    <input
+                      name="email"
+                      type="email"
+                      required
+                      className={`w-full px-3 py-2 border rounded-xl focus:ring-brand-500 focus:border-brand-500 dark:bg-gray-900 dark:text-gray-100 ${emailError ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 dark:border-gray-700'}`}
+                      placeholder="tu@email.com"
+                      onInput={(event) => {
+                        const value = (event.target as HTMLInputElement).value
+                        const hasAt = value.includes('@')
+                        const domainPart = (value.split('@')[1] ?? '').toLowerCase()
+                        const matchesPrefix = allowedDomainList.some((allowed) => allowed.startsWith(domainPart))
+
+                        if (hasAt && domainPart && !matchesPrefix) {
+                          setEmailError('Solo admitimos correos de Gmail, Outlook (incluye Hotmail/Live/MSN), Yahoo o Apple.')
+                        } else {
+                          setEmailError('')
+                        }
+                      }}
+                    />
+                    {emailError && (
+                      <div className="animate-slide-up-fade">
+                        <div className="rounded-2xl border border-red-200/80 bg-red-50/90 dark:bg-red-500/10 dark:border-red-500/40 px-4 py-3 shadow-md shadow-red-500/10 backdrop-blur">
+                          <p className="text-sm font-medium text-red-600 dark:text-red-300">
+                            {emailError}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                   </div>
 
                   <div>
