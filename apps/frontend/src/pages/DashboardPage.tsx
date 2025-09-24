@@ -240,12 +240,12 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <div className="space-y-3">
+          <div className="mt-6">
             <button
               onClick={handleLogout}
-              className="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-red-500/25 flex items-center justify-center gap-2"
+              className="mx-auto max-w-40 w-full bg-gradient-to-l from-red-400 to-red-500 hover:from-red-500 hover:to-red-600 text-white font-semibold py-2 px-3 rounded-lg transition-all duration-200 hover:scale-105 hover:shadow-md hover:shadow-red-400/15 flex items-center justify-center gap-2 text-sm"
             >
-              <LogOut className="h-5 w-5" />
+              <LogOut className="h-4 w-4" />
               Cerrar sesión
             </button>
           </div>
