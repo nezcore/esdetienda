@@ -12,6 +12,7 @@ import {
   Users,
   Palette,
   Gauge,
+  Rocket,
   X,
   LogOut
 } from 'lucide-react'
@@ -100,13 +101,6 @@ export default function DashboardLayout() {
               Panel
             </span>
           </div>
-          <button
-            className="lg:hidden text-gray-500 hover:text-gray-800"
-            onClick={() => setIsSidebarOpen(false)}
-            aria-label="Cerrar menú"
-          >
-            <X className="h-5 w-5" />
-          </button>
         </div>
 
         <div className="flex-1 overflow-y-auto py-6 px-4 space-y-8">
@@ -303,12 +297,22 @@ export default function DashboardLayout() {
             <div className="flex justify-between items-center h-16">
               <div className="flex items-center space-x-4">
                 <div>
-                  <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">Panel de control</h1>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Gestiona tu tienda y productos</p>
+                  <h1 className="text-2xl font-semibold text-gray-900 dark:text-white sm:text-2xl text-lg">Panel de control</h1>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 sm:text-sm text-xs">Gestiona tu tienda<span className="hidden sm:inline"> y productos</span></p>
                 </div>
               </div>
 
-              <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-3">
+                {tenant?.plan === 'esencial' && (
+                  <button
+                    onClick={() => navigate('/panel/recursos')}
+                    className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-emerald-500/85 via-teal-500/85 to-sky-500/85 px-3.5 py-1.5 text-xs font-semibold text-white shadow-md shadow-emerald-500/25 transition-transform hover:scale-[1.03] hover:shadow-emerald-500/35 focus:outline-none focus:ring-2 focus:ring-emerald-300 dark:from-emerald-500/70 dark:via-teal-500/70 dark:to-sky-500/70 dark:text-white"
+                  >
+                    <Rocket className="h-3.5 w-3.5" />
+                    <span className="hidden sm:inline">Mejora tu plan</span>
+                    <span className="sm:hidden">Mejorar</span>
+                  </button>
+                )}
                 <ThemeToggle />
               </div>
             </div>
