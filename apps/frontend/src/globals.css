@@ -71,7 +71,7 @@
     border: 1px solid rgba(255, 255, 255, 0.2);
   }
   
-  /* Animación para el cursor parpadeante del efecto typewriter */
+  /* 타자기 효과 커서 깜박임 애니메이션 */
   @keyframes blink {
     0%, 50% {
       opacity: 1;
@@ -80,4 +80,75 @@
       opacity: 0;
     }
   }
+
+  /* 테마 토글 기본 위치 */
+  #theme-toggle-button {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+    padding: 0.25rem 0;
+    margin-top: 0.15rem;
+  }
+}
+
+/* Uiverse.io 디자인 변형 */
+/* 스위치 설정 👇 */
+
+.switch {
+  display: block;
+  --width-of-switch: 3em;
+  --height-of-switch: 1.6em;
+  --size-of-icon: 1.1em;
+  --slider-offset: 0.25em;
+  position: relative;
+  width: var(--width-of-switch);
+  height: var(--height-of-switch);
+}
+
+/* 기본 체크박스 숨김 */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* 슬라이더 영역 */
+.switch .slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #f4f4f5;
+  transition: 0.4s;
+  border-radius: 30px;
+}
+
+/* 슬라이더 핸들 아이콘 */
+.switch .slider::before {
+  position: absolute;
+  content: "";
+  height: var(--size-of-icon, 1.4em);
+  width: var(--size-of-icon, 1.4em);
+  border-radius: 20px;
+  left: var(--slider-offset, 0.3em);
+  top: 50%;
+  transform: translateY(-50%);
+  background: linear-gradient(40deg, #ff0080, #ff8c00 70%);
+  transition: 0.4s;
+}
+
+/* 다크 모드 배경 전환 */
+.switch input:checked + .slider {
+  background-color: #303136;
+}
+
+/* 다크 모드 핸들 전환 */
+.switch input:checked + .slider::before {
+  left: calc(100% - (var(--size-of-icon, 1.4em) + var(--slider-offset, 0.3em)));
+  background: #303136;
+  box-shadow: inset -3px -2px 5px -2px #8983f7, inset -10px -4px 0 0 #a3dafb;
 }
