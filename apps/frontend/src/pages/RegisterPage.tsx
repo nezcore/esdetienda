@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
-import { Eye, EyeOff, Check, CheckCircle, Loader2, XCircle } from 'lucide-react'
+import { Eye, EyeOff, Check, CheckCircle, Loader2, RefreshCcw, XCircle } from 'lucide-react'
 import ThemeToggle from '../components/ThemeToggle'
 
 export default function RegisterPage() {
@@ -11,6 +11,11 @@ export default function RegisterPage() {
   const [businessName, setBusinessName] = useState('')
   const [businessNameTouched, setBusinessNameTouched] = useState(false)
   const [tenantSlug, setTenantSlug] = useState('')
+  const [password, setPassword] = useState('')
+  const [passwordStrength, setPasswordStrength] = useState<{ score: number; label: string }>({
+    score: 0,
+    label: 'Muy débil'
+  })
   const [slugStatus, setSlugStatus] = useState<'idle' | 'checking' | 'available' | 'taken' | 'invalid'>(
     'idle'
   )
@@ -105,6 +110,32 @@ export default function RegisterPage() {
     ? allowedDomainList.some((allowed) => allowed.startsWith(emailDomainPart))
     : true
   const emailValid = emailHasAt && allowedDomainList.includes(emailDomainPart)
+
+  const evaluatePassword = (value: string) => {
+    let score = 0
+    if (value.length >= 8) score += 1
+    if (/[A-Z]/.test(value)) score += 1
+    if (/[a-z]/.test(value)) score += 1
+    if (/[0-9]/.test(value)) score += 1
+    if (/[^A-Za-z0-9]/.test(value)) score += 1
+
+    const labels = ['Muy débil', 'Débil', 'Aceptable', 'Buena', 'Fuerte', 'Excelente']
+    return {
+      score,
+      label: labels[score]
+    }
+  }
+
+  const generatePassword = () => {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+';
+    const length = 16
+    let generated = ''
+    for (let i = 0; i < length; i += 1) {
+      generated += chars[Math.floor(Math.random() * chars.length)]
+    }
+    setPassword(generated)
+    setPasswordStrength(evaluatePassword(generated))
+  }
 
   const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -351,7 +382,13 @@ export default function RegisterPage() {
                         type={showPassword ? "text" : "password"}
                         required
                         minLength={8}
-                        className="w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-700 rounded-xl focus:ring-brand-500 focus:border-brand-500 dark:bg-gray-900 dark:text-gray-100"
+                        value={password}
+                        onChange={(event) => {
+                          const value = event.target.value
+                          setPassword(value)
+                          setPasswordStrength(evaluatePassword(value))
+                        }}
+                        className="w-full px-3 py-2 pr-16 border border-gray-300 dark:border-gray-700 rounded-xl focus:ring-brand-500 focus:border-brand-500 dark:bg-gray-900 dark:text-gray-100"
                         placeholder="Mínimo 8 caracteres"
                       />
                       <button
@@ -366,6 +403,40 @@ export default function RegisterPage() {
                         )}
                       </button>
                     </div>
+                    <div className="mt-3 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-[0.2em]">
+                          Fortaleza
+                        </p>
+                        <button
+                          type="button"
+                          onClick={generatePassword}
+                          className="inline-flex items-center gap-2 text-xs font-semibold text-brand-600 hover:text-brand-700"
+                        >
+                          <RefreshCcw className="h-4 w-4" />
+                          Generar contraseña
+                        </button>
+                      </div>
+                      <div className="h-2 w-full rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden">
+                        <div
+                          className={`h-full rounded-full transition-all duration-300 ${
+                            passwordStrength.score <= 1
+                              ? 'bg-red-500'
+                              : passwordStrength.score === 2
+                              ? 'bg-yellow-500'
+                              : passwordStrength.score === 3
+                              ? 'bg-amber-500'
+                              : passwordStrength.score === 4
+                              ? 'bg-green-500'
+                              : 'bg-emerald-500'
+                          }`}
+                          style={{ width: `${Math.min(passwordStrength.score * 20, 100)}%` }}
+                        />
+                      </div>
+                      <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
+                        {passwordStrength.label}
+                      </p>
+                    </div>
                   </div>
 
                   <div className="flex items-start">
@@ -376,7 +447,7 @@ export default function RegisterPage() {
                     />
                     <label className="ml-2 text-sm text-gray-600 dark:text-gray-400">
                       Acepto los{' '}
-                      <Link to="/terminos" className="text-brand-500 hover:text-brand-700">
+                      <Link to="/terminos" target="_blank" rel="noreferrer noopener" className="text-brand-500 hover:text-brand-700">
                         términos y condiciones
                       </Link>
                     </label>
