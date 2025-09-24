@@ -155,6 +155,10 @@ export const authApi = {
     return api.post<AuthResponse>('/auth/login', { email, password })
   },
 
+  async adminLogin(email: string, password: string): Promise<{ success: boolean; token: string; admin: { id: string; email: string; role: 'superadmin' } }> {
+    return api.post('/admin/login', { email, password })
+  },
+
   async register(data: {
     email: string
     password: string

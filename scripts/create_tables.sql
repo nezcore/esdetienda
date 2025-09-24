@@ -114,3 +114,21 @@ CREATE TRIGGER update_usage_updated_at BEFORE UPDATE ON tenant_usage FOR EACH RO
 -- RLS para uso
 ALTER TABLE tenant_usage ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Allow all operations on tenant_usage" ON tenant_usage FOR ALL USING (true);
+
+-- Tabla de administradores de plataforma (superadmin)
+CREATE TABLE IF NOT EXISTS platform_admins (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    role VARCHAR(50) DEFAULT 'superadmin' CHECK (role IN ('superadmin')),
+    status VARCHAR(50) DEFAULT 'active' CHECK (status IN ('active','inactive')),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_platform_admins_email ON platform_admins(email);
+
+CREATE TRIGGER update_platform_admins_updated_at BEFORE UPDATE ON platform_admins FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+ALTER TABLE platform_admins ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow all operations on platform_admins" ON platform_admins FOR ALL USING (true);

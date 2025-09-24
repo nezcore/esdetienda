@@ -14,6 +14,7 @@ import sttRoutes from './routes/stt'
 import webhookRoutes from './routes/webhooks'
 import orderRoutes from './routes/orders'
 import usageRoutes from './routes/usage'
+import adminRoutes from './routes/admin'
 import { getSupabaseAdminClient } from './lib/supabase'
 
 // Middleware
@@ -97,6 +98,7 @@ app.route('/stt', sttRoutes)
 app.route('/webhook', webhookRoutes)
 app.route('/orders', orderRoutes)
 app.route('/usage', usageRoutes)
+app.route('/admin', adminRoutes)
 
 // Ruta de fallback
 app.all('*', (c) => {

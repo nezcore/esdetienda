@@ -5,11 +5,18 @@ import posthog from 'posthog-js'
 // Contextos
 import { ThemeProvider } from './contexts/ThemeContext'
 import { AuthProvider } from './contexts/AuthContext'
+import { AdminAuthProvider } from './contexts/AdminAuthContext'
 
 // Componentes
 import ProtectedRoute from './components/ProtectedRoute'
 import DashboardLayout from './components/DashboardLayout'
 import DashboardHome from './components/DashboardHome'
+import ProtectedAdminRoute from './components/ProtectedAdminRoute'
+import AdminLoginPage from './pages/AdminLoginPage'
+import AdminDashboardLayout from './pages/AdminDashboardLayout'
+import AdminDashboardHome from './pages/AdminDashboardHome'
+import AdminTenantsPage from './pages/AdminTenantsPage'
+import AdminUsersPage from './pages/AdminUsersPage'
 import ResourcesPage from './pages/ResourcesPage'
 
 // Páginas
@@ -38,6 +45,7 @@ function App() {
 
   return (
     <ThemeProvider>
+      <AdminAuthProvider>
       <AuthProvider>
         <div className="min-h-screen bg-background text-foreground transition-colors">
           <Routes>
@@ -65,9 +73,24 @@ function App() {
             {/* Tiendas públicas multi-tenant */}
             <Route path="/str/:tenantSlug" element={<PublicStorePage />} />
             <Route path="/str/:tenantSlug/producto/:productId" element={<ProductPage />} />
+            {/* Superadmin */}
+            <Route path="/superadmin/acceso" element={<AdminLoginPage />} />
+            <Route 
+              path="/superadmin"
+              element={
+                <ProtectedAdminRoute>
+                  <AdminDashboardLayout />
+                </ProtectedAdminRoute>
+              }
+            >
+              <Route index element={<AdminDashboardHome />} />
+              <Route path="tenants" element={<AdminTenantsPage />} />
+              <Route path="users" element={<AdminUsersPage />} />
+            </Route>
           </Routes>
         </div>
       </AuthProvider>
+      </AdminAuthProvider>
     </ThemeProvider>
   )
 }

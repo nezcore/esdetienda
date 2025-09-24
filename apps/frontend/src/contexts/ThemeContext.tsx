@@ -22,19 +22,15 @@ interface ThemeProviderProps {
 }
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
-  const [theme, setTheme] = useState<Theme>('light')
-
-  // Inicializar tema desde localStorage o preferencia del sistema
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('theme') as Theme
+  const [theme, setTheme] = useState<Theme>(() => {
+    if (typeof window === 'undefined') return 'light'
+    const saved = localStorage.getItem('theme') as Theme | null
+    if (saved === 'dark' || saved === 'light') return saved
     const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-    
-    if (savedTheme) {
-      setTheme(savedTheme)
-    } else if (systemPrefersDark) {
-      setTheme('dark')
-    }
-  }, [])
+    return systemPrefersDark ? 'dark' : 'light'
+  })
+
+  // Sin efecto de inicialización extra: se maneja en el estado inicial y en index.html
 
   // Aplicar tema al documento y guardar en localStorage
   useEffect(() => {

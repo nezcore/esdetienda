@@ -11,6 +11,20 @@
     <link rel="preconnect" href="https://us.i.posthog.com" />
     
     <title>EsDeTienda - Tu tienda virtual con WhatsApp Bot</title>
+    <script>
+      (function() {
+        try {
+          var t = localStorage.getItem('theme');
+          var m = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var useDark = t ? (t === 'dark') : m;
+          if (useDark) {
+            document.documentElement.classList.add('dark');
+          } else {
+            document.documentElement.classList.remove('dark');
+          }
+        } catch (e) { /* noop */ }
+      })();
+    </script>
   </head>
   <body class="h-full">
     <div id="root" class="h-full"></div>

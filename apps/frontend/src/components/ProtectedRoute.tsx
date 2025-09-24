@@ -1,6 +1,7 @@
 import { ReactNode } from 'react'
 import { Navigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import { useAdminAuth } from '../contexts/AdminAuthContext'
 
 interface ProtectedRouteProps {
   children: ReactNode
@@ -9,6 +10,7 @@ interface ProtectedRouteProps {
 
 export default function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) {
   const { isAuthenticated, isLoading, user } = useAuth()
+  const { isAuthenticated: isAdminAuthenticated } = useAdminAuth()
   const location = useLocation()
 
   // Mostrar loading mientras se verifica la autenticación
@@ -23,8 +25,8 @@ export default function ProtectedRoute({ children, requiredRole }: ProtectedRout
     )
   }
 
-  // Si no está autenticado, redirigir al login
-  if (!isAuthenticated) {
+  // Si no está autenticado en ninguno de los contextos, redirigir
+  if (!isAuthenticated && !isAdminAuthenticated) {
     return <Navigate to="/login" state={{ from: location }} replace />
   }
 
