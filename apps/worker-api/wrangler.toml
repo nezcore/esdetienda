@@ -20,7 +20,7 @@ STT_PROVIDER = "assemblyai"
 # R2 Bucket para medios
 [[r2_buckets]]
 binding = "R2"
-bucket_name = "esdetienda-media"
+bucket_name = "esdetienda"
 
 # Configuración de development
 [env.development]
