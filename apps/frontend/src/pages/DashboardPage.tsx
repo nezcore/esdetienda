@@ -73,7 +73,7 @@ export default function DashboardPage() {
     <div className="min-h-screen flex bg-background text-foreground transition-colors">
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-40 w-64 transform bg-white border-r border-gray-200 shadow-sm transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-auto ${
+        className={`fixed inset-y-0 left-0 z-40 w-64 transform bg-white border-r border-gray-200 shadow-sm transition-transform duration-300 ease-in-out ${
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
         } dark:bg-gray-900 dark:border-gray-800`}
       >
@@ -252,27 +252,35 @@ export default function DashboardPage() {
         </div>
       </aside>
 
-      {/* Overlay */}
+      {/* Toggle Button - Floating next to sidebar */}
+      <button
+        className={`fixed top-1/2 -translate-y-1/2 z-50 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 shadow-lg hover:shadow-xl text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white p-3 transition-all duration-300 hover:scale-110 ${
+          isSidebarOpen ? 'left-64 rounded-r-lg md:rounded-r-lg' : 'left-0 rounded-r-full'
+        } md:block`}
+        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+        aria-label={isSidebarOpen ? "Ocultar menú" : "Mostrar menú"}
+      >
+        {isSidebarOpen ? (
+          <X className="h-4 w-4" />
+        ) : (
+          <Menu className="h-4 w-4" />
+        )}
+      </button>
+
+      {/* Overlay - only on mobile */}
       {isSidebarOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-30 z-30 lg:hidden"
+          className="fixed inset-0 bg-black bg-opacity-30 z-30 md:hidden"
           onClick={() => setIsSidebarOpen(false)}
         ></div>
       )}
 
-      <div className="flex-1 flex flex-col min-h-screen lg:ml-0 bg-background text-foreground transition-colors">
+      <div className={`flex-1 flex flex-col min-h-screen bg-background text-foreground transition-all duration-300 ${isSidebarOpen ? 'md:ml-64' : 'md:ml-0'}`}>
         {/* Top bar */}
         <header className="sticky top-0 z-10 bg-white shadow-sm border-b border-gray-200 dark:bg-gray-900 dark:border-gray-800">
           <div className="px-4 sm:px-6 lg:px-10">
             <div className="flex justify-between items-center h-16">
               <div className="flex items-center space-x-4">
-                <button
-                  className="lg:hidden text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
-                  onClick={() => setIsSidebarOpen(true)}
-                  aria-label="Abrir menú"
-                >
-                  <Menu className="h-5 w-5" />
-                </button>
                 <div>
                   <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">Panel de control</h1>
                   <p className="text-sm text-gray-500 dark:text-gray-400">Gestiona tu tienda y productos</p>
