@@ -12,8 +12,7 @@ export default function HomePage() {
     'trabajando por ti',
     'siempre disponible',
     'nunca descansan',
-    'en piloto automático',
-    'las 24 horas'
+    'en piloto automático'
   ]
   
   const [displayedText, setDisplayedText] = useState('')
