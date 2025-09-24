@@ -329,7 +329,7 @@ export default function HomePage() {
                   to="/registro?plan=starter" 
                   className="block w-full bg-gradient-to-r from-brand-500 to-emerald-500 text-white text-center py-4 rounded-2xl font-bold hover:from-emerald-500 hover:to-emerald-600 hover:shadow-xl hover:shadow-emerald-500/30 transition-all duration-300 transform hover:scale-105 text-lg"
                 >
-                  Probar gratis
+                  Empezar Starter
                 </Link>
               </div>
             </div>
