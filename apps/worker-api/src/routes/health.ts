@@ -22,7 +22,7 @@ health.get('/health', async (c) => {
       services: {
         kv: !!c.env.KV,
         r2: !!c.env.R2,
-        hyperdrive: !!c.env.DB
+        database: !!c.env.SUPABASE_URL
       }
     })
   } catch (error) {

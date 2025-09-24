@@ -6,6 +6,7 @@ const products = new Hono<{ Bindings: Env }>()
 
 // Schema para crear producto
 const createProductSchema = z.object({
+  tenantSlug: z.string().min(3, 'Tenant requerido'),
   name: z.string().min(2, 'Nombre requerido'),
   description: z.string().optional(),
   price: z.number().positive('Precio debe ser positivo'),
@@ -30,17 +31,29 @@ products.get('/', async (c) => {
       }, 400)
     }
     
-    // TODO: Obtener productos reales de MongoDB
-    const mockProducts = []
+    const supabase = c.get('supabase')
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .eq('tenant_slug', tenantSlug)
+      .range((page - 1) * limit, page * limit - 1)
+      .order('created_at', { ascending: false })
+
+    if (error) {
+      console.error('Supabase get products error:', error)
+      return c.json({
+        error: 'Error al obtener productos'
+      }, 500)
+    }
     
     return c.json({
       success: true,
-      products: mockProducts,
+      products: data ?? [],
       pagination: {
         page,
         limit,
-        total: 0,
-        pages: 0
+        total: data?.length ?? 0,
+        pages: data ? Math.ceil(data.length / limit) : 0
       }
     })
     
@@ -57,21 +70,31 @@ products.post('/', async (c) => {
   try {
     const body = await c.req.json()
     const validatedData = createProductSchema.parse(body)
-    
-    // TODO: Verificar autenticación y permisos del tenant
-    // TODO: Crear producto en MongoDB
-    
-    const newProduct = {
-      id: `prod_${Date.now()}`,
-      ...validatedData,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+    const supabase = c.get('supabase')
+    const { data, error } = await supabase.from('products').insert({
+      tenant_slug: validatedData.tenantSlug,
+      name: validatedData.name,
+      description: validatedData.description ?? null,
+      price: validatedData.price,
+      original_price: validatedData.originalPrice ?? null,
+      brand: validatedData.brand ?? null,
+      category: validatedData.category ?? null,
+      stock: validatedData.stock,
+      images: validatedData.images ?? [],
+      attributes: validatedData.attributes ?? {}
+    }).select('*').single()
+
+    if (error) {
+      console.error('Supabase create product error:', error)
+      return c.json({
+        error: 'Error al crear producto'
+      }, 500)
     }
     
     return c.json({
       success: true,
       message: 'Producto creado exitosamente',
-      product: newProduct
+      product: data
     }, 201)
     
   } catch (error) {

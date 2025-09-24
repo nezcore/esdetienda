@@ -13,6 +13,7 @@ import visionRoutes from './routes/vision'
 import sttRoutes from './routes/stt'
 import webhookRoutes from './routes/webhooks'
 import orderRoutes from './routes/orders'
+import { getSupabaseAdminClient } from './lib/supabase'
 
 // Middleware
 import { errorHandler } from './middleware/error-handler'
@@ -24,9 +25,6 @@ export interface Env {
   
   // R2 para medios
   R2: R2Bucket
-  
-  // Hyperdrive para MongoDB
-  DB: Hyperdrive
   
   // Variables de entorno
   NODE_ENV: string
@@ -50,8 +48,10 @@ export interface Env {
   GOOGLE_SA_EMAIL?: string
   GOOGLE_SA_PRIVATE_KEY?: string
   
-  // MongoDB
-  MONGODB_URI: string
+  // Supabase
+  SUPABASE_URL: string
+  SUPABASE_ANON_KEY: string
+  SUPABASE_SERVICE_KEY: string
   
   // Analytics
   POSTHOG_API_KEY: string
@@ -87,6 +87,16 @@ app.route('/chat', chatRoutes)
 app.route('/vision', visionRoutes)
 app.route('/stt', sttRoutes)
 app.route('/webhook', webhookRoutes)
+// Inyección de cliente Supabase a request
+app.use('*', async (c, next) => {
+  const client = getSupabaseAdminClient({
+    url: c.env.SUPABASE_URL,
+    serviceKey: c.env.SUPABASE_SERVICE_KEY
+  })
+  c.set('supabase', client)
+  await next()
+})
+
 app.route('/orders', orderRoutes)
 
 // Ruta de fallback

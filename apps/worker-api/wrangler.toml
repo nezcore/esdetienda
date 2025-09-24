@@ -11,20 +11,16 @@ OPENROUTER_APP_NAME = "EsDeTienda-Bot"
 OPENROUTER_SITE_URL = "https://esdetienda.com"
 STT_PROVIDER = "assemblyai"
 
-# KV Namespace para caps y contadores
-[[kv_namespaces]]
-binding = "KV"
-# id = "<KV_NAMESPACE_ID>"  # Configurar después de crear el namespace
+# KV Namespace para caps y contadores (habilitar más adelante)
+# [[kv_namespaces]]
+# binding = "KV"
+# id = "<KV_NAMESPACE_ID>"
+# preview_id = "<KV_PREVIEW_ID>"
 
 # R2 Bucket para medios
 [[r2_buckets]]
 binding = "R2"
 bucket_name = "esdetienda-media"
-
-# Hyperdrive para MongoDB
-[[hyperdrive]]
-binding = "DB"
-# id = "<HYPERDRIVE_ID>"  # Configurar después de crear hyperdrive
 
 # Configuración de development
 [env.development]

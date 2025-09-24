@@ -64,29 +64,61 @@ auth.post('/register', async (c) => {
     const body = await c.req.json()
     const validatedData = registerSchema.parse(body)
     
-    // TODO: Verificar que el tenantSlug no exista
-    // TODO: Crear usuario en MongoDB
-    // TODO: Crear tenant en MongoDB
-    // TODO: Configurar stripe/payment si está habilitado
-    
-    // Por ahora, simular registro exitoso
-    const newUser = {
-      id: `user_${Date.now()}`,
-      email: validatedData.email,
-      tenantId: `tenant_${validatedData.tenantSlug}`,
-      role: 'admin'
+    const supabase = c.get('supabase')
+
+    // Verificar que el tenantSlug no exista
+    const { data: existingTenant, error: existingTenantError } = await supabase
+      .from('tenants')
+      .select('id')
+      .eq('slug', validatedData.tenantSlug)
+      .maybeSingle()
+
+    if (existingTenantError) {
+      console.error('Supabase tenant check error:', existingTenantError)
+      return c.json({ error: 'Error al validar el slug' }, 500)
     }
-    
-    const newTenant = {
-      id: newUser.tenantId,
-      slug: validatedData.tenantSlug,
-      businessName: validatedData.businessName,
-      plan: validatedData.plan,
-      status: 'active',
-      createdAt: new Date().toISOString()
+
+    if (existingTenant) {
+      return c.json({
+        error: 'Slug ya existe',
+        message: `El slug '${validatedData.tenantSlug}' ya está en uso`
+      }, 409)
     }
-    
-    // TODO: Enviar email de bienvenida
+
+    // Crear tenant
+    const { data: tenant, error: tenantError } = await supabase
+      .from('tenants')
+      .insert({
+        slug: validatedData.tenantSlug,
+        business_name: validatedData.businessName,
+        plan: validatedData.plan,
+        status: 'active'
+      })
+      .select('*')
+      .single()
+
+    if (tenantError) {
+      console.error('Supabase tenant create error:', tenantError)
+      return c.json({ error: 'Error al crear la tienda' }, 500)
+    }
+
+    // Crear usuario
+    const { data: user, error: userError } = await supabase
+      .from('users')
+      .insert({
+        email: validatedData.email,
+        password_hash: validatedData.password, // TODO: hash real
+        tenant_id: tenant.id,
+        role: 'admin'
+      })
+      .select('*')
+      .single()
+
+    if (userError) {
+      console.error('Supabase user create error:', userError)
+      return c.json({ error: 'Error al crear el usuario' }, 500)
+    }
+
     // TODO: Generar JWT real
     const token = 'mock_jwt_token'
     
@@ -94,8 +126,8 @@ auth.post('/register', async (c) => {
       success: true,
       message: 'Cuenta creada exitosamente',
       token,
-      user: newUser,
-      tenant: newTenant
+      user,
+      tenant
     })
     
   } catch (error) {
