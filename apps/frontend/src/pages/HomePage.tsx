@@ -169,26 +169,26 @@ export default function HomePage() {
 
             {/* Beneficios rápidos */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8 text-center px-4">
-              <div className="group flex flex-col items-center p-6 md:p-8 bg-white/15 dark:bg-gray-800/40 rounded-2xl backdrop-blur-md border border-white/20 hover:bg-white/20 hover:border-white/30 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-white/10">
-                <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-white/20 to-white/10 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+              <div className="group flex flex-col items-center p-6 md:p-8 bg-gradient-to-br from-purple-500/20 to-pink-500/20 dark:from-purple-600/30 dark:to-pink-600/30 rounded-2xl backdrop-blur-md border border-purple-300/30 dark:border-purple-400/40 hover:from-purple-500/30 hover:to-pink-500/30 dark:hover:from-purple-600/40 dark:hover:to-pink-600/40 hover:border-purple-300/50 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-purple-500/20">
+                <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-purple-400 to-pink-500 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-purple-500/25">
                   <MessageCircle className="h-8 w-8 md:h-10 md:w-10 text-white" />
                 </div>
                 <h3 className="font-bold mb-3 text-lg md:text-xl text-white">Ahorra tiempo</h3>
-                <p className="text-white/80 text-sm md:text-base leading-relaxed">Bot responde automáticamente las preguntas frecuentes</p>
+                <p className="text-white/90 text-sm md:text-base leading-relaxed">Bot responde automáticamente las preguntas frecuentes</p>
               </div>
-              <div className="group flex flex-col items-center p-6 md:p-8 bg-white/15 dark:bg-gray-800/40 rounded-2xl backdrop-blur-md border border-white/20 hover:bg-white/20 hover:border-white/30 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-white/10">
-                <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-white/20 to-white/10 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+              <div className="group flex flex-col items-center p-6 md:p-8 bg-gradient-to-br from-emerald-500/20 to-teal-500/20 dark:from-emerald-600/30 dark:to-teal-600/30 rounded-2xl backdrop-blur-md border border-emerald-300/30 dark:border-emerald-400/40 hover:from-emerald-500/30 hover:to-teal-500/30 dark:hover:from-emerald-600/40 dark:hover:to-teal-600/40 hover:border-emerald-300/50 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-emerald-500/20">
+                <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-emerald-500/25">
                   <ShoppingBag className="h-8 w-8 md:h-10 md:w-10 text-white" />
                 </div>
                 <h3 className="font-bold mb-3 text-lg md:text-xl text-white">Más ventas desde WhatsApp</h3>
-                <p className="text-white/80 text-sm md:text-base leading-relaxed">Catálogo integrado con carrito directo a WhatsApp</p>
+                <p className="text-white/90 text-sm md:text-base leading-relaxed">Catálogo integrado con carrito directo a WhatsApp</p>
               </div>
-              <div className="group flex flex-col items-center p-6 md:p-8 bg-white/15 dark:bg-gray-800/40 rounded-2xl backdrop-blur-md border border-white/20 hover:bg-white/20 hover:border-white/30 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-white/10 sm:col-span-2 md:col-span-1">
-                <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-white/20 to-white/10 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+              <div className="group flex flex-col items-center p-6 md:p-8 bg-gradient-to-br from-orange-500/20 to-red-500/20 dark:from-orange-600/30 dark:to-red-600/30 rounded-2xl backdrop-blur-md border border-orange-300/30 dark:border-orange-400/40 hover:from-orange-500/30 hover:to-red-500/30 dark:hover:from-orange-600/40 dark:hover:to-red-600/40 hover:border-orange-300/50 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-orange-500/20 sm:col-span-2 md:col-span-1">
+                <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-orange-400 to-red-500 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-orange-500/25">
                   <BarChart3 className="h-8 w-8 md:h-10 md:w-10 text-white" />
                 </div>
                 <h3 className="font-bold mb-3 text-lg md:text-xl text-white">Sin sorpresas de costo</h3>
-                <p className="text-white/80 text-sm md:text-base leading-relaxed">Plan fijo mensual, caps claros en IA</p>
+                <p className="text-white/90 text-sm md:text-base leading-relaxed">Plan fijo mensual, caps claros en IA</p>
               </div>
             </div>
           </div>
@@ -202,27 +202,27 @@ export default function HomePage() {
             Cómo funciona
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-            <div className="group text-center p-8 bg-gradient-to-br from-white to-gray-50/80 dark:from-gray-800 dark:to-gray-700/80 rounded-3xl shadow-lg hover:shadow-2xl hover:shadow-brand-500/10 transition-all duration-300 hover:-translate-y-1 relative overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-brand-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div className="group text-center p-8 bg-gradient-to-br from-blue-50 to-indigo-100/60 dark:from-blue-900/40 dark:to-indigo-900/60 rounded-3xl shadow-lg hover:shadow-2xl hover:shadow-blue-500/20 transition-all duration-300 hover:-translate-y-1 relative overflow-hidden border border-blue-200/50 dark:border-blue-700/50">
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-indigo-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               <div className="relative z-10">
-                <div className="bg-gradient-to-br from-brand-500 to-brand-600 text-white w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center text-xl md:text-3xl font-bold mx-auto mb-6 shadow-lg shadow-brand-500/30 group-hover:shadow-xl group-hover:shadow-brand-500/40 group-hover:scale-110 transition-all duration-300">1</div>
-                <h3 className="text-xl md:text-2xl font-bold mb-4 text-gray-900 dark:text-white group-hover:text-brand-700 dark:group-hover:text-brand-300 transition-colors">Regístrate</h3>
+                <div className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center text-xl md:text-3xl font-bold mx-auto mb-6 shadow-lg shadow-blue-500/30 group-hover:shadow-xl group-hover:shadow-blue-500/40 group-hover:scale-110 transition-all duration-300">1</div>
+                <h3 className="text-xl md:text-2xl font-bold mb-4 text-gray-900 dark:text-white group-hover:text-blue-700 dark:group-hover:text-blue-300 transition-colors">Regístrate</h3>
                 <p className="text-gray-600 dark:text-gray-300 leading-relaxed">Crea tu cuenta y elige tu plan. Setup en menos de 5 minutos.</p>
               </div>
             </div>
-            <div className="group text-center p-8 bg-gradient-to-br from-white to-gray-50/80 dark:from-gray-800 dark:to-gray-700/80 rounded-3xl shadow-lg hover:shadow-2xl hover:shadow-brand-500/10 transition-all duration-300 hover:-translate-y-1 relative overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-brand-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div className="group text-center p-8 bg-gradient-to-br from-emerald-50 to-green-100/60 dark:from-emerald-900/40 dark:to-green-900/60 rounded-3xl shadow-lg hover:shadow-2xl hover:shadow-emerald-500/20 transition-all duration-300 hover:-translate-y-1 relative overflow-hidden border border-emerald-200/50 dark:border-emerald-700/50">
+              <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-green-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               <div className="relative z-10">
-                <div className="bg-gradient-to-br from-brand-500 to-brand-600 text-white w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center text-xl md:text-3xl font-bold mx-auto mb-6 shadow-lg shadow-brand-500/30 group-hover:shadow-xl group-hover:shadow-brand-500/40 group-hover:scale-110 transition-all duration-300">2</div>
-                <h3 className="text-xl md:text-2xl font-bold mb-4 text-gray-900 dark:text-white group-hover:text-brand-700 dark:group-hover:text-brand-300 transition-colors">Sube productos</h3>
+                <div className="bg-gradient-to-br from-emerald-500 to-green-600 text-white w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center text-xl md:text-3xl font-bold mx-auto mb-6 shadow-lg shadow-emerald-500/30 group-hover:shadow-xl group-hover:shadow-emerald-500/40 group-hover:scale-110 transition-all duration-300">2</div>
+                <h3 className="text-xl md:text-2xl font-bold mb-4 text-gray-900 dark:text-white group-hover:text-emerald-700 dark:group-hover:text-emerald-300 transition-colors">Sube productos</h3>
                 <p className="text-gray-600 dark:text-gray-300 leading-relaxed">Importa desde CSV, Google Sheets o sube manualmente tu catálogo.</p>
               </div>
             </div>
-            <div className="group text-center p-8 bg-gradient-to-br from-white to-gray-50/80 dark:from-gray-800 dark:to-gray-700/80 rounded-3xl shadow-lg hover:shadow-2xl hover:shadow-brand-500/10 transition-all duration-300 hover:-translate-y-1 relative overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-brand-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div className="group text-center p-8 bg-gradient-to-br from-violet-50 to-purple-100/60 dark:from-violet-900/40 dark:to-purple-900/60 rounded-3xl shadow-lg hover:shadow-2xl hover:shadow-violet-500/20 transition-all duration-300 hover:-translate-y-1 relative overflow-hidden border border-violet-200/50 dark:border-violet-700/50">
+              <div className="absolute inset-0 bg-gradient-to-br from-violet-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               <div className="relative z-10">
-                <div className="bg-gradient-to-br from-brand-500 to-brand-600 text-white w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center text-xl md:text-3xl font-bold mx-auto mb-6 shadow-lg shadow-brand-500/30 group-hover:shadow-xl group-hover:shadow-brand-500/40 group-hover:scale-110 transition-all duration-300">3</div>
-                <h3 className="text-xl md:text-2xl font-bold mb-4 text-gray-900 dark:text-white group-hover:text-brand-700 dark:group-hover:text-brand-300 transition-colors">Activa tu WhatsApp</h3>
+                <div className="bg-gradient-to-br from-violet-500 to-purple-600 text-white w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center text-xl md:text-3xl font-bold mx-auto mb-6 shadow-lg shadow-violet-500/30 group-hover:shadow-xl group-hover:shadow-violet-500/40 group-hover:scale-110 transition-all duration-300">3</div>
+                <h3 className="text-xl md:text-2xl font-bold mb-4 text-gray-900 dark:text-white group-hover:text-violet-700 dark:group-hover:text-violet-300 transition-colors">Activa tu WhatsApp</h3>
                 <p className="text-gray-600 dark:text-gray-300 leading-relaxed">Configuramos tu bot en 24 horas. Empieza a vender automatizado.</p>
               </div>
             </div>
@@ -241,26 +241,47 @@ export default function HomePage() {
               {
                 icon: ShoppingBag,
                 title: "Catálogo responsive",
-                desc: "Tu tienda se ve perfecta en móvil y desktop"
+                desc: "Tu tienda se ve perfecta en móvil y desktop",
+                bgGradient: "from-rose-50 to-pink-100/60 dark:from-rose-900/40 dark:to-pink-900/60",
+                iconGradient: "from-rose-500 to-pink-600",
+                borderColor: "border-rose-200/50 dark:border-rose-700/50",
+                hoverShadow: "hover:shadow-rose-500/20",
+                hoverBg: "from-rose-500/10 to-pink-500/10",
+                hoverText: "group-hover:text-rose-700 dark:group-hover:text-rose-300",
+                iconShadow: "shadow-rose-500/25 group-hover:shadow-rose-500/30"
               },
               {
                 icon: MessageCircle,
                 title: "Bot de WhatsApp",
-                desc: "Respuestas automáticas inteligentes las 24 horas"
+                desc: "Respuestas automáticas inteligentes las 24 horas",
+                bgGradient: "from-cyan-50 to-blue-100/60 dark:from-cyan-900/40 dark:to-blue-900/60",
+                iconGradient: "from-cyan-500 to-blue-600",
+                borderColor: "border-cyan-200/50 dark:border-cyan-700/50",
+                hoverShadow: "hover:shadow-cyan-500/20",
+                hoverBg: "from-cyan-500/10 to-blue-500/10",
+                hoverText: "group-hover:text-cyan-700 dark:group-hover:text-cyan-300",
+                iconShadow: "shadow-cyan-500/25 group-hover:shadow-cyan-500/30"
               },
               {
                 icon: Bot,
                 title: "Asistente inteligente",
-                desc: "Entiende fotos, audios y preguntas de tus clientes"
+                desc: "Entiende fotos, audios y preguntas de tus clientes",
+                bgGradient: "from-amber-50 to-orange-100/60 dark:from-amber-900/40 dark:to-orange-900/60",
+                iconGradient: "from-amber-500 to-orange-600",
+                borderColor: "border-amber-200/50 dark:border-amber-700/50",
+                hoverShadow: "hover:shadow-amber-500/20",
+                hoverBg: "from-amber-500/10 to-orange-500/10",
+                hoverText: "group-hover:text-amber-700 dark:group-hover:text-amber-300",
+                iconShadow: "shadow-amber-500/25 group-hover:shadow-amber-500/30"
               }
             ].map((feature, index) => (
-              <div key={index} className="group relative bg-gradient-to-br from-white to-gray-50/80 dark:from-gray-800 dark:to-gray-700/80 p-8 rounded-3xl border border-brand-100/60 dark:border-gray-600/60 hover:border-brand-300 dark:hover:border-brand-400 hover:shadow-2xl hover:shadow-brand-500/10 transition-all duration-300 hover:-translate-y-1 backdrop-blur-sm">
-                <div className="absolute inset-0 bg-gradient-to-br from-brand-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-3xl"></div>
+              <div key={index} className={`group relative bg-gradient-to-br ${feature.bgGradient} p-8 rounded-3xl border ${feature.borderColor} hover:shadow-2xl ${feature.hoverShadow} transition-all duration-300 hover:-translate-y-1 backdrop-blur-sm`}>
+                <div className={`absolute inset-0 bg-gradient-to-br ${feature.hoverBg} opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-3xl`}></div>
                 <div className="relative z-10">
-                  <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-brand-500 to-brand-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-brand-500/25 group-hover:shadow-xl group-hover:shadow-brand-500/30 transition-all duration-300">
+                  <div className={`w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br ${feature.iconGradient} rounded-2xl flex items-center justify-center mb-6 shadow-lg ${feature.iconShadow} group-hover:shadow-xl group-hover:scale-110 transition-all duration-300`}>
                     <feature.icon className="h-8 w-8 md:h-9 md:w-9 text-white" />
                   </div>
-                  <h3 className="text-xl md:text-2xl font-bold mb-3 text-gray-900 dark:text-white group-hover:text-brand-700 dark:group-hover:text-brand-300 transition-colors">{feature.title}</h3>
+                  <h3 className={`text-xl md:text-2xl font-bold mb-3 text-gray-900 dark:text-white ${feature.hoverText} transition-colors`}>{feature.title}</h3>
                   <p className="text-gray-600 dark:text-gray-300 text-base leading-relaxed">{feature.desc}</p>
                 </div>
               </div>
@@ -279,18 +300,18 @@ export default function HomePage() {
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 max-w-4xl mx-auto">
             {/* Plan Esencial */}
-            <div className="group relative bg-gradient-to-br from-white to-gray-50/50 dark:from-gray-800 dark:to-gray-700/50 rounded-3xl p-8 border-2 border-brand-100/60 dark:border-gray-600/60 hover:border-brand-400 dark:hover:border-brand-400 hover:shadow-2xl hover:shadow-brand-500/15 transition-all duration-300 hover:-translate-y-2 backdrop-blur-sm overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-brand-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div className="group relative bg-gradient-to-br from-slate-50 to-blue-50/80 dark:from-slate-800 dark:to-blue-900/50 rounded-3xl p-8 border-2 border-slate-200/60 dark:border-slate-600/60 hover:border-blue-400 dark:hover:border-blue-400 hover:shadow-2xl hover:shadow-blue-500/20 transition-all duration-300 hover:-translate-y-2 backdrop-blur-sm overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-slate-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               <div className="relative z-10">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-2xl md:text-3xl font-bold text-brand-900 dark:text-brand-300 group-hover:text-brand-700 dark:group-hover:text-brand-200 transition-colors">Plan Esencial</h3>
-                  <div className="w-12 h-12 bg-gradient-to-br from-brand-500 to-brand-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <h3 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-200 group-hover:text-blue-700 dark:group-hover:text-blue-300 transition-colors">Plan Esencial</h3>
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-slate-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/25">
                     <ShoppingBag className="h-6 w-6 text-white" />
                   </div>
                 </div>
                 <div className="mb-6">
                   <div className="flex items-baseline">
-                    <span className="text-4xl md:text-5xl font-bold text-brand-900 dark:text-brand-300">RD$1,000</span>
+                    <span className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-slate-200">RD$1,000</span>
                     <span className="text-lg text-gray-600 dark:text-gray-400 ml-1">/mes</span>
                   </div>
                   <p className="text-gray-600 dark:text-gray-400 mt-2">Perfecto para empezar</p>
@@ -305,7 +326,7 @@ export default function HomePage() {
                     "1 usuario admin"
                   ].map((feature, index) => (
                     <li key={index} className="flex items-start group/item">
-                      <div className="w-5 h-5 bg-gradient-to-br from-brand-500 to-brand-600 rounded-full flex items-center justify-center mr-3 flex-shrink-0 mt-0.5 shadow-sm">
+                      <div className="w-5 h-5 bg-gradient-to-br from-blue-500 to-slate-600 rounded-full flex items-center justify-center mr-3 flex-shrink-0 mt-0.5 shadow-sm">
                         <CheckCircle className="h-3 w-3 text-white" />
                       </div>
                       <span className="text-gray-700 dark:text-gray-300 leading-relaxed group-hover/item:text-gray-900 dark:group-hover/item:text-white transition-colors">{feature}</span>
@@ -314,7 +335,7 @@ export default function HomePage() {
                 </ul>
                 <Link 
                   to="/registro?plan=esencial" 
-                  className="block w-full bg-gradient-to-r from-brand-500 to-brand-600 text-white text-center py-4 rounded-2xl font-bold hover:from-brand-600 hover:to-brand-700 hover:shadow-xl hover:shadow-brand-500/30 transition-all duration-300 transform hover:scale-105 text-lg"
+                  className="block w-full bg-gradient-to-r from-blue-500 to-slate-600 text-white text-center py-4 rounded-2xl font-bold hover:from-blue-600 hover:to-slate-700 hover:shadow-xl hover:shadow-blue-500/30 transition-all duration-300 transform hover:scale-105 text-lg"
                 >
                   Empezar con Esencial
                 </Link>
@@ -322,23 +343,23 @@ export default function HomePage() {
             </div>
 
             {/* Plan Pro */}
-            <div className="group relative bg-gradient-to-br from-white to-orange-50/30 dark:from-gray-800 dark:to-orange-900/10 rounded-3xl p-8 border-2 border-brand-accent/60 hover:border-brand-accent hover:shadow-2xl hover:shadow-brand-accent/20 transition-all duration-300 hover:-translate-y-2 backdrop-blur-sm overflow-hidden">
+            <div className="group relative bg-gradient-to-br from-orange-50 to-red-50/80 dark:from-orange-900/60 dark:to-red-900/40 rounded-3xl p-8 border-2 border-orange-200/60 dark:border-orange-600/60 hover:border-orange-400 dark:hover:border-orange-400 hover:shadow-2xl hover:shadow-orange-500/25 transition-all duration-300 hover:-translate-y-2 backdrop-blur-sm overflow-hidden">
               <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-20">
-                <div className="bg-gradient-to-r from-brand-accent to-orange-500 text-white px-6 py-2 rounded-full font-bold shadow-lg shadow-brand-accent/30 text-sm">
+                <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-6 py-2 rounded-full font-bold shadow-lg shadow-orange-500/40 text-sm">
                   ⭐ Recomendado
                 </div>
               </div>
-              <div className="absolute inset-0 bg-gradient-to-br from-brand-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-red-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               <div className="relative z-10 pt-4">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-2xl md:text-3xl font-bold text-brand-900 dark:text-brand-300 group-hover:text-orange-700 dark:group-hover:text-orange-200 transition-colors">Plan Pro</h3>
-                  <div className="w-12 h-12 bg-gradient-to-br from-brand-accent to-orange-500 rounded-xl flex items-center justify-center shadow-lg">
+                  <h3 className="text-2xl md:text-3xl font-bold text-orange-900 dark:text-orange-200 group-hover:text-red-700 dark:group-hover:text-red-300 transition-colors">Plan Pro</h3>
+                  <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex items-center justify-center shadow-lg shadow-orange-500/25">
                     <Bot className="h-6 w-6 text-white" />
                   </div>
                 </div>
                 <div className="mb-6">
                   <div className="flex items-baseline">
-                    <span className="text-4xl md:text-5xl font-bold text-brand-900 dark:text-brand-300">RD$2,000</span>
+                    <span className="text-4xl md:text-5xl font-bold text-orange-900 dark:text-orange-200">RD$2,000</span>
                     <span className="text-lg text-gray-600 dark:text-gray-400 ml-1">/mes</span>
                   </div>
                   <p className="text-orange-600 dark:text-orange-400 mt-2 font-medium">Máximo rendimiento</p>
@@ -354,7 +375,7 @@ export default function HomePage() {
                     "Subdominio de marca (opcional)"
                   ].map((feature, index) => (
                     <li key={index} className="flex items-start group/item">
-                      <div className="w-5 h-5 bg-gradient-to-br from-brand-accent to-orange-500 rounded-full flex items-center justify-center mr-3 flex-shrink-0 mt-0.5 shadow-sm">
+                      <div className="w-5 h-5 bg-gradient-to-br from-orange-500 to-red-500 rounded-full flex items-center justify-center mr-3 flex-shrink-0 mt-0.5 shadow-sm">
                         <CheckCircle className="h-3 w-3 text-white" />
                       </div>
                       <span className="text-gray-700 dark:text-gray-300 leading-relaxed group-hover/item:text-gray-900 dark:group-hover/item:text-white transition-colors">{feature}</span>
@@ -363,7 +384,7 @@ export default function HomePage() {
                 </ul>
                 <Link 
                   to="/registro?plan=pro" 
-                  className="block w-full bg-gradient-to-r from-brand-accent to-orange-500 text-white text-center py-4 rounded-2xl font-bold hover:from-orange-600 hover:to-red-500 hover:shadow-xl hover:shadow-brand-accent/30 transition-all duration-300 transform hover:scale-105 text-lg"
+                  className="block w-full bg-gradient-to-r from-orange-500 to-red-500 text-white text-center py-4 rounded-2xl font-bold hover:from-red-600 hover:to-red-700 hover:shadow-xl hover:shadow-orange-500/30 transition-all duration-300 transform hover:scale-105 text-lg"
                 >
                   Empezar con Pro
                 </Link>
