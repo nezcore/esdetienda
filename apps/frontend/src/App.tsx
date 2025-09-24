@@ -17,6 +17,7 @@ import AdminDashboardLayout from './pages/AdminDashboardLayout'
 import AdminDashboardHome from './pages/AdminDashboardHome'
 import AdminTenantsPage from './pages/AdminTenantsPage'
 import AdminUsersPage from './pages/AdminUsersPage'
+import ProductsListPage from './pages/ProductsListPage'
 import ResourcesPage from './pages/ResourcesPage'
 
 // Páginas
@@ -65,6 +66,7 @@ function App() {
               } 
             >
               <Route index element={<DashboardHome />} />
+              <Route path="productos" element={<ProductsListPage />} />
               <Route path="recursos" element={<ResourcesPage />} />
               <Route path="agregar-producto" element={<AddProductPage />} />
               <Route path="guia-importacion" element={<ImportGuidePage />} />

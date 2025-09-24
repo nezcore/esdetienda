@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Upload, X, Plus, Save } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
+import { API_BASE_URL } from '../lib/api'
 
 export default function AddProductPage() {
   const [loading, setLoading] = useState(false)
@@ -28,19 +29,16 @@ export default function AddProductPage() {
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
     if (files) {
-      const newImages: string[] = []
-      Array.from(files).forEach(file => {
-        const reader = new FileReader()
-        reader.onload = (e) => {
-          if (e.target?.result) {
-            newImages.push(e.target.result as string)
-            if (newImages.length === files.length) {
-              setImages(prev => [...prev, ...newImages])
-            }
-          }
+      const maxBytes = 4 * 1024 * 1024
+      const accepted: string[] = []
+      for (const file of Array.from(files)) {
+        if (file.size > maxBytes) {
+          alert(`La imagen '${file.name}' supera 4MB`)
+          continue
         }
-        reader.readAsDataURL(file)
-      })
+        accepted.push(URL.createObjectURL(file))
+      }
+      if (accepted.length) setImages(prev => [...prev, ...accepted])
     }
   }
 
@@ -53,13 +51,37 @@ export default function AddProductPage() {
     setLoading(true)
 
     try {
-      // TODO: Implementar llamada a la API para crear producto
-      console.log('Creando producto:', { ...formData, images })
-      
-      // Simular delay de API
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      // Redirigir al panel con mensaje de éxito
+      if (!tenant?.id) {
+        alert('Tenant no definido')
+        return
+      }
+      const fileInput = document.getElementById('image-upload') as HTMLInputElement | null
+      const files = fileInput?.files
+      if (!files || files.length === 0) {
+        alert('Debes seleccionar al menos una imagen (máx 4MB cada una)')
+        return
+      }
+
+      const fd = new FormData()
+      fd.append('tenantId', tenant.id)
+      fd.append('name', formData.name)
+      if (formData.description) fd.append('description', formData.description)
+      if (formData.price) fd.append('price', String(formData.price))
+      fd.append('category', formData.category)
+      if (formData.stock) fd.append('stock', String(formData.stock))
+      Array.from(files).forEach(f => fd.append('images', f))
+
+      const token = localStorage.getItem('auth_token')
+      const res = await fetch(`${API_BASE_URL}/products`, {
+        method: 'POST',
+        headers: token ? { Authorization: `Bearer ${token}` } as any : undefined,
+        body: fd
+      })
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        throw new Error(data.error || `HTTP ${res.status}`)
+      }
+      await res.json()
       navigate('/panel?product_added=true')
     } catch (error) {
       console.error('Error al crear producto:', error)
@@ -201,10 +223,10 @@ export default function AddProductPage() {
               
               <div className="space-y-4">
                 {/* Upload area */}
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors">
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors dark:border-gray-700 dark:hover:border-gray-600">
                   <Upload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                  <p className="text-gray-600 mb-2">Arrastra imágenes aquí o haz clic para seleccionar</p>
-                  <p className="text-sm text-gray-500 mb-4">PNG, JPG hasta 10MB cada una</p>
+                  <p className="text-gray-600 dark:text-gray-300 mb-2">Arrastra imágenes aquí o haz clic para seleccionar</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">PNG, JPG hasta 4MB cada una</p>
                   <input
                     type="file"
                     multiple

@@ -29,7 +29,7 @@ export default function DashboardLayout() {
 
   const mainNav = [
     { label: 'Resumen', to: '/panel', icon: Home, disabled: false, external: false, iconColor: 'text-blue-500', disabledColor: 'text-blue-300 dark:text-blue-400' },
-    { label: 'Productos', to: '/panel/agregar-producto', icon: ShoppingCart, disabled: false, external: false, iconColor: 'text-emerald-500', disabledColor: 'text-emerald-300 dark:text-emerald-400' },
+    { label: 'Productos', to: '/panel/productos', icon: ShoppingCart, disabled: false, external: false, iconColor: 'text-emerald-500', disabledColor: 'text-emerald-300 dark:text-emerald-400' },
     { label: 'Pedidos', to: '#', icon: Package, disabled: true, external: false, iconColor: 'text-orange-500', disabledColor: 'text-orange-300 dark:text-orange-400' },
     { label: 'Clientes', to: '#', icon: Users, disabled: true, external: false, iconColor: 'text-purple-500', disabledColor: 'text-purple-300 dark:text-purple-400' },
     { label: 'Ver mi tienda', to: tenant ? `/str/${tenant.slug}` : '#', icon: Store, disabled: !tenant, external: true, iconColor: 'text-teal-500', disabledColor: 'text-teal-300 dark:text-teal-400' }

@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import {
   BarChart3,
   Package,
@@ -7,10 +7,37 @@ import {
   Upload,
   Plus
 } from 'lucide-react'
+import { useEffect, useMemo, useState } from 'react'
+import { useAuth } from '../contexts/AuthContext'
+import { API_BASE_URL } from '../lib/api'
 
 export default function DashboardHome() {
+  const { tenant } = useAuth()
+  const location = useLocation()
+  const [products, setProducts] = useState<any[]>([])
+  const [loading, setLoading] = useState(false)
+  const productAdded = useMemo(() => new URLSearchParams(location.search).get('product_added') === 'true', [location.search])
+
+  useEffect(() => {
+    const load = async () => {
+      if (!tenant?.id) return
+      setLoading(true)
+      try {
+        const res = await fetch(`${API_BASE_URL}/products?tenantId=${tenant.id}`)
+        if (!res.ok) throw new Error(`HTTP ${res.status}`)
+        const data = await res.json()
+        setProducts(Array.isArray(data.products) ? data.products : [])
+      } catch (e) {
+        // noop
+      } finally {
+        setLoading(false)
+      }
+    }
+    load()
+  }, [tenant?.id])
+
   const stats = [
-    { title: 'Productos', value: '0', icon: Package, change: '+0%' },
+    { title: 'Productos', value: String(products.length), icon: Package, change: '+0%' },
     { title: 'Consultas hoy', value: '0', icon: MessageCircle, change: '+0%' },
     { title: 'Visitas', value: '0', icon: BarChart3, change: '+0%' },
   ]
@@ -37,6 +64,12 @@ export default function DashboardHome() {
           </div>
         ))}
       </div>
+
+      {productAdded && (
+        <div className="mb-6 rounded-xl border border-emerald-300 bg-emerald-50 text-emerald-800 px-4 py-3 dark:border-emerald-900/40 dark:bg-emerald-900/20 dark:text-emerald-200">
+          Producto creado correctamente.
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Productos */}
@@ -65,30 +98,50 @@ export default function DashboardHome() {
             </div>
           </div>
           <div className="p-6">
-            <div className="text-center py-12">
-              <Package className="h-16 w-16 text-gray-300 mx-auto mb-4 dark:text-gray-600" />
-              <h4 className="text-lg font-medium text-gray-900 mb-2 dark:text-white">
-                No tienes productos aún
-              </h4>
-              <p className="text-gray-600 mb-4 dark:text-gray-300">
-                Sube tu primer producto o importa un catálogo completo desde CSV/Excel
-              </p>
-              <div className="space-y-2">
-                <Link
-                  to="/panel/agregar-producto"
-                  className="inline-block bg-brand-500 text-white px-6 py-2 rounded-xl hover:bg-brand-600 transition-colors"
-                >
-                  Agregar producto
-                </Link>
-                <br />
-                <Link
-                  to="/panel/guia-importacion"
-                  className="text-brand-500 hover:text-brand-700 text-sm"
-                >
-                  Ver guía de inicio →
-                </Link>
+            {products.length === 0 ? (
+              <div className="text-center py-12">
+                <Package className="h-16 w-16 text-gray-300 mx-auto mb-4 dark:text-gray-600" />
+                <h4 className="text-lg font-medium text-gray-900 mb-2 dark:text-white">
+                  No tienes productos aún
+                </h4>
+                <p className="text-gray-600 mb-4 dark:text-gray-300">
+                  Sube tu primer producto o importa un catálogo completo desde CSV/Excel
+                </p>
+                <div className="space-y-2">
+                  <Link
+                    to="/panel/agregar-producto"
+                    className="inline-block bg-brand-500 text-white px-6 py-2 rounded-xl hover:bg-brand-600 transition-colors"
+                  >
+                    Agregar producto
+                  </Link>
+                  <br />
+                  <Link
+                    to="/panel/guia-importacion"
+                    className="text-brand-500 hover:text-brand-700 text-sm"
+                  >
+                    Ver guía de inicio →
+                  </Link>
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {products.slice(0, 6).map((p: any) => (
+                  <div key={p.id} className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
+                    <div className="h-12 w-12 bg-gray-100 dark:bg-gray-800 rounded-md overflow-hidden grid place-items-center">
+                      {Array.isArray(p.images) && p.images.length > 0 ? (
+                        <img src={p.images[0]} alt={p.name} className="h-full w-full object-cover" />
+                      ) : (
+                        <Package className="h-6 w-6 text-gray-400" />
+                      )}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="font-medium text-gray-900 dark:text-white truncate">{p.name}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{p.category || 'Sin categoría'}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 

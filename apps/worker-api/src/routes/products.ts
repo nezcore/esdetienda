@@ -4,28 +4,24 @@ import { Env } from '../index'
 
 const products = new Hono<{ Bindings: Env }>()
 
-// Schema para crear producto
+// Parámetros via multipart/form-data para crear producto
 const createProductSchema = z.object({
-  tenantSlug: z.string().min(3, 'Tenant requerido'),
+  tenantId: z.string().uuid('Tenant inválido'),
   name: z.string().min(2, 'Nombre requerido'),
   description: z.string().optional(),
-  price: z.number().positive('Precio debe ser positivo'),
-  originalPrice: z.number().positive().optional(),
-  brand: z.string().optional(),
-  category: z.string().optional(),
-  stock: z.number().int().min(0, 'Stock no puede ser negativo'),
-  images: z.array(z.string().url()).optional(),
-  attributes: z.record(z.string()).optional()
+  price: z.preprocess((v) => (v === '' || v === undefined || v === null ? undefined : Number(v)), z.number().positive('Precio debe ser positivo').optional()),
+  category: z.string().min(1, 'Categoría requerida'),
+  stock: z.preprocess((v) => (v === '' || v === undefined || v === null ? 0 : Number(v)), z.number().int().min(0, 'Stock no puede ser negativo')).optional(),
 })
 
 // GET /products - Listar productos del tenant
 products.get('/', async (c) => {
   try {
-    const tenantSlug = c.req.query('tenant')
+    const tenantId = c.req.query('tenantId')
     const page = parseInt(c.req.query('page') || '1')
     const limit = Math.min(parseInt(c.req.query('limit') || '20'), 100)
     
-    if (!tenantSlug) {
+    if (!tenantId) {
       return c.json({
         error: 'Tenant requerido'
       }, 400)
@@ -35,7 +31,7 @@ products.get('/', async (c) => {
     const { data, error } = await supabase
       .from('products')
       .select('*')
-      .eq('tenant_slug', tenantSlug)
+      .eq('tenant_id', tenantId)
       .range((page - 1) * limit, page * limit - 1)
       .order('created_at', { ascending: false })
 
@@ -68,20 +64,51 @@ products.get('/', async (c) => {
 // POST /products - Crear producto
 products.post('/', async (c) => {
   try {
-    const body = await c.req.json()
-    const validatedData = createProductSchema.parse(body)
+    const form = await c.req.formData()
+
+    const raw = {
+      tenantId: String(form.get('tenantId') || ''),
+      name: String(form.get('name') || ''),
+      description: (form.get('description') as string) || undefined,
+      price: form.get('price') as any,
+      category: String(form.get('category') || ''),
+      stock: form.get('stock') as any,
+    }
+
+    const validatedData = createProductSchema.parse(raw)
+
+    // Validar imágenes
+    const files = form.getAll('images') as File[]
+    if (!files || files.length === 0) {
+      return c.json({ error: 'Se requiere al menos una imagen' }, 400)
+    }
+    const maxBytes = 4 * 1024 * 1024 // 4MB
+    const uploadUrls: string[] = []
+    for (const file of files) {
+      if (!(file instanceof File)) continue
+      if (file.size > maxBytes) {
+        return c.json({ error: `La imagen '${file.name}' supera 4MB` }, 400)
+      }
+      const arrayBuf = await file.arrayBuffer()
+      const key = `${validatedData.tenantId}/${Date.now()}-${encodeURIComponent(file.name)}`
+      await c.env.R2.put(key, new Uint8Array(arrayBuf), {
+        httpMetadata: { contentType: file.type }
+      })
+      const publicBase = (c.env as any).R2_PUBLIC_BASE || ''
+      const url = publicBase ? `${publicBase}/${key}` : key
+      uploadUrls.push(url)
+    }
+
     const supabase = c.get('supabase')
     const { data, error } = await supabase.from('products').insert({
-      tenant_slug: validatedData.tenantSlug,
+      tenant_id: validatedData.tenantId,
       name: validatedData.name,
       description: validatedData.description ?? null,
-      price: validatedData.price,
-      original_price: validatedData.originalPrice ?? null,
-      brand: validatedData.brand ?? null,
-      category: validatedData.category ?? null,
-      stock: validatedData.stock,
-      images: validatedData.images ?? [],
-      attributes: validatedData.attributes ?? {}
+      price: validatedData.price ?? null,
+      category: validatedData.category,
+      stock: (validatedData.stock as number | undefined) ?? 0,
+      images: uploadUrls,
+      status: 'active'
     }).select('*').single()
 
     if (error) {
