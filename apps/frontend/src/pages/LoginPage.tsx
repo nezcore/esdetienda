@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Eye, EyeOff } from 'lucide-react'
+import { authApi, type AuthResponse } from '../lib/api'
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
@@ -11,22 +12,32 @@ export default function LoginPage() {
     e.preventDefault()
     setLoading(true)
 
-    // Aquí irá la lógica de autenticación
     const formData = new FormData(e.currentTarget)
     const email = formData.get('email') as string
     const password = formData.get('password') as string
 
     try {
-      // TODO: Implementar autenticación real
-      console.log('Login attempt:', { email, password })
+      console.log('Intentando login:', { email })
       
-      // Simular login exitoso por ahora
-      setTimeout(() => {
+      const response: AuthResponse = await authApi.login(email, password)
+      
+      if (response.success) {
+        // Guardar token y datos del usuario
+        localStorage.setItem('auth_token', response.token)
+        localStorage.setItem('user_data', JSON.stringify(response.user))
+        if (response.tenant) {
+          localStorage.setItem('tenant_data', JSON.stringify(response.tenant))
+        }
+        
+        console.log('Login exitoso:', response)
         setLoading(false)
         navigate('/panel')
-      }, 1000)
-    } catch (error) {
-      console.error('Login error:', error)
+      } else {
+        throw new Error(response.message || 'Error en el login')
+      }
+    } catch (error: any) {
+      console.error('Error en el login:', error)
+      alert(error.message || 'Error al iniciar sesión. Verifica tus credenciales.')
       setLoading(false)
     }
   }

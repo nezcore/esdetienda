@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { Eye, EyeOff, Check, CheckCircle, Loader2, RefreshCcw, XCircle } from 'lucide-react'
+import { authApi, type AuthResponse } from '../lib/api'
 import ThemeToggle from '../components/ThemeToggle'
 
 export default function RegisterPage() {
@@ -96,9 +97,16 @@ export default function RegisterPage() {
 
     setSlugStatus('checking')
 
-    const delay = setTimeout(() => {
-      const reservedSlugs = new Set(['demo', 'starter', 'grow', 'pro', 'tienda', 'store'])
-      setSlugStatus(reservedSlugs.has(value) ? 'taken' : 'available')
+    const delay = setTimeout(async () => {
+      try {
+        const response = await authApi.checkSlug(value)
+        setSlugStatus(response.available ? 'available' : 'taken')
+      } catch (error) {
+        console.error('Error verificando slug:', error)
+        // En caso de error, verificar slugs reservados localmente
+        const reservedSlugs = new Set(['demo', 'starter', 'grow', 'pro', 'tienda', 'store'])
+        setSlugStatus(reservedSlugs.has(value) ? 'taken' : 'available')
+      }
     }, 400)
 
     return () => clearTimeout(delay)
@@ -106,9 +114,6 @@ export default function RegisterPage() {
 
   const emailHasAt = email.includes('@')
   const emailDomainPart = (email.split('@')[1] ?? '').toLowerCase()
-  const emailMatchesPrefix = emailDomainPart
-    ? allowedDomainList.some((allowed) => allowed.startsWith(emailDomainPart))
-    : true
   const emailValid = emailHasAt && allowedDomainList.includes(emailDomainPart)
 
   const evaluatePassword = (value: string) => {
@@ -173,16 +178,27 @@ export default function RegisterPage() {
     }
 
     try {
-      // TODO: Implementar registro real
-      console.log('Register attempt:', data)
+      console.log('Intentando registrar:', data)
       
-      // Simular registro exitoso
-      setTimeout(() => {
+      const response: AuthResponse = await authApi.register(data)
+      
+      if (response.success) {
+        // Guardar token y datos del usuario
+        localStorage.setItem('auth_token', response.token)
+        localStorage.setItem('user_data', JSON.stringify(response.user))
+        if (response.tenant) {
+          localStorage.setItem('tenant_data', JSON.stringify(response.tenant))
+        }
+        
+        console.log('Registro exitoso:', response)
         setLoading(false)
         navigate('/panel?welcome=true')
-      }, 1500)
-    } catch (error) {
-      console.error('Register error:', error)
+      } else {
+        throw new Error(response.message || 'Error en el registro')
+      }
+    } catch (error: any) {
+      console.error('Error en el registro:', error)
+      setEmailError(error.message || 'Error al crear la cuenta. Intenta de nuevo.')
       setLoading(false)
     }
   }

@@ -75,6 +75,16 @@ app.use('*', cors({
 // Manejador de errores
 app.onError(errorHandler)
 
+// Inyección de cliente Supabase a request (debe ir ANTES de las rutas)
+app.use('*', async (c, next) => {
+  const client = getSupabaseAdminClient({
+    url: c.env.SUPABASE_URL,
+    serviceKey: c.env.SUPABASE_SERVICE_KEY
+  })
+  c.set('supabase', client)
+  await next()
+})
+
 // Health check (sin prefijo para que funcione en el root)
 app.route('/', healthRoute)
 
@@ -87,16 +97,6 @@ app.route('/chat', chatRoutes)
 app.route('/vision', visionRoutes)
 app.route('/stt', sttRoutes)
 app.route('/webhook', webhookRoutes)
-// Inyección de cliente Supabase a request
-app.use('*', async (c, next) => {
-  const client = getSupabaseAdminClient({
-    url: c.env.SUPABASE_URL,
-    serviceKey: c.env.SUPABASE_SERVICE_KEY
-  })
-  c.set('supabase', client)
-  await next()
-})
-
 app.route('/orders', orderRoutes)
 
 // Ruta de fallback
