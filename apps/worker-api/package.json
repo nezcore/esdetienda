@@ -4,7 +4,7 @@
   "description": "API Worker para EsDeTienda - Endpoints con Hono",
   "main": "src/index.ts",
   "scripts": {
-    "dev": "wrangler dev --local --port 8787",
+    "dev": "wrangler dev --local --ip 0.0.0.0 --port 8787",
     "deploy": "wrangler deploy",
     "build": "esbuild --bundle --format=esm --target=es2022 --outfile=dist/worker.js src/index.ts",
     "test": "vitest"

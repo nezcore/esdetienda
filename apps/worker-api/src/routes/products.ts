@@ -78,26 +78,59 @@ products.post('/', async (c) => {
     const validatedData = createProductSchema.parse(raw)
 
     // Validar imágenes
+    console.log('🔍 Validando imágenes...')
     const files = form.getAll('images') as File[]
+    console.log('📁 Archivos recibidos:', files.length)
+    
     if (!files || files.length === 0) {
+      console.log('❌ No se encontraron archivos')
       return c.json({ error: 'Se requiere al menos una imagen' }, 400)
     }
+    
     const maxBytes = 4 * 1024 * 1024 // 4MB
     const uploadUrls: string[] = []
+    
+    console.log('🔧 R2 Bucket disponible:', !!c.env.R2)
+    console.log('🌐 R2_PUBLIC_BASE:', c.env.R2_PUBLIC_BASE)
+    
     for (const file of files) {
-      if (!(file instanceof File)) continue
+      if (!(file instanceof File)) {
+        console.log('⚠️ Archivo no válido:', typeof file)
+        continue
+      }
+      
+      console.log('📄 Procesando archivo:', file.name, 'Tamaño:', file.size)
+      
       if (file.size > maxBytes) {
+        console.log('❌ Archivo muy grande:', file.name)
         return c.json({ error: `La imagen '${file.name}' supera 4MB` }, 400)
       }
-      const arrayBuf = await file.arrayBuffer()
-      const key = `${validatedData.tenantId}/${Date.now()}-${encodeURIComponent(file.name)}`
-      await c.env.R2.put(key, new Uint8Array(arrayBuf), {
-        httpMetadata: { contentType: file.type }
-      })
-      const publicBase = (c.env as any).R2_PUBLIC_BASE || ''
-      const url = publicBase ? `${publicBase}/${key}` : key
-      uploadUrls.push(url)
+      
+      try {
+        const arrayBuf = await file.arrayBuffer()
+        const key = `${validatedData.tenantId}/${Date.now()}-${encodeURIComponent(file.name)}`
+        
+        console.log('⬆️ Subiendo a R2 con key:', key)
+        
+        await c.env.R2.put(key, new Uint8Array(arrayBuf), {
+          httpMetadata: { contentType: file.type }
+        })
+        
+        console.log('✅ Archivo subido exitosamente a R2')
+        
+        const publicBase = c.env.R2_PUBLIC_BASE || ''
+        const url = publicBase ? `${publicBase}/${key}` : key
+        
+        console.log('🔗 URL generada:', url)
+        uploadUrls.push(url)
+        
+      } catch (r2Error) {
+        console.error('💥 Error subiendo a R2:', r2Error)
+        return c.json({ error: `Error subiendo imagen: ${r2Error.message}` }, 500)
+      }
     }
+    
+    console.log('📋 URLs finales:', uploadUrls)
 
     const supabase = c.get('supabase')
     const { data, error } = await supabase.from('products').insert({
