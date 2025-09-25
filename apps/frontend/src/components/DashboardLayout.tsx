@@ -346,16 +346,16 @@ export default function DashboardLayout() {
             <div className="px-4 sm:px-6 lg:px-10 py-4">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-lg font-semibold">
+                <h2 className="text-lg font-semibold drop-shadow-sm">
                   ¡Bienvenido a EsDeTienda! 🎉
                 </h2>
-                <p className="text-brand-100">
+                <p className="text-white/90 dark:text-white font-medium drop-shadow-sm">
                   Configuraremos tu bot de WhatsApp en las próximas 24 horas. Mientras tanto, sube tus productos.
                 </p>
               </div>
               <button 
                 onClick={() => setShowWelcome(false)}
-                className="text-brand-100 hover:text-white"
+                className="text-white/80 hover:text-white"
                   aria-label="Cerrar mensaje de bienvenida"
               >
                 ×

@@ -183,16 +183,16 @@ export default function DashboardHome() {
                 </button>
               </div>
 
-              <div className="bg-brand-50 border border-brand-200 rounded-lg p-4 dark:bg-brand-500/10 dark:border-brand-500/30">
+              <div className="bg-brand-50 border border-brand-200 rounded-lg p-4 dark:bg-gray-800/60 dark:border-gray-700/60">
                 <div className="flex items-start">
                   <div className="flex-shrink-0">
                     <div className="h-2 w-2 bg-brand-500 rounded-full mt-2"></div>
                   </div>
                   <div className="ml-3">
-                    <h4 className="text-sm font-medium text-brand-900 dark:text-brand-200">
+                    <h4 className="text-sm font-semibold text-brand-900 dark:text-white drop-shadow-sm">
                       Tu bot estará listo en 24 horas
                     </h4>
-                    <p className="text-sm text-brand-700 mt-1 dark:text-brand-100">
+                    <p className="text-sm text-brand-700 mt-1 dark:text-gray-200 leading-relaxed">
                       Te enviaremos un email cuando esté configurado. Mientras tanto, sube tus productos.
                     </p>
                   </div>
