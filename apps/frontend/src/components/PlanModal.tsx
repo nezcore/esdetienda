@@ -180,6 +180,20 @@ export default function PlanModal({ isOpen, onClose, tenant }: PlanModalProps) {
 
           {/* Content */}
           <div className="px-6 pb-6 space-y-4">
+            {/* Upgrade Button (Top) */}
+            {currentPlan.nextPlan && (
+              <button
+                onClick={handleUpgrade}
+                className={`w-full bg-gradient-to-r ${
+                  currentPlan.name === 'esencial' 
+                    ? 'from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700' 
+                    : 'from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700'
+                } text-white font-bold py-3 px-4 rounded-xl transition-all duration-200 transform hover:scale-[1.02] hover:shadow-lg flex items-center justify-center space-x-2 shadow-md`}
+              >
+                <Rocket className="h-5 w-5" />
+                <span>Actualizar a {currentPlan.nextPlanDisplayName}</span>
+              </button>
+            )}
             {/* Plan Details */}
             <div className="bg-white/80 dark:bg-gray-800/90 rounded-xl p-4 space-y-3 shadow-sm border border-white/30 dark:border-gray-700/50">
               <div className="flex items-center justify-between">
@@ -222,21 +236,6 @@ export default function PlanModal({ isOpen, onClose, tenant }: PlanModalProps) {
 
             {/* Action Buttons */}
             <div className="space-y-3">
-              {/* Upgrade Button */}
-              {currentPlan.nextPlan && (
-                <button
-                  onClick={handleUpgrade}
-                  className={`w-full bg-gradient-to-r ${
-                    currentPlan.name === 'esencial' 
-                      ? 'from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700' 
-                      : 'from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700'
-                  } text-white font-bold py-3 px-4 rounded-xl transition-all duration-200 transform hover:scale-[1.02] hover:shadow-lg flex items-center justify-center space-x-2 shadow-md`}
-                >
-                  <Rocket className="h-5 w-5" />
-                  <span>Actualizar a {currentPlan.nextPlanDisplayName}</span>
-                </button>
-              )}
-              
               {!currentPlan.nextPlan && currentPlan.isPaid && (
                 <div className="text-center py-2 bg-white/60 dark:bg-gray-800/60 rounded-xl">
                   <span className="text-sm text-gray-800 dark:text-gray-200 font-bold">
@@ -248,9 +247,9 @@ export default function PlanModal({ isOpen, onClose, tenant }: PlanModalProps) {
               {/* Cancel Plan Button */}
               <button
                 onClick={handleCancelPlan}
-                className="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-3 px-4 rounded-xl transition-all duration-200 transform hover:scale-[1.02] hover:shadow-lg flex items-center justify-center space-x-2 shadow-md"
+                className="w-full bg-gradient-to-r from-red-400 to-red-500 hover:from-red-500 hover:to-red-600 text-white font-semibold py-2 px-3 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 shadow-sm text-sm"
               >
-                <AlertTriangle className="h-5 w-5" />
+                <AlertTriangle className="h-4 w-4" />
                 <span>Cancelar Plan / Cerrar Cuenta</span>
               </button>
             </div>
