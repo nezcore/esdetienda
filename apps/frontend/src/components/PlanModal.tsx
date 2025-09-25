@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { X, Crown, Rocket, CheckCircle, Calendar, CreditCard, Sparkles, AlertTriangle } from 'lucide-react'
+import { PLAN_DEFS } from '../config/plans'
 
 interface Tenant {
   id: string
@@ -89,6 +90,7 @@ export default function PlanModal({ isOpen, onClose, tenant }: PlanModalProps) {
   if (!isVisible) return null
 
   const currentPlan = tenant?.plan ? planConfig[tenant.plan] : null
+  const planDef = tenant?.plan ? PLAN_DEFS[tenant.plan as keyof typeof PLAN_DEFS] : undefined
   if (!currentPlan) return null
 
   const Icon = currentPlan.icon
@@ -170,9 +172,11 @@ export default function PlanModal({ isOpen, onClose, tenant }: PlanModalProps) {
                 <h2 className={`text-2xl font-bold ${currentPlan.color}`}>
                   Plan {currentPlan.displayName}
                 </h2>
-                <p className="text-sm font-bold text-gray-800 dark:text-gray-100">
-                  {currentPlan.price}
-                </p>
+                {planDef && (
+                  <p className="text-sm font-bold text-gray-800 dark:text-gray-100">
+                    {planDef.priceDisplay}
+                  </p>
+                )}
               </div>
             </div>
 
@@ -235,7 +239,7 @@ export default function PlanModal({ isOpen, onClose, tenant }: PlanModalProps) {
                 Características incluidas
               </h3>
               <div className="space-y-2">
-                {currentPlan.features.map((feature, index) => (
+                {(planDef?.features ?? currentPlan.features).map((feature, index) => (
                   <div key={index} className="flex items-center space-x-2">
                     <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400 flex-shrink-0" />
                     <span className="text-sm font-semibold text-gray-800 dark:text-gray-100">{feature}</span>
