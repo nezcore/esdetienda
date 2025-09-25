@@ -24,7 +24,13 @@ export default function DashboardLayout() {
   const location = useLocation()
   const [searchParams] = useSearchParams()
   const [showWelcome, setShowWelcome] = useState(searchParams.get('welcome') === 'true')
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(() => {
+    if (typeof window === 'undefined') return true
+    const stored = localStorage.getItem('sidebar_open')
+    if (stored !== null) return stored === 'true'
+    // Por defecto: abierto en desktop, cerrado en móvil
+    return window.innerWidth >= 1024
+  })
   const [isPlanModalOpen, setIsPlanModalOpen] = useState(false)
   const navigate = useNavigate()
   const { user, tenant, logout } = useAuth()
@@ -94,6 +100,14 @@ export default function DashboardLayout() {
 
     unlock()
     return undefined
+  }, [isSidebarOpen])
+
+  // Persistir preferencia del sidebar
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    try {
+      localStorage.setItem('sidebar_open', String(isSidebarOpen))
+    } catch {}
   }, [isSidebarOpen])
 
   const isActive = (path: string) => {
