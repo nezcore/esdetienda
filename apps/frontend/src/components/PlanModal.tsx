@@ -136,13 +136,13 @@ export default function PlanModal({ isOpen, onClose, tenant }: PlanModalProps) {
       />
       
       {/* Modal */}
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div 
-          className={`w-full sm:max-w-md h-full sm:h-auto transition-all duration-300 ease-out ${
+          className={`w-full max-w-sm sm:max-w-md transition-all duration-300 ease-out ${
             showContent ? 'scale-100 opacity-100' : 'scale-90 opacity-0'
           }`}
         >
-          <div className={`bg-gradient-to-br ${currentPlan.bgGradient} border-2 ${currentPlan.borderColor} rounded-none sm:rounded-2xl shadow-2xl overflow-hidden backdrop-blur-md h-full sm:h-auto max-h-screen sm:max-h-[90vh] overflow-y-auto`}>
+          <div className={`bg-gradient-to-br ${currentPlan.bgGradient} border-2 ${currentPlan.borderColor} rounded-2xl shadow-2xl overflow-hidden backdrop-blur-md max-h-[85vh] overflow-y-auto`}>
             {/* Header */}
             <div className="relative p-6 pb-4">
             <button
