@@ -125,6 +125,16 @@ export default function PlanModal({ isOpen, onClose, tenant }: PlanModalProps) {
     }
   }
 
+  const handleDowngrade = () => {
+    const targetPlan = currentPlan.name === 'pro' ? 'grow' : 'esencial'
+    const targetPlanName = targetPlan === 'grow' ? planConfig.grow.displayName : planConfig.esencial.displayName
+    if (window.confirm(`¿Deseas hacer downgrade al plan ${targetPlanName}?`)) {
+      console.log('Downgrade to:', targetPlan)
+      // TODO: Implementar llamada al backend para cambiar de plan
+      onClose()
+    }
+  }
+
   return (
     <>
       {/* Overlay */}
@@ -236,12 +246,13 @@ export default function PlanModal({ isOpen, onClose, tenant }: PlanModalProps) {
 
             {/* Action Buttons */}
             <div className="space-y-3">
-              {!currentPlan.nextPlan && currentPlan.isPaid && (
-                <div className="text-center py-2 bg-white/60 dark:bg-gray-800/60 rounded-xl">
-                  <span className="text-sm text-gray-800 dark:text-gray-200 font-bold">
-                    🎉 ¡Tienes el plan más avanzado!
-                  </span>
-                </div>
+              {currentPlan.isPaid && (
+                <button
+                  onClick={handleDowngrade}
+                  className="w-full bg-red-100/90 dark:bg-red-900/60 border border-red-200 dark:border-red-700 text-red-800 dark:text-red-100 font-semibold py-2.5 px-4 rounded-xl transition-colors duration-200 hover:bg-red-200/90 dark:hover:bg-red-800/70"
+                >
+                  Hacer downgrade a {currentPlan.name === 'pro' ? planConfig.grow.displayName : planConfig.esencial.displayName}
+                </button>
               )}
 
               {/* Cancel Plan Button */}
