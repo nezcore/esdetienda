@@ -118,8 +118,9 @@ products.post('/', async (c) => {
         
         console.log('✅ Archivo subido exitosamente a R2')
         
-        const publicBase = c.env.R2_PUBLIC_BASE || ''
-        const url = publicBase ? `${publicBase}/${key}` : key
+        // Construir URL pública servida por el propio worker (/media) para que funcione en desarrollo y producción
+        const origin = new URL(c.req.url).origin
+        const url = `${origin}/media/${key}`
         
         console.log('🔗 URL generada:', url)
         uploadUrls.push(url)

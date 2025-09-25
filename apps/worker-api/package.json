@@ -10,8 +10,8 @@
     "test": "vitest"
   },
   "dependencies": {
-    "hono": "^3.9.0",
     "@supabase/supabase-js": "^2.39.1",
+    "hono": "^3.9.0",
     "zod": "^3.22.0"
   },
   "devDependencies": {
@@ -20,6 +20,6 @@
     "esbuild": "^0.19.0",
     "typescript": "^5.0.0",
     "vitest": "^0.34.0",
-    "wrangler": "^3.0.0"
+    "wrangler": "^4.40.0"
   }
 }
