@@ -8,6 +8,12 @@ CREATE TABLE IF NOT EXISTS tenants (
     business_name VARCHAR(255) NOT NULL,
     plan VARCHAR(50) NOT NULL CHECK (plan IN ('esencial', 'pro')),
     status VARCHAR(50) DEFAULT 'active' CHECK (status IN ('active', 'inactive', 'suspended')),
+    description TEXT,
+    logo TEXT,
+    icon TEXT,
+    primary_color VARCHAR(7) DEFAULT '#134572',
+    secondary_color VARCHAR(7) DEFAULT '#27A3A4',
+    whatsapp_number VARCHAR(20),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
