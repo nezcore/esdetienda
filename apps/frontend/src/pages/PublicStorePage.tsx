@@ -1,89 +1,89 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { ShoppingBag, MessageCircle, Star, ArrowLeft, ExternalLink } from 'lucide-react'
+import { api } from '../lib/api'
 
 interface Product {
   id: string
   name: string
-  description: string
-  price: number
-  images: string[]
-  category: string
-  stock: number
-  sku?: string
+  description?: string
+  price?: number
+  images?: string[]
+  category?: string
+  stock?: number
+  status?: 'active' | 'inactive' | 'out_of_stock'
+  created_at: string
+  updated_at?: string
+}
+
+interface Store {
+  id: string
+  slug: string
+  business_name: string
+  plan: string
+  status: string
+  description?: string
+  logo?: string
+  colors?: {
+    primary: string
+    secondary: string
+  }
 }
 
 export default function PublicStorePage() {
   const { tenantSlug } = useParams<{ tenantSlug: string }>()
-  const [store, setStore] = useState<any>(null)
+  const [store, setStore] = useState<Store | null>(null)
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     loadStoreData()
   }, [tenantSlug])
 
   const loadStoreData = async () => {
-    try {
-      // TODO: Implementar llamada a la API para obtener datos de la tienda
-      console.log('Cargando datos de la tienda:', tenantSlug)
-      
-      // Simular datos de la tienda
-      setStore({
-        id: '1',
-        slug: tenantSlug,
-        business_name: 'Ferretería Carlos',
-        plan: 'esencial',
-        status: 'active',
-        description: 'Todo en ferretería y construcción para tu hogar y proyecto.',
-        logo: null,
-        colors: {
-          primary: '#3B82F6',
-          secondary: '#1E40AF'
-        }
-      })
+    if (!tenantSlug) {
+      setError('Slug de tienda no válido')
+      setLoading(false)
+      return
+    }
 
-      // Simular productos
-      setProducts([
-        {
-          id: '1',
-          name: 'Martillo de 16 oz',
-          description: 'Martillo de acero forjado con mango de fibra de vidrio. Ideal para trabajos de construcción.',
-          price: 850,
-          images: ['/placeholder-product.jpg'],
-          category: 'Herramientas',
-          stock: 25,
-          sku: 'MART-16OZ'
-        },
-        {
-          id: '2',
-          name: 'Destornillador Phillips #2',
-          description: 'Destornillador Phillips de 6 pulgadas con mango ergonómico.',
-          price: 320,
-          images: ['/placeholder-product.jpg'],
-          category: 'Herramientas',
-          stock: 50,
-          sku: 'DEST-PH2'
-        },
-        {
-          id: '3',
-          name: 'Pintura Latex Blanco 1 Galón',
-          description: 'Pintura látex de alta calidad, cubrimiento excelente y acabado mate.',
-          price: 1200,
-          images: ['/placeholder-product.jpg'],
-          category: 'Pintura',
-          stock: 15,
-          sku: 'PINT-LATEX-1G'
-        }
-      ])
-    } catch (error) {
+    try {
+      setLoading(true)
+      setError(null)
+
+      // 1. Obtener información del tenant por slug
+      const tenantResponse = await api.get<{success: boolean, tenant?: Store}>(`/tenants/${tenantSlug}`)
+      
+      if (!tenantResponse.success || !tenantResponse.tenant) {
+        setError('Tienda no encontrada')
+        setLoading(false)
+        return
+      }
+
+      const tenant = tenantResponse.tenant
+      setStore(tenant)
+
+      // 2. Cargar productos del tenant
+      const productsResponse = await api.get<{products: Product[]}>(`/products?tenantId=${tenant.id}`)
+      
+      // Filtrar solo productos activos para la tienda pública
+      const activeProducts = (productsResponse.products || []).filter(product => 
+        product.status === 'active' && (product.stock === undefined || product.stock > 0)
+      )
+      
+      setProducts(activeProducts)
+
+    } catch (error: any) {
       console.error('Error al cargar datos de la tienda:', error)
+      setError(error.message || 'Error al cargar la tienda')
     } finally {
       setLoading(false)
     }
   }
 
-  const formatPrice = (price: number) => {
+  const formatPrice = (price?: number) => {
+    if (!price) return 'Precio no disponible'
     return new Intl.NumberFormat('es-DO', {
       style: 'currency',
       currency: 'DOP',
@@ -108,12 +108,16 @@ export default function PublicStorePage() {
     )
   }
 
-  if (!store) {
+  if (error || !store) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Tienda no encontrada</h1>
-          <p className="text-gray-600 mb-6">La tienda que buscas no existe o no está disponible.</p>
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">
+            {error || 'Tienda no encontrada'}
+          </h1>
+          <p className="text-gray-600 mb-6">
+            {error ? 'Ocurrió un error al cargar la tienda.' : 'La tienda que buscas no existe o no está disponible.'}
+          </p>
           <Link 
             to="/" 
             className="inline-flex items-center px-4 py-2 bg-brand-500 text-white rounded-lg hover:bg-brand-600"
@@ -193,9 +197,13 @@ export default function PublicStorePage() {
                 {/* Product image */}
                 <div className="aspect-square bg-gray-200 relative">
                   <img
-                    src={product.images[0] || '/placeholder-product.jpg'}
+                    src={(product.images && product.images.length > 0) ? product.images[0] : '/placeholder-product.jpg'}
                     alt={product.name}
                     className="w-full h-full object-cover"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement
+                      target.src = '/placeholder-product.jpg'
+                    }}
                   />
                   {product.stock === 0 && (
                     <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
@@ -207,12 +215,20 @@ export default function PublicStorePage() {
                 {/* Product info */}
                 <div className="p-4">
                   <h4 className="font-semibold text-gray-900 mb-2 line-clamp-2">{product.name}</h4>
-                  <p className="text-sm text-gray-600 mb-3 line-clamp-2">{product.description}</p>
+                  {product.description && (
+                    <p className="text-sm text-gray-600 mb-3 line-clamp-2">{product.description}</p>
+                  )}
                   
                   <div className="flex justify-between items-center mb-4">
                     <span className="text-2xl font-bold text-brand-600">{formatPrice(product.price)}</span>
-                    <span className="text-sm text-gray-500">{product.category}</span>
+                    {product.category && (
+                      <span className="text-sm text-gray-500">{product.category}</span>
+                    )}
                   </div>
+
+                  {product.stock !== undefined && product.stock > 0 && (
+                    <p className="text-xs text-gray-500 mb-2">Stock: {product.stock} disponibles</p>
+                  )}
 
                   <button
                     onClick={() => sendToWhatsApp(product)}

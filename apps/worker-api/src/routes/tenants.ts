@@ -137,26 +137,63 @@ tenants.get('/:slug', async (c) => {
       }, 400)
     }
     
-    // Buscar en KV primero (más rápido)
-    let tenantData = await c.env.KV.get(`tenant:slug:${slug}`, 'json')
-    
-    if (!tenantData) {
-      // TODO: Buscar en MongoDB si no está en cache
-      // Por ahora, devolver tenant demo si es 'demo'
-      if (slug === 'demo') {
-        tenantData = {
-          id: 'tenant_demo',
-          slug: 'demo',
-          businessName: 'Tienda Demo',
+    // Buscar en Supabase
+    const supabase = c.get('supabase')
+    const { data: tenantData, error } = await supabase
+      .from('tenants')
+      .select('*')
+      .eq('slug', slug)
+      .eq('status', 'active')
+      .single()
+
+    if (error || !tenantData) {
+      // Si no existe, crear tenant demo para ciertos slugs
+      if (slug === 'demo' || slug === 'ferreteriacarlos') {
+        const demoTenant = {
+          id: `tenant_${slug}`,
+          slug: slug,
+          business_name: slug === 'demo' ? 'Tienda Demo' : 'Ferretería Carlos',
           plan: 'pro',
           status: 'active',
-          settings: {
-            primaryColor: '#134572',
-            secondaryColor: '#27A3A4',
-            whatsappNumber: '+1-809-555-0123',
-            description: 'Tienda de demostración para EsDeTienda'
-          }
+          description: slug === 'demo' 
+            ? 'Tienda de demostración para EsDeTienda' 
+            : 'Todo en ferretería y construcción para tu hogar y proyecto.',
+          primary_color: '#134572',
+          secondary_color: '#27A3A4',
+          whatsapp_number: '+1-809-555-0123'
         }
+        
+        // Crear tenant en Supabase
+        const { data: newTenant, error: createError } = await supabase
+          .from('tenants')
+          .insert(demoTenant)
+          .select()
+          .single()
+        
+        if (createError) {
+          console.error('Error creating demo tenant:', createError)
+          return c.json({
+            error: 'Tienda no encontrada',
+            message: `La tienda '${slug}' no existe`
+          }, 404)
+        }
+        
+        return c.json({
+          success: true,
+          tenant: {
+            id: newTenant.id,
+            slug: newTenant.slug,
+            business_name: newTenant.business_name,
+            plan: newTenant.plan,
+            status: newTenant.status,
+            description: newTenant.description,
+            colors: {
+              primary: newTenant.primary_color || '#134572',
+              secondary: newTenant.secondary_color || '#27A3A4'
+            },
+            whatsappNumber: newTenant.whatsapp_number
+          }
+        })
       }
     }
     
@@ -169,15 +206,17 @@ tenants.get('/:slug', async (c) => {
     
     // Solo devolver información pública
     const publicTenantInfo = {
-      slug: (tenantData as any).slug,
-      businessName: (tenantData as any).businessName,
-      description: (tenantData as any).settings?.description,
+      id: tenantData.id,
+      slug: tenantData.slug,
+      business_name: tenantData.business_name,
+      plan: tenantData.plan,
+      status: tenantData.status,
+      description: tenantData.description,
       colors: {
-        primary: (tenantData as any).settings?.primaryColor || '#134572',
-        secondary: (tenantData as any).settings?.secondaryColor || '#27A3A4'
+        primary: tenantData.primary_color || '#134572',
+        secondary: tenantData.secondary_color || '#27A3A4'
       },
-      whatsappNumber: (tenantData as any).settings?.whatsappNumber,
-      status: (tenantData as any).status
+      whatsappNumber: tenantData.whatsapp_number
     }
     
     return c.json({
