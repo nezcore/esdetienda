@@ -21,6 +21,8 @@ import {
 import { api } from '../lib/api'
 import { ThemeProvider } from '../components/ThemeProvider'
 import StoreBanner from '../components/StoreBanner'
+import StoreLogo from '../components/StoreLogo'
+import LogoCustomizer from '../components/LogoCustomizer'
 
 interface Product {
   id: string
@@ -43,6 +45,7 @@ interface Store {
   status: string
   description?: string
   logo?: string
+  icon?: string
   colors?: {
     primary: string
     secondary: string
@@ -60,6 +63,7 @@ export default function PublicStorePageNew() {
   const [selectedCategory, setSelectedCategory] = useState('')
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [favorites, setFavorites] = useState<Set<string>>(new Set())
+  const [showLogoCustomizer, setShowLogoCustomizer] = useState(false)
 
   useEffect(() => {
     loadStoreData()
@@ -156,6 +160,32 @@ export default function PublicStorePageNew() {
   // Obtener categorías únicas
   const categories = Array.from(new Set(products.map(p => p.category).filter(Boolean)))
 
+  const handleLogoSave = async (logoData: { type: 'icon' | 'image' | 'emoji', value: string }) => {
+    try {
+      // TODO: Implementar guardado en backend
+      console.log('Guardando logo:', logoData)
+      
+      // Actualizar estado local temporalmente
+      if (store) {
+        const updatedStore = {
+          ...store,
+          logo: logoData.type === 'image' ? logoData.value : undefined,
+          icon: logoData.type === 'icon' || logoData.type === 'emoji' ? logoData.value : undefined
+        }
+        setStore(updatedStore)
+      }
+      
+      setShowLogoCustomizer(false)
+      
+      // TODO: Mostrar toast de éxito
+      alert('¡Logo actualizado exitosamente!')
+      
+    } catch (error) {
+      console.error('Error guardando logo:', error)
+      alert('Error al guardar el logo')
+    }
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
@@ -201,7 +231,10 @@ export default function PublicStorePageNew() {
         <StoreBanner 
           storeName={store.business_name}
           storeSlug={store.slug}
-          showCustomization={false} // TODO: Detectar si es el propietario
+          storeLogo={store.logo}
+          storeIcon={store.icon}
+          showCustomization={true} // TODO: Detectar si es el propietario
+          onLogoClick={() => setShowLogoCustomizer(true)}
         />
 
         {/* Espaciador para el banner fijo */}
@@ -216,14 +249,15 @@ export default function PublicStorePageNew() {
           <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
             <div className="text-center">
               {/* Logo de la tienda - más pequeño */}
-              <div className="mb-4">
-                <div className="w-16 h-16 bg-white/10 backdrop-blur-md rounded-xl flex items-center justify-center mx-auto shadow-xl">
-                  {store.logo ? (
-                    <img src={store.logo} alt={store.business_name} className="w-12 h-12 rounded-lg" />
-                  ) : (
-                    <ShoppingBag className="h-8 w-8 text-white" />
-                  )}
-                </div>
+              <div className="mb-4 flex justify-center">
+                <StoreLogo 
+                  logo={store.logo}
+                  icon={store.icon}
+                  storeName={store.business_name}
+                  size="lg"
+                  className="bg-white/10 backdrop-blur-md shadow-xl"
+                  onClick={() => setShowLogoCustomizer(true)}
+                />
               </div>
 
               {/* Nombre y descripción - más compacto */}
@@ -519,6 +553,16 @@ export default function PublicStorePageNew() {
             </div>
           </div>
         </footer>
+
+        {/* Logo Customizer */}
+        {showLogoCustomizer && (
+          <LogoCustomizer
+            currentLogo={store.logo}
+            currentIcon={store.icon}
+            onSave={handleLogoSave}
+            onClose={() => setShowLogoCustomizer(false)}
+          />
+        )}
       </div>
     </ThemeProvider>
   )

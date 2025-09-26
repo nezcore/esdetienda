@@ -2,19 +2,26 @@ import { useState } from 'react'
 import { ExternalLink, Palette } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import ThemeToggle from './ThemeToggle'
+import StoreLogo from './StoreLogo'
 
 interface StoreBannerProps {
   storeName: string
   storeSlug: string
+  storeLogo?: string
+  storeIcon?: string
   showCustomization?: boolean
   onCustomizationClick?: () => void
+  onLogoClick?: () => void
 }
 
 export default function StoreBanner({ 
   storeName, 
   storeSlug, 
+  storeLogo,
+  storeIcon,
   showCustomization = false,
-  onCustomizationClick 
+  onCustomizationClick,
+  onLogoClick
 }: StoreBannerProps) {
   const [isExpanded, setIsExpanded] = useState(false)
 
@@ -24,11 +31,13 @@ export default function StoreBanner({
         <div className="flex items-center justify-between h-14">
           {/* Logo y info de la tienda */}
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center shadow-sm">
-              <span className="text-white font-bold text-sm">
-                {storeName.charAt(0).toUpperCase()}
-              </span>
-            </div>
+            <StoreLogo 
+              logo={storeLogo}
+              icon={storeIcon}
+              storeName={storeName}
+              size="sm"
+              onClick={onLogoClick}
+            />
             <div className="hidden sm:block">
               <h1 className="text-sm font-semibold text-gray-900 dark:text-white">
                 {storeName}
