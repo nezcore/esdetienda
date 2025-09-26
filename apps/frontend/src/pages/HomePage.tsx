@@ -1,11 +1,24 @@
-import { Link, useLocation } from 'react-router-dom'
-import { ArrowRight, CheckCircle, MessageCircle, ShoppingBag, Bot, BarChart3, Menu, X, Sparkles } from 'lucide-react'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { ArrowRight, CheckCircle, MessageCircle, ShoppingBag, Bot, BarChart3, Menu, X, Sparkles, LogOut, Store } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import ThemeToggle from '../components/ThemeToggle'
+import { useAuth } from '../contexts/AuthContext'
 
 export default function HomePage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const location = useLocation()
+  const navigate = useNavigate()
+  const { user, tenant, logout } = useAuth()
+
+  // Función para manejar logout
+  const handleLogout = async () => {
+    try {
+      await logout()
+      navigate('/')
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error)
+    }
+  }
 
   // Efecto para scroll automático a la sección de precios
   useEffect(() => {
@@ -87,19 +100,45 @@ export default function HomePage() {
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-6">
               <ThemeToggle />
-              <Link 
-                to="/login" 
-                className="text-gray-700 dark:text-gray-300 hover:text-brand-500 transition-all hover:scale-105 font-medium px-3 py-2 rounded-lg hover:bg-brand-50 dark:hover:bg-gray-800"
-              >
-                Iniciar sesión
-              </Link>
-              <Link 
-                to="/registro" 
-                className="bg-gradient-to-r from-brand-900 to-brand-700 text-white px-6 py-3 rounded-xl hover:shadow-lg hover:shadow-brand-500/25 transition-all hover:scale-105 font-semibold relative overflow-hidden group"
-              >
-                <span className="relative z-10">Crear mi tienda</span>
-                <div className="absolute inset-0 bg-gradient-to-r from-brand-700 to-brand-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              </Link>
+              {user ? (
+                // Usuario logueado
+                <>
+                  <button
+                    onClick={handleLogout}
+                    className="text-gray-700 dark:text-gray-300 hover:text-red-500 transition-all hover:scale-105 font-medium px-3 py-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-2"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Cerrar sesión
+                  </button>
+                  <Link 
+                    to="/panel" 
+                    className="bg-gradient-to-r from-brand-900 to-brand-700 text-white px-6 py-3 rounded-xl hover:shadow-lg hover:shadow-brand-500/25 transition-all hover:scale-105 font-semibold relative overflow-hidden group flex items-center gap-2"
+                  >
+                    <span className="relative z-10 flex items-center gap-2">
+                      <Store className="h-4 w-4" />
+                      Ir a mi tienda
+                    </span>
+                    <div className="absolute inset-0 bg-gradient-to-r from-brand-700 to-brand-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                  </Link>
+                </>
+              ) : (
+                // Usuario no logueado
+                <>
+                  <Link 
+                    to="/login" 
+                    className="text-gray-700 dark:text-gray-300 hover:text-brand-500 transition-all hover:scale-105 font-medium px-3 py-2 rounded-lg hover:bg-brand-50 dark:hover:bg-gray-800"
+                  >
+                    Iniciar sesión
+                  </Link>
+                  <Link 
+                    to="/registro" 
+                    className="bg-gradient-to-r from-brand-900 to-brand-700 text-white px-6 py-3 rounded-xl hover:shadow-lg hover:shadow-brand-500/25 transition-all hover:scale-105 font-semibold relative overflow-hidden group"
+                  >
+                    <span className="relative z-10">Crear mi tienda</span>
+                    <div className="absolute inset-0 bg-gradient-to-r from-brand-700 to-brand-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                  </Link>
+                </>
+              )}
             </div>
 
             {/* Mobile menu button */}
@@ -119,20 +158,47 @@ export default function HomePage() {
             <div className="md:hidden border-t border-gray-200/50 dark:border-gray-700/50 backdrop-blur-lg">
               <div className="bg-white/95 dark:bg-gray-900/95 py-6">
                 <div className="flex flex-col space-y-4 px-4">
-                  <Link 
-                    to="/login" 
-                    className="text-gray-700 dark:text-gray-300 hover:text-brand-500 transition-all hover:scale-105 px-4 py-3 rounded-xl hover:bg-brand-50 dark:hover:bg-gray-800 font-medium"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    Iniciar sesión
-                  </Link>
-                  <Link 
-                    to="/registro" 
-                    className="bg-gradient-to-r from-brand-900 to-brand-700 text-white px-6 py-3 rounded-xl hover:shadow-lg hover:shadow-brand-500/25 transition-all hover:scale-105 font-semibold text-center"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    Crear mi tienda
-                  </Link>
+                  {user ? (
+                    // Usuario logueado - móvil
+                    <>
+                      <button
+                        onClick={() => {
+                          handleLogout()
+                          setMobileMenuOpen(false)
+                        }}
+                        className="text-gray-700 dark:text-gray-300 hover:text-red-500 transition-all hover:scale-105 px-4 py-3 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20 font-medium flex items-center gap-2"
+                      >
+                        <LogOut className="h-4 w-4" />
+                        Cerrar sesión
+                      </button>
+                      <Link 
+                        to="/panel" 
+                        className="bg-gradient-to-r from-brand-900 to-brand-700 text-white px-6 py-3 rounded-xl hover:shadow-lg hover:shadow-brand-500/25 transition-all hover:scale-105 font-semibold text-center flex items-center justify-center gap-2"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        <Store className="h-4 w-4" />
+                        Ir a mi tienda
+                      </Link>
+                    </>
+                  ) : (
+                    // Usuario no logueado - móvil
+                    <>
+                      <Link 
+                        to="/login" 
+                        className="text-gray-700 dark:text-gray-300 hover:text-brand-500 transition-all hover:scale-105 px-4 py-3 rounded-xl hover:bg-brand-50 dark:hover:bg-gray-800 font-medium"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        Iniciar sesión
+                      </Link>
+                      <Link 
+                        to="/registro" 
+                        className="bg-gradient-to-r from-brand-900 to-brand-700 text-white px-6 py-3 rounded-xl hover:shadow-lg hover:shadow-brand-500/25 transition-all hover:scale-105 font-semibold text-center"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        Crear mi tienda
+                      </Link>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
@@ -168,19 +234,43 @@ export default function HomePage() {
             
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center mb-12 md:mb-16 px-4">
-              <Link 
-                to="/registro?plan=esencial" 
-                className="group bg-gradient-to-r from-brand-accent to-orange-500 text-white px-8 md:px-10 py-4 md:py-5 rounded-2xl font-bold hover:from-orange-600 hover:to-red-500 hover:shadow-2xl hover:shadow-brand-accent/25 transition-all duration-300 transform hover:scale-105 flex items-center justify-center text-lg md:text-xl"
-              >
-                <span>Crear mi tienda</span>
-                <ArrowRight className="ml-3 h-5 w-5 md:h-6 md:w-6 group-hover:translate-x-1 transition-transform" />
-              </Link>
-              <Link 
-                to="/login" 
-                className="border-2 border-white/60 text-white px-8 md:px-10 py-4 md:py-5 rounded-2xl font-bold hover:bg-white/10 hover:border-white transition-all duration-300 backdrop-blur-sm text-lg md:text-xl"
-              >
-                Iniciar sesión
-              </Link>
+              {user ? (
+                // Usuario logueado - Hero
+                <>
+                  <Link 
+                    to="/panel" 
+                    className="group bg-gradient-to-r from-brand-accent to-orange-500 text-white px-8 md:px-10 py-4 md:py-5 rounded-2xl font-bold hover:from-orange-600 hover:to-red-500 hover:shadow-2xl hover:shadow-brand-accent/25 transition-all duration-300 transform hover:scale-105 flex items-center justify-center text-lg md:text-xl"
+                  >
+                    <Store className="mr-3 h-5 w-5 md:h-6 md:w-6" />
+                    <span>Ir a mi tienda</span>
+                    <ArrowRight className="ml-3 h-5 w-5 md:h-6 md:w-6 group-hover:translate-x-1 transition-transform" />
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="border-2 border-white/60 text-white px-8 md:px-10 py-4 md:py-5 rounded-2xl font-bold hover:bg-red-500/20 hover:border-red-300 transition-all duration-300 backdrop-blur-sm text-lg md:text-xl flex items-center justify-center gap-3"
+                  >
+                    <LogOut className="h-5 w-5 md:h-6 md:w-6" />
+                    Cerrar sesión
+                  </button>
+                </>
+              ) : (
+                // Usuario no logueado - Hero
+                <>
+                  <Link 
+                    to="/registro?plan=esencial" 
+                    className="group bg-gradient-to-r from-brand-accent to-orange-500 text-white px-8 md:px-10 py-4 md:py-5 rounded-2xl font-bold hover:from-orange-600 hover:to-red-500 hover:shadow-2xl hover:shadow-brand-accent/25 transition-all duration-300 transform hover:scale-105 flex items-center justify-center text-lg md:text-xl"
+                  >
+                    <span>Crear mi tienda</span>
+                    <ArrowRight className="ml-3 h-5 w-5 md:h-6 md:w-6 group-hover:translate-x-1 transition-transform" />
+                  </Link>
+                  <Link 
+                    to="/login" 
+                    className="border-2 border-white/60 text-white px-8 md:px-10 py-4 md:py-5 rounded-2xl font-bold hover:bg-white/10 hover:border-white transition-all duration-300 backdrop-blur-sm text-lg md:text-xl"
+                  >
+                    Iniciar sesión
+                  </Link>
+                </>
+              )}
             </div>
 
             {/* Beneficios rápidos */}
