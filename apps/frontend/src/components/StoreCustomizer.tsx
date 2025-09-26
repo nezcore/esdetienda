@@ -9,11 +9,11 @@ interface StoreCustomizerProps {
 }
 
 export default function StoreCustomizer({ isOpen, onClose, onSave }: StoreCustomizerProps) {
+  if (!isOpen) return null
+
   const { storeTheme, setStoreTheme } = useTheme()
   const [activeTab, setActiveTab] = useState<'colors' | 'layout' | 'content'>('colors')
   const [tempTheme, setTempTheme] = useState(storeTheme)
-
-  if (!isOpen) return null
 
   const colorPresets = [
     { name: 'Azul Océano', primary: '#3B82F6', secondary: '#1E40AF', accent: '#F59E0B' },
