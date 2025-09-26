@@ -213,7 +213,7 @@ export default function PublicStorePageNew() {
           <div className="absolute inset-0 bg-black/20"></div>
           <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/5 to-transparent"></div>
           
-          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
             <div className="text-center">
               {/* Logo de la tienda - más pequeño */}
               <div className="mb-4">
@@ -252,19 +252,19 @@ export default function PublicStorePageNew() {
                 </button>
               </div>
 
-              {/* Estadísticas - más compactas */}
-              <div className="grid grid-cols-3 gap-4 max-w-lg mx-auto">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-white mb-1">{products.length}</div>
-                  <div className="text-white/80 text-sm">Productos</div>
+              {/* Estadísticas - más compactas y visibles */}
+              <div className="relative z-20 grid grid-cols-3 gap-4 max-w-lg mx-auto">
+                <div className="text-center bg-white/10 backdrop-blur-md rounded-xl p-3 border border-white/20 shadow-lg">
+                  <div className="text-2xl font-bold text-white mb-1 drop-shadow-md">{products.length}</div>
+                  <div className="text-white/90 text-sm font-medium">Productos</div>
                 </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-white mb-1">{categories.length}</div>
-                  <div className="text-white/80 text-sm">Categorías</div>
+                <div className="text-center bg-white/10 backdrop-blur-md rounded-xl p-3 border border-white/20 shadow-lg">
+                  <div className="text-2xl font-bold text-white mb-1 drop-shadow-md">{categories.length}</div>
+                  <div className="text-white/90 text-sm font-medium">Categorías</div>
                 </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-white mb-1">5★</div>
-                  <div className="text-white/80 text-sm">Calificación</div>
+                <div className="text-center bg-white/10 backdrop-blur-md rounded-xl p-3 border border-white/20 shadow-lg">
+                  <div className="text-2xl font-bold text-white mb-1 drop-shadow-md">5★</div>
+                  <div className="text-white/90 text-sm font-medium">Calificación</div>
                 </div>
               </div>
             </div>
