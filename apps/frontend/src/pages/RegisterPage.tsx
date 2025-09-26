@@ -218,7 +218,7 @@ export default function RegisterPage() {
 
     const data = {
       email,
-      password: formData.get('password') as string,
+      password,
       businessName,
       tenantSlug,
       plan: selectedPlan

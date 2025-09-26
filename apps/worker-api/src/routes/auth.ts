@@ -1,6 +1,7 @@
 import { Hono } from 'hono'
 import { z } from 'zod'
 import { Env } from '../index'
+import { verifyPasswordPBKDF2, hashPasswordPBKDF2 } from '../utils/password'
 
 const auth = new Hono<{ Bindings: Env }>()
 
@@ -65,8 +66,15 @@ auth.post('/login', async (c) => {
       }, 401)
     }
 
-    // Verificar contraseña (por ahora comparación directa, TODO: hash real)
-    if (user.password_hash !== validatedData.password) {
+    // Verificar contraseña (soportar texto plano legado o PBKDF2)
+    let passwordOk = false
+    if (typeof user.password_hash === 'string' && user.password_hash.startsWith('pbkdf2$')) {
+      passwordOk = await verifyPasswordPBKDF2(validatedData.password, user.password_hash)
+    } else {
+      passwordOk = user.password_hash === validatedData.password
+    }
+
+    if (!passwordOk) {
       return c.json({
         error: 'Error de autenticación',
         message: 'Email o contraseña incorrectos'
@@ -234,3 +242,115 @@ auth.get('/me', async (c) => {
 })
 
 export default auth
+
+// Utilidad para extraer userId de nuestro token mock: jwt_<userId>_<timestamp>
+function getUserIdFromAuthHeader(c: any): string | null {
+  const auth = c.req.header('Authorization')
+  if (!auth || !auth.startsWith('Bearer ')) return null
+  const token = auth.slice('Bearer '.length)
+  if (!token.startsWith('jwt_')) return null
+  const parts = token.split('_')
+  return parts.length >= 3 ? parts[1] : null
+}
+
+// PUT /auth/email - Actualizar email del usuario autenticado (requiere contraseña actual)
+auth.put('/email', async (c) => {
+  try {
+    const body = await c.req.json()
+    const schema = z.object({
+      newEmail: z.string().email('Email inválido'),
+      currentPassword: z.string().min(8)
+    })
+    const { newEmail, currentPassword } = schema.parse(body)
+
+    const userId = getUserIdFromAuthHeader(c)
+    if (!userId) return c.json({ error: 'No autorizado' }, 401)
+
+    const supabase = c.get('supabase')
+    const { data: user, error: userError } = await supabase
+      .from('users')
+      .select('id,email,password_hash')
+      .eq('id', userId)
+      .maybeSingle()
+
+    if (userError || !user) {
+      return c.json({ error: 'Usuario no encontrado' }, 404)
+    }
+
+    let passwordOk = false
+    if (typeof user.password_hash === 'string' && user.password_hash.startsWith('pbkdf2$')) {
+      passwordOk = await verifyPasswordPBKDF2(currentPassword, user.password_hash)
+    } else {
+      passwordOk = user.password_hash === currentPassword
+    }
+    if (!passwordOk) return c.json({ error: 'Contraseña actual incorrecta' }, 400)
+
+    const { error: updateError } = await supabase
+      .from('users')
+      .update({ email: newEmail })
+      .eq('id', userId)
+
+    if (updateError) {
+      return c.json({ error: 'No se pudo actualizar el email' }, 500)
+    }
+
+    return c.json({ success: true, message: 'Email actualizado' })
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return c.json({ error: 'Datos inválidos', details: error.errors }, 400)
+    }
+    return c.json({ error: 'Error al actualizar email' }, 500)
+  }
+})
+
+// PUT /auth/password - Actualizar contraseña del usuario autenticado
+auth.put('/password', async (c) => {
+  try {
+    const body = await c.req.json()
+    const schema = z.object({
+      currentPassword: z.string().min(8),
+      newPassword: z.string().min(8)
+    })
+    const { currentPassword, newPassword } = schema.parse(body)
+
+    const userId = getUserIdFromAuthHeader(c)
+    if (!userId) return c.json({ error: 'No autorizado' }, 401)
+
+    const supabase = c.get('supabase')
+    const { data: user, error: userError } = await supabase
+      .from('users')
+      .select('id,password_hash')
+      .eq('id', userId)
+      .maybeSingle()
+
+    if (userError || !user) {
+      return c.json({ error: 'Usuario no encontrado' }, 404)
+    }
+
+    let passwordOk = false
+    if (typeof user.password_hash === 'string' && user.password_hash.startsWith('pbkdf2$')) {
+      passwordOk = await verifyPasswordPBKDF2(currentPassword, user.password_hash)
+    } else {
+      passwordOk = user.password_hash === currentPassword
+    }
+    if (!passwordOk) return c.json({ error: 'Contraseña actual incorrecta' }, 400)
+
+    // Guardar en hash PBKDF2 (mejora seguridad sin romper login legacy)
+    const hashed = await hashPasswordPBKDF2(newPassword)
+    const { error: updateError } = await supabase
+      .from('users')
+      .update({ password_hash: hashed })
+      .eq('id', userId)
+
+    if (updateError) {
+      return c.json({ error: 'No se pudo actualizar la contraseña' }, 500)
+    }
+
+    return c.json({ success: true, message: 'Contraseña actualizada' })
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return c.json({ error: 'Datos inválidos', details: error.errors }, 400)
+    }
+    return c.json({ error: 'Error al actualizar contraseña' }, 500)
+  }
+})

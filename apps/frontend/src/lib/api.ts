@@ -181,6 +181,14 @@ export const authApi = {
     localStorage.removeItem('user_data')
   },
 
+  async updateEmail(newEmail: string, currentPassword: string): Promise<{ success: boolean; message?: string; error?: string }> {
+    return api.put('/auth/email', { newEmail, currentPassword })
+  },
+
+  async updatePassword(currentPassword: string, newPassword: string): Promise<{ success: boolean; message?: string; error?: string }> {
+    return api.put('/auth/password', { currentPassword, newPassword })
+  },
+
   async checkSlug(slug: string): Promise<{ available: boolean }> {
     try {
       const response = await api.get<{ available: boolean }>(`/tenants/slug/${slug}`)
