@@ -29,6 +29,7 @@ import TermsPage from './pages/TermsPage'
 import AddProductPage from './pages/AddProductPage'
 import PublicStorePage from './pages/PublicStorePage'
 import ImportGuidePage from './pages/ImportGuidePage'
+import CustomizationPage from './pages/CustomizationPage'
 
 function App() {
   useEffect(() => {
@@ -70,6 +71,7 @@ function App() {
               <Route path="recursos" element={<ResourcesPage />} />
               <Route path="agregar-producto" element={<AddProductPage />} />
               <Route path="guia-importacion" element={<ImportGuidePage />} />
+              <Route path="personalizacion" element={<CustomizationPage />} />
             </Route>
             
             {/* Tiendas públicas multi-tenant */}

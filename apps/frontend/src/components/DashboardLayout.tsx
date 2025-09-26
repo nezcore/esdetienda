@@ -44,7 +44,7 @@ export default function DashboardLayout() {
   ]
 
   const secondaryNav = [
-    { label: 'Personalización', to: '#', icon: Palette, disabled: true, external: false, iconColor: 'text-pink-500', disabledColor: 'text-pink-300 dark:text-pink-400' },
+    { label: 'Personalización', to: '/panel/personalizacion', icon: Palette, disabled: false, external: false, iconColor: 'text-pink-500', disabledColor: 'text-pink-300 dark:text-pink-400' },
     { label: 'Configuración', to: '#', icon: Settings, disabled: true, external: false, iconColor: 'text-gray-500', disabledColor: 'text-gray-300 dark:text-gray-400' },
     { label: 'Recursos', to: '/panel/recursos', icon: Gauge, disabled: false, external: false, iconColor: 'text-sky-500', disabledColor: 'text-sky-300 dark:text-sky-400' },
     { label: 'Guía de inicio', to: '/panel/guia-importacion', icon: FileText, disabled: false, external: false, iconColor: 'text-indigo-500', disabledColor: 'text-indigo-300 dark:text-indigo-400' }
