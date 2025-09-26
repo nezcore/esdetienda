@@ -2,6 +2,77 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Variables CSS para personalización de tienda */
+:root {
+  --store-primary: #3B82F6;
+  --store-secondary: #1E40AF;
+  --store-accent: #F59E0B;
+  --store-bg: #F9FAFB;
+  --store-text: #111827;
+  --store-card: #FFFFFF;
+  --store-border: #E5E7EB;
+  --store-gradient-from: #3B82F6;
+  --store-gradient-to: #1E40AF;
+}
+
+/* Clases utilitarias para temas de tienda */
+.store-primary { color: var(--store-primary); }
+.store-secondary { color: var(--store-secondary); }
+.store-accent { color: var(--store-accent); }
+.bg-store-primary { background-color: var(--store-primary); }
+.bg-store-secondary { background-color: var(--store-secondary); }
+.bg-store-accent { background-color: var(--store-accent); }
+.bg-store-gradient { background: linear-gradient(135deg, var(--store-gradient-from), var(--store-gradient-to)); }
+.border-store { border-color: var(--store-border); }
+
+/* Animaciones y transiciones suaves */
+.smooth-transition { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+
+/* Efectos de hover y focus mejorados */
+.hover-lift {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Efectos de glassmorphism */
+.glass {
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  background-color: rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(209, 213, 219, 0.3);
+}
+
+.glass-dark {
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  background-color: rgba(17, 24, 39, 0.75);
+  border: 1px solid rgba(75, 85, 99, 0.3);
+}
+
+/* Gradientes personalizados */
+.gradient-mesh {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.gradient-sunset {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.gradient-ocean {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+/* Line clamp utilities */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
