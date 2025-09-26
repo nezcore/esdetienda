@@ -188,18 +188,12 @@ export default function PublicStorePageNew() {
       
       if (logoData.type === 'image') {
         updateData.logo = logoData.value
-        updateData.icon = undefined // Limpiar icono si se sube imagen
       } else if (logoData.type === 'icon' || logoData.type === 'emoji') {
         updateData.icon = logoData.value
-        updateData.logo = undefined // Limpiar imagen si se selecciona icono
       }
       
-      console.log('Datos a enviar:', updateData)
-
       // Llamar a la API para actualizar el tenant
       const response = await api.put(`/tenants/${store.slug}`, updateData)
-      
-      console.log('Respuesta del servidor:', response)
       
       if (response.success && response.tenant) {
         // Actualizar estado local con los datos del servidor
@@ -211,18 +205,8 @@ export default function PublicStorePageNew() {
       }
       
     } catch (error: any) {
-      console.error('Error completo:', error)
       console.error('Error guardando logo:', error)
-      
-      // Mostrar error más detallado
-      let errorMessage = 'Error desconocido'
-      if (error.message) {
-        errorMessage = error.message
-      } else if (typeof error === 'string') {
-        errorMessage = error
-      }
-      
-      alert(`Error al guardar el logo: ${errorMessage}`)
+      alert(`Error al guardar el logo: ${error.message || 'Error desconocido'}`)
     }
   }
 
@@ -521,9 +505,14 @@ export default function PublicStorePageNew() {
               {/* Información de la tienda */}
               <div>
                 <div className="flex items-center mb-4">
-                  <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center mr-3">
-                    <ShoppingBag className="h-6 w-6 text-white" />
-                  </div>
+                  <StoreLogo 
+                    logo={store.logo}
+                    icon={store.icon}
+                    storeName={store.business_name}
+                    size="sm"
+                    className="mr-3"
+                    onClick={isStoreOwner() ? () => setShowLogoCustomizer(true) : undefined}
+                  />
                   <h3 className="text-lg font-bold text-gray-900 dark:text-white">{store.business_name}</h3>
                 </div>
                 <p className="text-gray-600 dark:text-gray-400 mb-4">

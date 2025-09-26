@@ -275,13 +275,26 @@ tenants.put('/:slug', async (c) => {
       }, 404)
     }
     
+    // Preparar datos de actualización con lógica especial para logo/icon
+    const updatePayload = {
+      ...validatedData,
+      updated_at: new Date().toISOString()
+    }
+    
+    // Si se está actualizando el logo, limpiar el icon
+    if (validatedData.logo !== undefined) {
+      updatePayload.icon = null
+    }
+    
+    // Si se está actualizando el icon, limpiar el logo
+    if (validatedData.icon !== undefined) {
+      updatePayload.logo = null
+    }
+    
     // Actualizar tenant en Supabase
     const { data: updatedTenant, error: updateError } = await supabase
       .from('tenants')
-      .update({
-        ...validatedData,
-        updated_at: new Date().toISOString()
-      })
+      .update(updatePayload)
       .eq('slug', slug)
       .select()
       .single()
