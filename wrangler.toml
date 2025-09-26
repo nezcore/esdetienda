@@ -1,0 +1,24 @@
+# Configuración de Cloudflare Workers para auto-deploy desde GitHub
+# Este archivo debe estar en la raíz del proyecto para que funcione el auto-deploy
+
+name = "esdetienda-api"
+main = "apps/worker-api/src/index.ts"
+compatibility_date = "2025-09-26"
+compatibility_flags = ["nodejs_compat"]
+
+# Variables de entorno (configurar en Cloudflare Dashboard)
+[vars]
+NODE_ENV = "production"
+OPENROUTER_API_URL = "https://openrouter.ai/api/v1"
+OPENROUTER_APP_NAME = "EsDeTienda-Bot"
+OPENROUTER_SITE_URL = "https://esdetienda.com"
+STT_PROVIDER = "assemblyai"
+
+# R2 Bucket para medios
+[[r2_buckets]]
+binding = "R2"
+bucket_name = "esdetienda"
+
+# Configuración de development
+[env.development]
+vars = { NODE_ENV = "development" }
