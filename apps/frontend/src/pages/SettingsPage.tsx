@@ -4,7 +4,7 @@ import { authApi } from '../lib/api'
 import { useAuth } from '../contexts/AuthContext'
 
 export default function SettingsPage() {
-  const { user } = useAuth()
+  const { user, updateUserEmail } = useAuth()
   const [email, setEmail] = useState(user?.email || '')
   const [currentPasswordForEmail, setCurrentPasswordForEmail] = useState('')
   const [currentPassword, setCurrentPassword] = useState('')
@@ -29,6 +29,8 @@ export default function SettingsPage() {
       setLoadingEmail(true)
       const res = await authApi.updateEmail(email, currentPasswordForEmail)
       if ((res as any).success) {
+        // Actualizar el contexto de usuario con el nuevo email
+        updateUserEmail(email)
         showToast('Email actualizado correctamente', 'success')
         setCurrentPasswordForEmail('')
       } else {

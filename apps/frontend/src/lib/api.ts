@@ -197,6 +197,16 @@ export const authApi = {
       // En caso de error de red, asumir que está disponible
       return { available: true }
     }
+  },
+
+  async checkEmail(email: string): Promise<{ available: boolean; message?: string }> {
+    try {
+      const response = await api.get<{ available: boolean; message?: string }>(`/auth/check-email/${encodeURIComponent(email)}`)
+      return response
+    } catch (error) {
+      // En caso de error de red, asumir que está disponible
+      return { available: true }
+    }
   }
 }
 

@@ -125,6 +125,25 @@ auth.post('/register', async (c) => {
     
     const supabase = c.get('supabase')
 
+    // Verificar que el email no exista
+    const { data: existingUser, error: existingUserError } = await supabase
+      .from('users')
+      .select('id')
+      .eq('email', validatedData.email)
+      .maybeSingle()
+
+    if (existingUserError) {
+      console.error('Supabase user check error:', existingUserError)
+      return c.json({ error: 'Error al validar el email' }, 500)
+    }
+
+    if (existingUser) {
+      return c.json({
+        error: 'Email ya existe',
+        message: `El correo '${validatedData.email}' ya está en uso. Elige otro correo o inicia sesión.`
+      }, 409)
+    }
+
     // Verificar que el tenantSlug no exista
     const { data: existingTenant, error: existingTenantError } = await supabase
       .from('tenants')
@@ -161,12 +180,13 @@ auth.post('/register', async (c) => {
       return c.json({ error: 'Error al crear la tienda' }, 500)
     }
 
-    // Crear usuario
+    // Crear usuario con contraseña hasheada
+    const hashedPassword = await hashPasswordPBKDF2(validatedData.password)
     const { data: user, error: userError } = await supabase
       .from('users')
       .insert({
         email: validatedData.email,
-        password_hash: validatedData.password, // TODO: hash real
+        password_hash: hashedPassword,
         tenant_id: tenant.id,
         role: 'admin'
       })
@@ -239,6 +259,37 @@ auth.get('/me', async (c) => {
     success: true,
     user: mockUser
   })
+})
+
+// GET /auth/check-email/:email - Verificar disponibilidad de email
+auth.get('/check-email/:email', async (c) => {
+  try {
+    const email = c.req.param('email')
+    
+    if (!email || !email.includes('@')) {
+      return c.json({ available: false, error: 'Email inválido' }, 400)
+    }
+
+    const supabase = c.get('supabase')
+    const { data: existingUser, error } = await supabase
+      .from('users')
+      .select('id')
+      .eq('email', email)
+      .maybeSingle()
+
+    if (error) {
+      console.error('Error checking email availability:', error)
+      return c.json({ available: true }, 200) // Asumir disponible en caso de error
+    }
+
+    return c.json({ 
+      available: !existingUser,
+      message: existingUser ? 'El correo ya está en uso' : 'Correo disponible'
+    })
+  } catch (error) {
+    console.error('Email check error:', error)
+    return c.json({ available: true }, 200)
+  }
 })
 
 export default auth

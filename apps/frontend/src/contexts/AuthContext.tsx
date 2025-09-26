@@ -24,6 +24,7 @@ interface AuthContextType {
   login: (token: string, user: User, tenant?: Tenant) => void
   logout: () => void
   checkAuth: () => void
+  updateUserEmail: (newEmail: string) => void
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -93,6 +94,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setTenant(null)
   }
 
+  const updateUserEmail = (newEmail: string) => {
+    if (user) {
+      const updatedUser = { ...user, email: newEmail }
+      setUser(updatedUser)
+      localStorage.setItem('user_data', JSON.stringify(updatedUser))
+    }
+  }
+
   const value: AuthContextType = {
     user,
     tenant,
@@ -101,7 +110,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     isLoading,
     login,
     logout,
-    checkAuth
+    checkAuth,
+    updateUserEmail
   }
 
   return (

@@ -24,6 +24,9 @@ export default function RegisterPage() {
   const [slugStatus, setSlugStatus] = useState<'idle' | 'checking' | 'available' | 'taken' | 'invalid'>(
     'idle'
   )
+  const [emailStatus, setEmailStatus] = useState<'idle' | 'checking' | 'available' | 'taken' | 'invalid'>(
+    'idle'
+  )
   const [acceptTerms, setAcceptTerms] = useState(false)
   const [termsTouched, setTermsTouched] = useState(false)
   const isBusinessNameValid = businessName.trim().length >= 4
@@ -125,9 +128,44 @@ export default function RegisterPage() {
     return () => clearTimeout(delay)
   }, [tenantSlug])
 
+  useEffect(() => {
+    const value = email.trim().toLowerCase()
+
+    if (!value) {
+      setEmailStatus('idle')
+      return
+    }
+
+    // Verificar formato básico
+    if (!value.includes('@') || value.length < 5) {
+      setEmailStatus('invalid')
+      return
+    }
+
+    const domain = (value.split('@')[1] ?? '').toLowerCase()
+    if (!allowedDomainList.includes(domain)) {
+      setEmailStatus('invalid')
+      return
+    }
+
+    setEmailStatus('checking')
+
+    const delay = setTimeout(async () => {
+      try {
+        const response = await authApi.checkEmail(value)
+        setEmailStatus(response.available ? 'available' : 'taken')
+      } catch (error) {
+        console.error('Error verificando email:', error)
+        setEmailStatus('available') // En caso de error, asumir disponible
+      }
+    }, 500)
+
+    return () => clearTimeout(delay)
+  }, [email])
+
   const emailHasAt = email.includes('@')
   const emailDomainPart = (email.split('@')[1] ?? '').toLowerCase()
-  const emailValid = emailHasAt && allowedDomainList.includes(emailDomainPart)
+  const emailValid = emailHasAt && allowedDomainList.includes(emailDomainPart) && emailStatus === 'available'
 
   const evaluatePassword = (value: string) => {
     let score = 0
@@ -158,7 +196,7 @@ export default function RegisterPage() {
   // Paso a paso: validaciones y navegación
   const isSlugValid = slugPattern.test(tenantSlug) && tenantSlug.length >= 4 && slugStatus === 'available'
   const isPasswordValid = password.length >= 8
-  const isEmailValidForSubmit = emailValid && !emailError
+  const isEmailValidForSubmit = emailValid && !emailError && emailStatus === 'available'
   const totalSteps = 4
   const stepValidity = [
     isBusinessNameValid,
@@ -406,7 +444,9 @@ export default function RegisterPage() {
                               required
                               value={email}
                               className={`w-full px-3 py-2 pr-10 border rounded-xl focus:ring-brand-500 focus:border-brand-500 dark:bg-gray-900 dark:text-gray-100 ${
-                                emailError ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 dark:border-gray-700'
+                                emailStatus === 'invalid' || emailStatus === 'taken' || emailError
+                                  ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
+                                  : 'border-gray-300 dark:border-gray-700'
                               }`}
                               placeholder="tu@email.com"
                               onChange={(event) => {
@@ -427,19 +467,25 @@ export default function RegisterPage() {
                               onBlur={() => setEmailTouched(true)}
                             />
                             <span className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
-                              {emailError && emailHasAt && (
-                                <XCircle className="h-5 w-5 text-red-500" />
+                              {emailStatus === 'checking' && (
+                                <Loader2 className="h-5 w-5 text-brand-500 animate-spin" />
                               )}
-                              {!emailError && emailValid && (
+                              {emailStatus === 'available' && email && !emailError && (
                                 <CheckCircle className="h-5 w-5 text-emerald-500" />
+                              )}
+                              {(emailStatus === 'taken' || emailStatus === 'invalid' || emailError) && email && (
+                                <XCircle className="h-5 w-5 text-red-500" />
                               )}
                             </span>
                           </div>
-                          {emailTouched && (!!emailError || !emailValid) && (
+                          {email && (emailError || emailStatus === 'taken' || emailStatus === 'invalid' || (emailTouched && !emailValid)) && (
                             <div className="animate-slide-up-fade">
                               <div className="rounded-2xl border border-red-200/80 bg-red-50/90 dark:bg-red-500/10 dark:border-red-500/40 px-4 py-3 shadow-md shadow-red-500/10 backdrop-blur">
                                 <p className="text-sm font-medium text-red-600 dark:text-red-300">
-                                  {emailError || 'Ingresa un correo permitido.'}
+                                  {emailError || 
+                                   (emailStatus === 'taken' ? 'Este correo ya está en uso. Elige otro correo o inicia sesión.' :
+                                    emailStatus === 'invalid' ? 'Correo inválido o no permitido.' :
+                                    'Ingresa un correo válido.')}
                                 </p>
                               </div>
                             </div>
