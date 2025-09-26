@@ -297,11 +297,11 @@ export default function RegisterPage() {
                 </div>
 
                 <form onSubmit={handleRegister}>
-                  {/* Paso 1: Nombre del negocio */}
+                  {/* Paso 1: ¿Cómo llamaremos tu negocio? */}
                   {currentStepIndex === 0 && (
                     <div className="space-y-2">
                       <label className="block text-sm font-medium text-gray-800 dark:text-gray-200 mb-1">
-                        Nombre del negocio
+                        ¿Cómo llamaremos tu negocio?
                       </label>
                       <div className="relative">
                         <input
@@ -336,11 +336,11 @@ export default function RegisterPage() {
                     </div>
                   )}
 
-                  {/* Paso 2: Slug */}
+                  {/* Paso 2: Dirección de tu tienda (URL) */}
                   {currentStepIndex === 1 && (
                     <div className="space-y-2">
                       <label className="block text-sm font-medium text-gray-800 dark:text-gray-200 mb-1">
-                        Slug de tu tienda
+                        Dirección de tu tienda (URL)
                       </label>
                       <div className="space-y-2">
                         <div className="flex">
@@ -387,6 +387,7 @@ export default function RegisterPage() {
                         )}
                       </div>
                       <p className="text-xs text-gray-500 mt-1">Solo minúsculas, números y guiones</p>
+                      <p className="text-xs text-gray-500">Ejemplo: esdetienda.com/str/mi-tienda</p>
                     </div>
                   )}
 
@@ -395,7 +396,7 @@ export default function RegisterPage() {
                     <div className="space-y-6">
                       <div>
                         <label className="block text-sm font-medium text-gray-800 dark:text-gray-200 mb-1">
-                          Email
+                          Tu correo
                         </label>
                         <div className="space-y-3">
                           <div className="relative">
@@ -448,7 +449,7 @@ export default function RegisterPage() {
 
                       <div>
                         <label className="block text-sm font-medium text-gray-800 dark:text-gray-200 mb-1">
-                          Contraseña
+                          Elige una contraseña
                         </label>
                         <div className="relative">
                           <input
@@ -525,9 +526,9 @@ export default function RegisterPage() {
                       <div className="rounded-2xl border border-gray-100 dark:border-gray-800 p-4 bg-gray-50/50 dark:bg-gray-900/50">
                         <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Resumen</p>
                         <ul className="text-sm text-gray-800 dark:text-gray-200 space-y-1">
-                          <li><span className="font-semibold">Negocio:</span> {businessName || '—'}</li>
-                          <li><span className="font-semibold">Slug:</span> {tenantSlug || '—'}</li>
-                          <li><span className="font-semibold">Email:</span> {email || '—'}</li>
+                          <li><span className="font-semibold">Tu negocio:</span> {businessName || '—'}</li>
+                          <li><span className="font-semibold">Dirección (URL):</span> {tenantSlug || '—'}</li>
+                          <li><span className="font-semibold">Tu correo:</span> {email || '—'}</li>
                         </ul>
                       </div>
 
