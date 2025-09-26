@@ -213,31 +213,31 @@ export default function PublicStorePageNew() {
           <div className="absolute inset-0 bg-black/20"></div>
           <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/5 to-transparent"></div>
           
-          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
             <div className="text-center">
-              {/* Logo de la tienda */}
-              <div className="mb-8">
-                <div className="w-24 h-24 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center mx-auto shadow-2xl">
+              {/* Logo de la tienda - más pequeño */}
+              <div className="mb-4">
+                <div className="w-16 h-16 bg-white/10 backdrop-blur-md rounded-xl flex items-center justify-center mx-auto shadow-xl">
                   {store.logo ? (
-                    <img src={store.logo} alt={store.business_name} className="w-16 h-16 rounded-xl" />
+                    <img src={store.logo} alt={store.business_name} className="w-12 h-12 rounded-lg" />
                   ) : (
-                    <ShoppingBag className="h-12 w-12 text-white" />
+                    <ShoppingBag className="h-8 w-8 text-white" />
                   )}
                 </div>
               </div>
 
-              {/* Nombre y descripción */}
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 drop-shadow-lg">
+              {/* Nombre y descripción - más compacto */}
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-3 drop-shadow-lg">
                 {store.business_name}
               </h1>
               {store.description && (
-                <p className="text-xl sm:text-2xl text-white/90 max-w-3xl mx-auto mb-8 leading-relaxed">
+                <p className="text-sm sm:text-base text-white/90 max-w-2xl mx-auto mb-6 leading-relaxed">
                   {store.description}
                 </p>
               )}
 
-              {/* Botones de acción */}
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
+              {/* Solo botón de WhatsApp */}
+              <div className="flex justify-center mb-6">
                 <button
                   onClick={() => {
                     const message = `¡Hola! Me interesa conocer más sobre ${store.business_name}`
@@ -245,30 +245,26 @@ export default function PublicStorePageNew() {
                     const whatsappUrl = `https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(message)}`
                     window.open(whatsappUrl, '_blank')
                   }}
-                  className="inline-flex items-center px-8 py-4 bg-green-500 text-white rounded-full hover:bg-green-600 transition-all transform hover:scale-105 shadow-lg font-semibold text-lg"
+                  className="inline-flex items-center px-6 py-3 bg-green-500 text-white rounded-full hover:bg-green-600 transition-all transform hover:scale-105 shadow-lg font-semibold"
                 >
-                  <MessageCircle className="h-6 w-6 mr-3" />
+                  <MessageCircle className="h-5 w-5 mr-2" />
                   Contactar por WhatsApp
-                </button>
-                <button className="inline-flex items-center px-8 py-4 bg-white/10 backdrop-blur-md text-white rounded-full hover:bg-white/20 transition-all border border-white/20 font-semibold text-lg">
-                  <Phone className="h-6 w-6 mr-3" />
-                  Llamar ahora
                 </button>
               </div>
 
-              {/* Estadísticas */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-2xl mx-auto">
+              {/* Estadísticas - más compactas */}
+              <div className="grid grid-cols-3 gap-4 max-w-lg mx-auto">
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-white mb-2">{products.length}</div>
-                  <div className="text-white/80">Productos</div>
+                  <div className="text-2xl font-bold text-white mb-1">{products.length}</div>
+                  <div className="text-white/80 text-sm">Productos</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-white mb-2">{categories.length}</div>
-                  <div className="text-white/80">Categorías</div>
+                  <div className="text-2xl font-bold text-white mb-1">{categories.length}</div>
+                  <div className="text-white/80 text-sm">Categorías</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-white mb-2">5★</div>
-                  <div className="text-white/80">Calificación</div>
+                  <div className="text-2xl font-bold text-white mb-1">5★</div>
+                  <div className="text-white/80 text-sm">Calificación</div>
                 </div>
               </div>
             </div>

@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { Moon, Sun, ExternalLink, Palette, Settings } from 'lucide-react'
-import { useTheme } from './ThemeProvider'
+import { ExternalLink, Palette } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import ThemeToggle from './ThemeToggle'
 
 interface StoreBannerProps {
   storeName: string
@@ -16,7 +16,6 @@ export default function StoreBanner({
   showCustomization = false,
   onCustomizationClick 
 }: StoreBannerProps) {
-  const { isDark, toggleTheme } = useTheme()
   const [isExpanded, setIsExpanded] = useState(false)
 
   return (
@@ -42,18 +41,8 @@ export default function StoreBanner({
 
           {/* Controles */}
           <div className="flex items-center space-x-2">
-            {/* Toggle de tema */}
-            <button
-              onClick={toggleTheme}
-              className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-              title={isDark ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro'}
-            >
-              {isDark ? (
-                <Sun className="h-4 w-4 text-yellow-500" />
-              ) : (
-                <Moon className="h-4 w-4 text-gray-600" />
-              )}
-            </button>
+            {/* Toggle de tema - usando el componente que funciona */}
+            <ThemeToggle />
 
             {/* Botón de personalización (solo para propietarios) */}
             {showCustomization && (
