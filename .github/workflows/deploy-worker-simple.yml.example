@@ -1,0 +1,26 @@
+# ALTERNATIVA: Integración directa con Cloudflare
+# Este archivo es un ejemplo - no se ejecutará automáticamente
+# Para usarlo, renómbralo quitando la extensión .example
+
+name: Deploy Worker (Simple)
+
+on:
+  push:
+    branches: [main]
+    paths: ['apps/worker-api/**']
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - name: Install and Deploy
+        working-directory: apps/worker-api
+        run: |
+          npm ci
+          npx wrangler deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}

@@ -41,10 +41,11 @@ health.get('/health', async (c) => {
 health.get('/', (c) => {
   return c.json({
     service: 'EsDeTienda API',
-    version: '1.0.0',
+    version: '1.0.1',
     description: 'API Worker para plataforma SaaS multi-tenant',
     documentation: 'https://api.esdetienda.com/docs',
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
+    deployment: 'Auto-deploy desde GitHub activo! 🚀'
   })
 })
 

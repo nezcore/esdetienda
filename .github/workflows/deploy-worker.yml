@@ -1,0 +1,58 @@
+name: Deploy to Cloudflare Workers
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'apps/worker-api/**'
+      - '.github/workflows/deploy-worker.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'apps/worker-api/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy Worker
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: 'apps/worker-api/package-lock.json'
+          
+      - name: Install dependencies
+        working-directory: apps/worker-api
+        run: npm ci
+        
+      - name: Run tests (if any)
+        working-directory: apps/worker-api
+        run: npm test --if-present
+        
+      - name: Deploy to Cloudflare Workers
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: apps/worker-api
+          command: deploy
+          
+      - name: Comment deployment URL
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '🚀 Worker desplegado exitosamente en: https://esdetienda-api.josemiguel-account.workers.dev'
+            })
