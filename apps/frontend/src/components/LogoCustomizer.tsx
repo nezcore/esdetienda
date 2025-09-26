@@ -30,7 +30,7 @@ export default function LogoCustomizer({
     '💊', '🏥', '💉', '🩺', '🦷', '👩‍⚕️',
     '📚', '✏️', '📝', '🎓', '📖', '🖊️',
     '🌸', '🌺', '🌻', '🌹', '🌷', '🌱',
-    '🚗', '🚙', '🏍️', '🚲', '⛽', '🔧'
+    '🚗', '🚙', '🏍️', '🚲', '⛽', '🔋'
   ]
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -135,9 +135,9 @@ export default function LogoCustomizer({
                   Selecciona un icono
                 </h3>
                 <div className="grid grid-cols-6 gap-3">
-                  {predefinedIcons.map((icon) => (
+                  {predefinedIcons.map((icon, index) => (
                     <button
-                      key={icon}
+                      key={`icon-${index}-${icon}`}
                       onClick={() => {
                         setSelectedIcon(icon)
                         setSelectedType('icon')

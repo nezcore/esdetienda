@@ -165,15 +165,20 @@ export default function PublicStorePageNew() {
 
     try {
       console.log('Guardando logo:', logoData)
+      console.log('Store slug:', store.slug)
       
       // Preparar datos para el backend
       const updateData = {
         logo: logoData.type === 'image' ? logoData.value : null,
         icon: logoData.type === 'icon' || logoData.type === 'emoji' ? logoData.value : null
       }
+      
+      console.log('Datos a enviar:', updateData)
 
       // Llamar a la API para actualizar el tenant
       const response = await api.put(`/tenants/${store.slug}`, updateData)
+      
+      console.log('Respuesta del servidor:', response)
       
       if (response.success && response.tenant) {
         // Actualizar estado local con los datos del servidor
@@ -185,8 +190,18 @@ export default function PublicStorePageNew() {
       }
       
     } catch (error: any) {
+      console.error('Error completo:', error)
       console.error('Error guardando logo:', error)
-      alert(`Error al guardar el logo: ${error.message || 'Error desconocido'}`)
+      
+      // Mostrar error más detallado
+      let errorMessage = 'Error desconocido'
+      if (error.message) {
+        errorMessage = error.message
+      } else if (typeof error === 'string') {
+        errorMessage = error
+      }
+      
+      alert(`Error al guardar el logo: ${errorMessage}`)
     }
   }
 
