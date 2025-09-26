@@ -212,6 +212,8 @@ tenants.get('/:slug', async (c) => {
       plan: tenantData.plan,
       status: tenantData.status,
       description: tenantData.description,
+      logo: tenantData.logo,
+      icon: tenantData.icon,
       colors: {
         primary: tenantData.primary_color || '#134572',
         secondary: tenantData.secondary_color || '#27A3A4'
@@ -232,24 +234,98 @@ tenants.get('/:slug', async (c) => {
   }
 })
 
+// Schema para actualizar tenant
+const updateTenantSchema = z.object({
+  business_name: z.string().min(2, 'Nombre de negocio requerido').optional(),
+  description: z.string().optional(),
+  primary_color: z.string().optional(),
+  secondary_color: z.string().optional(),
+  whatsapp_number: z.string().optional(),
+  logo: z.string().optional(),
+  icon: z.string().optional()
+})
+
 // PUT /tenants/:slug - Actualizar configuración del tenant (solo owner)
 tenants.put('/:slug', async (c) => {
   try {
     const slug = c.req.param('slug')
     const body = await c.req.json()
     
-    // TODO: Verificar autenticación y permisos
-    // TODO: Validar datos de entrada
-    // TODO: Actualizar en MongoDB
-    // TODO: Actualizar cache en KV
+    if (!slug) {
+      return c.json({
+        error: 'Slug requerido'
+      }, 400)
+    }
+    
+    // Validar datos de entrada
+    const validatedData = updateTenantSchema.parse(body)
+    
+    const supabase = c.get('supabase')
+    
+    // Verificar que el tenant existe
+    const { data: existingTenant, error: fetchError } = await supabase
+      .from('tenants')
+      .select('id')
+      .eq('slug', slug)
+      .single()
+    
+    if (fetchError || !existingTenant) {
+      return c.json({
+        error: 'Tienda no encontrada'
+      }, 404)
+    }
+    
+    // Actualizar tenant en Supabase
+    const { data: updatedTenant, error: updateError } = await supabase
+      .from('tenants')
+      .update({
+        ...validatedData,
+        updated_at: new Date().toISOString()
+      })
+      .eq('slug', slug)
+      .select()
+      .single()
+    
+    if (updateError) {
+      console.error('Supabase update error:', updateError)
+      return c.json({
+        error: 'Error al actualizar la tienda'
+      }, 500)
+    }
+    
+    // Devolver información pública actualizada
+    const publicTenantInfo = {
+      id: updatedTenant.id,
+      slug: updatedTenant.slug,
+      business_name: updatedTenant.business_name,
+      plan: updatedTenant.plan,
+      status: updatedTenant.status,
+      description: updatedTenant.description,
+      logo: updatedTenant.logo,
+      icon: updatedTenant.icon,
+      colors: {
+        primary: updatedTenant.primary_color || '#134572',
+        secondary: updatedTenant.secondary_color || '#27A3A4'
+      },
+      whatsappNumber: updatedTenant.whatsapp_number
+    }
     
     return c.json({
       success: true,
-      message: 'Tenant actualizado exitosamente'
+      tenant: publicTenantInfo,
+      message: 'Tienda actualizada exitosamente'
     })
     
   } catch (error) {
     console.error('Update tenant error:', error)
+    
+    if (error instanceof z.ZodError) {
+      return c.json({
+        error: 'Datos inválidos',
+        details: error.errors
+      }, 400)
+    }
+    
     return c.json({
       error: 'Error al actualizar tenant'
     }, 500)

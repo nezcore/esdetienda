@@ -161,28 +161,32 @@ export default function PublicStorePageNew() {
   const categories = Array.from(new Set(products.map(p => p.category).filter(Boolean)))
 
   const handleLogoSave = async (logoData: { type: 'icon' | 'image' | 'emoji', value: string }) => {
+    if (!store) return
+
     try {
-      // TODO: Implementar guardado en backend
       console.log('Guardando logo:', logoData)
       
-      // Actualizar estado local temporalmente
-      if (store) {
-        const updatedStore = {
-          ...store,
-          logo: logoData.type === 'image' ? logoData.value : undefined,
-          icon: logoData.type === 'icon' || logoData.type === 'emoji' ? logoData.value : undefined
-        }
-        setStore(updatedStore)
+      // Preparar datos para el backend
+      const updateData = {
+        logo: logoData.type === 'image' ? logoData.value : null,
+        icon: logoData.type === 'icon' || logoData.type === 'emoji' ? logoData.value : null
+      }
+
+      // Llamar a la API para actualizar el tenant
+      const response = await api.put(`/tenants/${store.slug}`, updateData)
+      
+      if (response.success && response.tenant) {
+        // Actualizar estado local con los datos del servidor
+        setStore(response.tenant)
+        setShowLogoCustomizer(false)
+        alert('¡Logo actualizado y guardado exitosamente!')
+      } else {
+        throw new Error(response.message || 'Error al actualizar')
       }
       
-      setShowLogoCustomizer(false)
-      
-      // TODO: Mostrar toast de éxito
-      alert('¡Logo actualizado exitosamente!')
-      
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error guardando logo:', error)
-      alert('Error al guardar el logo')
+      alert(`Error al guardar el logo: ${error.message || 'Error desconocido'}`)
     }
   }
 
