@@ -168,9 +168,14 @@ export default function PublicStorePageNew() {
       console.log('Store slug:', store.slug)
       
       // Preparar datos para el backend
-      const updateData = {
-        logo: logoData.type === 'image' ? logoData.value : null,
-        icon: logoData.type === 'icon' || logoData.type === 'emoji' ? logoData.value : null
+      const updateData: any = {}
+      
+      if (logoData.type === 'image') {
+        updateData.logo = logoData.value
+        updateData.icon = undefined // Limpiar icono si se sube imagen
+      } else if (logoData.type === 'icon' || logoData.type === 'emoji') {
+        updateData.icon = logoData.value
+        updateData.logo = undefined // Limpiar imagen si se selecciona icono
       }
       
       console.log('Datos a enviar:', updateData)
