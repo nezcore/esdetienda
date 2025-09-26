@@ -10,7 +10,6 @@ interface StoreBannerProps {
   storeSlug: string
   storeLogo?: string
   storeIcon?: string
-  showCustomization?: boolean
   onLogoClick?: () => void
 }
 
@@ -19,10 +18,9 @@ export default function StoreBanner({
   storeSlug, 
   storeLogo,
   storeIcon,
-  showCustomization = false,
   onLogoClick
 }: StoreBannerProps) {
-  const { user, tenant, logout, isAuthenticated } = useAuth()
+  const { tenant, logout, isAuthenticated } = useAuth()
   const navigate = useNavigate()
   const [showDropdown, setShowDropdown] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)

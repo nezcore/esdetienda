@@ -1,19 +1,16 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, Link, useSearchParams, useNavigate } from 'react-router-dom'
-import { 
-  ShoppingBag, 
-  MessageCircle, 
-  Star, 
-  ArrowLeft, 
+import {
+  ShoppingBag,
+  MessageCircle,
+  ArrowLeft,
   Search,
-  Filter,
   Grid3X3,
   List,
   Heart,
   Share2,
   MapPin,
   Clock,
-  Phone,
   Instagram,
   Facebook,
   Twitter
@@ -90,7 +87,7 @@ export default function PublicStorePageNew() {
 
       // 1. Obtener información del tenant por slug
       const tenantResponse = await api.get<{success: boolean, tenant?: Store}>(`/tenants/${tenantSlug}`)
-      
+
       if (!tenantResponse.success || !tenantResponse.tenant) {
         setError('Tienda no encontrada')
         setLoading(false)
@@ -102,12 +99,12 @@ export default function PublicStorePageNew() {
 
       // 2. Cargar productos del tenant
       const productsResponse = await api.get<{products: Product[]}>(`/products?tenantId=${tenant.id}`)
-      
+
       // Filtrar solo productos activos para la tienda pública
-      const activeProducts = (productsResponse.products || []).filter(product => 
+      const activeProducts = (productsResponse.products || []).filter(product =>
         product.status === 'active' && (product.stock === undefined || product.stock > 0)
       )
-      
+
       setProducts(activeProducts)
 
     } catch (error: any) {
@@ -178,7 +175,7 @@ export default function PublicStorePageNew() {
 
       if (!triggeredFromUrl) {
         const params = new URLSearchParams(searchParams)
-        params.set('product', productId)
+        params.set('product', productId ?? '')
         setSearchParams(params, { replace: false })
       }
 
@@ -226,7 +223,7 @@ export default function PublicStorePageNew() {
   // Verificar si el usuario actual es propietario de esta tienda
   const isStoreOwner = () => {
     if (!isAuthenticated || !user || !store) return false
-    
+
     // Verificar si el tenant del usuario autenticado coincide con la tienda actual
     return tenant?.id === store.id || tenant?.slug === store.slug
   }
@@ -243,28 +240,28 @@ export default function PublicStorePageNew() {
     try {
       console.log('Guardando logo:', logoData)
       console.log('Store slug:', store.slug)
-      
+
       // Preparar datos para el backend
       const updateData: any = {}
-      
+
       if (logoData.type === 'image') {
         updateData.logo = logoData.value
       } else if (logoData.type === 'icon' || logoData.type === 'emoji') {
         updateData.icon = logoData.value
       }
-      
+
       // Llamar a la API para actualizar el tenant
-      const response = await api.put(`/tenants/${store.slug}`, updateData)
-      
-      if (response.success && response.tenant) {
+      const response = await api.put<{ success: boolean; tenant?: Store; message?: string }>(`/tenants/${store.slug}`, updateData)
+
+      if (response?.success && response.tenant) {
         // Actualizar estado local con los datos del servidor
         setStore(response.tenant)
         setShowLogoCustomizer(false)
         alert('¡Logo actualizado y guardado exitosamente!')
       } else {
-        throw new Error(response.message || 'Error al actualizar')
+        throw new Error(response?.message || 'Error al actualizar')
       }
-      
+
     } catch (error: any) {
       console.error('Error guardando logo:', error)
       alert(`Error al guardar el logo: ${error.message || 'Error desconocido'}`)
@@ -292,8 +289,8 @@ export default function PublicStorePageNew() {
           <p className="text-gray-600 dark:text-gray-400 mb-6">
             {error ? 'Ocurrió un error al cargar la tienda.' : 'La tienda que buscas no existe o no está disponible.'}
           </p>
-          <Link 
-            to="/" 
+          <Link
+            to="/"
             className="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
@@ -313,7 +310,7 @@ export default function PublicStorePageNew() {
     <ThemeProvider initialTheme={storeTheme}>
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
         {/* Banner fijo */}
-        <StoreBanner 
+        <StoreBanner
           storeName={store.business_name}
           storeSlug={store.slug}
           storeLogo={store.logo}
@@ -329,12 +326,12 @@ export default function PublicStorePageNew() {
           {/* Patrón de fondo */}
           <div className="absolute inset-0 bg-black/20"></div>
           <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/5 to-transparent"></div>
-          
+
           <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
             <div className="text-center">
               {/* Logo de la tienda - más pequeño */}
               <div className="mb-4 flex justify-center">
-                <StoreLogo 
+                <StoreLogo
                   logo={store.logo}
                   icon={store.icon}
                   storeName={store.business_name}
@@ -449,15 +446,15 @@ export default function PublicStorePageNew() {
                 {searchQuery || selectedCategory ? 'No se encontraron productos' : 'No hay productos disponibles'}
               </h3>
               <p className="text-gray-600 dark:text-gray-400">
-                {searchQuery || selectedCategory 
-                  ? 'Intenta con otros términos de búsqueda o filtros.' 
+                {searchQuery || selectedCategory
+                  ? 'Intenta con otros términos de búsqueda o filtros.'
                   : 'Esta tienda aún no ha agregado productos.'}
               </p>
             </div>
           ) : (
             <div className={`grid gap-6 ${
-              viewMode === 'grid' 
-                ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' 
+              viewMode === 'grid'
+                ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
                 : 'grid-cols-1'
             }`}>
               {filteredProducts.map((product) => (
@@ -588,7 +585,7 @@ export default function PublicStorePageNew() {
               {/* Información de la tienda */}
               <div>
                 <div className="flex items-center mb-4">
-                  <StoreLogo 
+                  <StoreLogo
                     logo={store.logo}
                     icon={store.icon}
                     storeName={store.business_name}
@@ -623,7 +620,8 @@ export default function PublicStorePageNew() {
                   {categories.slice(0, 5).map(category => (
                     <li key={category}>
                       <button
-                        onClick={() => setSelectedCategory(category)}
+                        key={category}
+                        onClick={() => setSelectedCategory(category ?? '')}
                         className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                       >
                         {category}

@@ -247,7 +247,7 @@ Precio estimado: ${formatPrice((product.price || 0) * quantity)}
                     {product.category}
                   </span>
                 )}
-                {product.stock !== undefined && product.stock > 0 && (
+                {typeof product.stock === 'number' && product.stock > 0 && (
                   <span className="px-3 py-1 text-xs font-medium bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-200 rounded-full">
                     Disponible
                   </span>
@@ -300,11 +300,11 @@ Precio estimado: ${formatPrice((product.price || 0) * quantity)}
             <div className="space-y-3">
               <p className="text-sm text-gray-500 dark:text-gray-400">Stock</p>
               <p className={`text-sm font-semibold ${
-                product.stock !== undefined && product.stock > 0
+                typeof product.stock === 'number' && product.stock > 0
                   ? 'text-green-600 dark:text-green-400'
                   : 'text-red-500'
               }`}>
-                {product.stock !== undefined
+                {typeof product.stock === 'number'
                   ? product.stock > 0
                     ? `${product.stock} unidades disponibles`
                     : 'Sin stock'

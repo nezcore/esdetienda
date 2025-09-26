@@ -183,8 +183,8 @@ export const authApi = {
 
   async checkSlug(slug: string): Promise<{ available: boolean }> {
     try {
-      const response = await api.get(`/tenants/slug/${slug}`)
-      return response // El backend ya devuelve { available: true/false }
+      const response = await api.get<{ available: boolean }>(`/tenants/slug/${slug}`)
+      return response
     } catch (error) {
       // En caso de error de red, asumir que está disponible
       return { available: true }

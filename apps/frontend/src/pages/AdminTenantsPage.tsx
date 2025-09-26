@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { API_BASE_URL } from '../lib/api'
-import { ChevronDown } from 'lucide-react'
 
 type Tenant = { id: string; slug: string; business_name: string; plan: string; status: string; created_at: string }
 

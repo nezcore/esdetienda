@@ -1,48 +1,47 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { CheckCircle, AlertTriangle, RefreshCw } from 'lucide-react'
-import { authApi } from '../lib/api'
 
 const planResources = {
   esencial: {
     label: 'Starter',
-    color: 'emerald',
+    color: 'emerald' as const,
     description: 'Recursos incluidos en tu plan Starter',
     items: [
-      { label: 'Productos activos', used: 12, limit: 50 },
-      { label: 'Consultas de IA texto', used: 320, limit: 2000 },
-      { label: 'Audios a texto (minutos)', used: 8, limit: 20 },
-      { label: 'Usuarios', used: 1, limit: 1 }
+      { key: 'products', label: 'Productos activos', used: 12, limit: 50, renewableMonthly: false },
+      { key: 'ai_text', label: 'Consultas de IA texto', used: 320, limit: 2000, renewableMonthly: true },
+      { key: 'audio_minutes', label: 'Audios a texto (minutos)', used: 8, limit: 20, renewableMonthly: true },
+      { key: 'users', label: 'Usuarios', used: 1, limit: 1, renewableMonthly: false }
     ]
   },
   grow: {
     label: 'Grow',
-    color: 'sky',
+    color: 'sky' as const,
     description: 'Recursos incluidos en tu plan Grow',
     items: [
-      { label: 'Productos activos', used: 220, limit: 500 },
-      { label: 'Consultas de IA texto', used: 3120, limit: 10000 },
-      { label: 'Audios a texto (minutos)', used: 45, limit: 100 },
-      { label: 'Usuarios admin', used: 1, limit: 1 }
+      { key: 'products', label: 'Productos activos', used: 220, limit: 500, renewableMonthly: false },
+      { key: 'ai_text', label: 'Consultas de IA texto', used: 3120, limit: 10000, renewableMonthly: true },
+      { key: 'audio_minutes', label: 'Audios a texto (minutos)', used: 45, limit: 100, renewableMonthly: true },
+      { key: 'users_admin', label: 'Usuarios admin', used: 1, limit: 1, renewableMonthly: false }
     ]
   },
   pro: {
     label: 'Pro',
-    color: 'orange',
+    color: 'orange' as const,
     description: 'Recursos incluidos en tu plan Pro',
     items: [
-      { label: 'Productos activos', used: 620, limit: 5000 },
-      { label: 'Consultas de IA texto', used: 11200, limit: 20000 },
-      { label: 'Consultas IA visión (imágenes)', used: 420, limit: 1000 },
-      { label: 'Audios a texto (minutos)', used: 180, limit: 300 },
-      { label: 'Usuarios admin', used: 2, limit: 3 }
+      { key: 'products', label: 'Productos activos', used: 620, limit: 5000, renewableMonthly: false },
+      { key: 'ai_text', label: 'Consultas de IA texto', used: 11200, limit: 20000, renewableMonthly: true },
+      { key: 'ai_vision', label: 'Consultas IA visión (imágenes)', used: 420, limit: 1000, renewableMonthly: true },
+      { key: 'audio_minutes', label: 'Audios a texto (minutos)', used: 180, limit: 300, renewableMonthly: true },
+      { key: 'users_admin', label: 'Usuarios admin', used: 2, limit: 3, renewableMonthly: false }
     ]
   }
 }
 
 type PlanKey = keyof typeof planResources
 
-const colorMap: Record<string, { bar: string; bg: string; text: string; glow: string }> = {
+const colorMap: Record<'emerald' | 'sky' | 'orange', { bar: string; bg: string; text: string; glow: string }> = {
   emerald: {
     bar: 'from-emerald-400 to-emerald-500',
     bg: 'bg-emerald-500/15 dark:bg-emerald-500/20',
@@ -96,7 +95,7 @@ export default function ResourcesPage() {
 
   const planKey = (tenant?.plan as PlanKey) ?? 'esencial'
   const planData = useMemo(() => planResources[planKey] ?? planResources.esencial, [planKey])
-  const colorTokens = colorMap[planData.color] ?? colorMap.emerald
+  const colorTokens = colorMap[planData.color]
 
   useEffect(() => {
     const fetchUsage = async () => {

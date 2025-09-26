@@ -15,13 +15,11 @@ export default function DashboardHome() {
   const { tenant } = useAuth()
   const location = useLocation()
   const [products, setProducts] = useState<any[]>([])
-  const [loading, setLoading] = useState(false)
   const productAdded = useMemo(() => new URLSearchParams(location.search).get('product_added') === 'true', [location.search])
 
   useEffect(() => {
     const load = async () => {
       if (!tenant?.id) return
-      setLoading(true)
       try {
         const res = await fetch(`${API_BASE_URL}/products?tenantId=${tenant.id}`)
         if (!res.ok) throw new Error(`HTTP ${res.status}`)
@@ -29,8 +27,6 @@ export default function DashboardHome() {
         setProducts(Array.isArray(data.products) ? data.products : [])
       } catch (e) {
         // noop
-      } finally {
-        setLoading(false)
       }
     }
     load()

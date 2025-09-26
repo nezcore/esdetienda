@@ -8,7 +8,7 @@ export default function HomePage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const location = useLocation()
   const navigate = useNavigate()
-  const { user, tenant, logout } = useAuth()
+  const { user, logout } = useAuth()
 
   // Función para manejar logout
   const handleLogout = async () => {

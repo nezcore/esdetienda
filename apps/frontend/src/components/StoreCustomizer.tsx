@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { X, Palette, Type, Layout, Image, Save, RefreshCw } from 'lucide-react'
+import { X, Palette, Layout, Type, RefreshCw, Save } from 'lucide-react'
 import { useTheme } from './ThemeProvider'
 
 interface StoreCustomizerProps {

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate, useLocation, Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { Eye, EyeOff, Shield } from 'lucide-react'
 import { authApi } from '../lib/api'
 import { useAdminAuth } from '../contexts/AdminAuthContext'
@@ -9,15 +9,14 @@ export default function AdminLoginPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const navigate = useNavigate()
-  const location = useLocation()
   const { login, isAuthenticated } = useAdminAuth()
 
   useEffect(() => {
     if (isAuthenticated) {
-      const from = (location.state as any)?.from?.pathname || '/superadmin'
+      const from = '/panel'
       navigate(from, { replace: true })
     }
-  }, [isAuthenticated, navigate, location.state])
+  }, [isAuthenticated, navigate])
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()

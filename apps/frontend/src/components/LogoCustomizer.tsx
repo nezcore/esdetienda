@@ -17,7 +17,6 @@ export default function LogoCustomizer({
   const [selectedType, setSelectedType] = useState<'icon' | 'image' | 'emoji'>('icon')
   const [selectedIcon, setSelectedIcon] = useState(currentIcon || '🏪')
   const [uploadedImage, setUploadedImage] = useState<string | null>(currentLogo || null)
-  const [selectedEmoji, setSelectedEmoji] = useState('🏪')
 
   // Iconos predefinidos para tiendas
   const predefinedIcons = [

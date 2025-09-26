@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { X, Share2, ShoppingBag } from 'lucide-react'
+import { X, Share2 } from 'lucide-react'
 import StoreLogo from './StoreLogo'
 
 interface ProductInfo {
@@ -138,7 +138,7 @@ export default function PublicProductModal({
 
             <div className="space-y-1">
               <p className="text-sm text-gray-500 dark:text-gray-400">Disponibilidad</p>
-              {product.stock !== undefined ? (
+              {typeof product.stock === 'number' ? (
                 <p className={`text-sm font-semibold ${product.stock > 0 ? 'text-green-600 dark:text-green-400' : 'text-red-500'}`}>
                   {product.stock > 0 ? `${product.stock} en inventario` : 'Sin stock'}
                 </p>
