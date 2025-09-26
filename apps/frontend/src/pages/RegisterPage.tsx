@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
-import { Eye, EyeOff, Check, CheckCircle, Loader2, RefreshCcw, XCircle } from 'lucide-react'
+import { Eye, EyeOff, Check, CheckCircle, Loader2, RefreshCcw, XCircle, ArrowLeft, ArrowRight, Sparkles } from 'lucide-react'
 import { authApi, type AuthResponse } from '../lib/api'
 import { useAuth } from '../contexts/AuthContext'
 import ThemeToggle from '../components/ThemeToggle'
@@ -8,12 +8,15 @@ import ThemeToggle from '../components/ThemeToggle'
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [currentStepIndex, setCurrentStepIndex] = useState(0)
   const [email, setEmail] = useState('')
   const [emailError, setEmailError] = useState('')
+  const [emailTouched, setEmailTouched] = useState(false)
   const [businessName, setBusinessName] = useState('')
   const [businessNameTouched, setBusinessNameTouched] = useState(false)
   const [tenantSlug, setTenantSlug] = useState('')
   const [password, setPassword] = useState('')
+  const [passwordTouched, setPasswordTouched] = useState(false)
   const [passwordStrength, setPasswordStrength] = useState<{ score: number; label: string }>({
     score: 0,
     label: 'Muy débil'
@@ -21,6 +24,8 @@ export default function RegisterPage() {
   const [slugStatus, setSlugStatus] = useState<'idle' | 'checking' | 'available' | 'taken' | 'invalid'>(
     'idle'
   )
+  const [acceptTerms, setAcceptTerms] = useState(false)
+  const [termsTouched, setTermsTouched] = useState(false)
   const isBusinessNameValid = businessName.trim().length >= 4
   const slugPattern = /^[a-z0-9-]+$/
   const [searchParams] = useSearchParams()
@@ -150,6 +155,34 @@ export default function RegisterPage() {
     setPasswordStrength(evaluatePassword(generated))
   }
 
+  // Paso a paso: validaciones y navegación
+  const isSlugValid = slugPattern.test(tenantSlug) && tenantSlug.length >= 4 && slugStatus === 'available'
+  const isPasswordValid = password.length >= 8
+  const isEmailValidForSubmit = emailValid && !emailError
+  const totalSteps = 4
+  const stepValidity = [
+    isBusinessNameValid,
+    isSlugValid,
+    isEmailValidForSubmit && isPasswordValid,
+    acceptTerms
+  ]
+
+  const goNext = () => {
+    if (currentStepIndex === 0) setBusinessNameTouched(true)
+    if (currentStepIndex === 2) { setEmailTouched(true); setPasswordTouched(true) }
+    if (currentStepIndex === 3) setTermsTouched(true)
+
+    if (stepValidity[currentStepIndex] && currentStepIndex < totalSteps - 1) {
+      setCurrentStepIndex(currentStepIndex + 1)
+    }
+  }
+
+  const goBack = () => {
+    if (currentStepIndex > 0) setCurrentStepIndex(currentStepIndex - 1)
+  }
+
+  const progressPercent = Math.round((currentStepIndex / (totalSteps - 1)) * 100)
+
   const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
@@ -160,17 +193,23 @@ export default function RegisterPage() {
       return
     }
 
-    if (tenantSlug.length < 4 || !slugPattern.test(tenantSlug)) {
+    if (!isSlugValid) {
       setSlugStatus('invalid')
       return
     }
 
-    if (slugStatus !== 'available') {
+    if (!isEmailValidForSubmit) {
+      setEmailTouched(true)
       return
     }
 
-    if (email.includes('@') && domain && !allowedDomainList.includes(domain)) {
-      setEmailError('Solo admitimos correos de Gmail, Outlook (incluye Hotmail/Live/MSN), Yahoo o Apple.')
+    if (!isPasswordValid) {
+      setPasswordTouched(true)
+      return
+    }
+
+    if (!acceptTerms) {
+      setTermsTouched(true)
       return
     }
 
@@ -187,13 +226,9 @@ export default function RegisterPage() {
 
     try {
       console.log('Intentando registrar:', data)
-      
       const response: AuthResponse = await authApi.register(data)
-      
       if (response.success) {
-        // Usar el contexto de autenticación
         login(response.token, response.user, response.tenant)
-        
         console.log('Registro exitoso:', response)
         setLoading(false)
         navigate('/panel?welcome=true')
@@ -248,245 +283,314 @@ export default function RegisterPage() {
 
           <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-xl overflow-hidden border border-gray-100/60 dark:border-gray-800/60">
             <div className="grid lg:grid-cols-5">
-              {/* Formulario */}
+              {/* Formulario por pasos */}
               <div className="lg:col-span-3 p-8 md:p-10">
-                <form onSubmit={handleRegister} className="space-y-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-800 dark:text-gray-200 mb-1">
-                      Nombre del negocio
-                    </label>
-                  <div className="space-y-2">
-                    <div className="relative">
-                      <input
-                        name="businessName"
-                        type="text"
-                        required
-                        value={businessName}
-                        onChange={(event) => setBusinessName(event.target.value)}
-                        onBlur={() => setBusinessNameTouched(true)}
-                        className={`w-full px-3 py-2 pr-10 border rounded-xl focus:ring-brand-500 focus:border-brand-500 dark:bg-gray-900 dark:text-gray-100 ${
-                          businessNameTouched && !isBusinessNameValid
-                            ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
-                            : 'border-gray-300 dark:border-gray-700'
-                        }`}
-                        placeholder="Ferretería El Martillo"
-                      />
-                      {businessNameTouched && businessName && (
-                        <span className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
-                          {isBusinessNameValid ? (
-                            <CheckCircle className="h-5 w-5 text-emerald-500" />
-                          ) : (
-                            <XCircle className="h-5 w-5 text-red-500" />
-                          )}
-                        </span>
-                      )}
-                    </div>
-                    {businessNameTouched && !isBusinessNameValid && (
-                      <p className="text-sm text-red-500 dark:text-red-400">
-                        El nombre del negocio debe tener al menos 4 caracteres.
-                      </p>
-                    )}
+                {/* Progreso */}
+                <div className="mb-6">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-[0.2em]">Paso {currentStepIndex + 1} de {totalSteps}</span>
+                    <Sparkles className="h-4 w-4 text-brand-500" />
+                  </div>
+                  <div className="h-2 w-full rounded-full bg-gray-200 dark:bg-gray-800 overflow-hidden">
+                    <div className="h-full bg-brand-500 transition-all" style={{ width: `${progressPercent}%` }} />
                   </div>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-800 dark:text-gray-200 mb-1">
-                    Slug de tu tienda
-                  </label>
-                  <div className="space-y-2">
-                    <div className="flex">
-                      <span className="inline-flex items-center px-3 rounded-l-xl border border-r-0 border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-300 text-sm">
-                        esdetienda.com/str/
-                      </span>
-                      <div className="relative flex-1">
+                <form onSubmit={handleRegister}>
+                  {/* Paso 1: Nombre del negocio */}
+                  {currentStepIndex === 0 && (
+                    <div className="space-y-2">
+                      <label className="block text-sm font-medium text-gray-800 dark:text-gray-200 mb-1">
+                        Nombre del negocio
+                      </label>
+                      <div className="relative">
                         <input
-                          name="tenantSlug"
+                          name="businessName"
                           type="text"
                           required
-                          pattern="[a-z0-9-]+"
-                          value={tenantSlug}
-                          onChange={(event) => setTenantSlug(event.target.value.toLowerCase())}
-                          className={`w-full px-3 py-2 pr-10 border rounded-r-xl focus:ring-brand-500 focus:border-brand-500 dark:bg-gray-900 dark:text-gray-100 ${
-                            slugStatus === 'invalid' || slugStatus === 'taken'
+                          value={businessName}
+                          onChange={(event) => setBusinessName(event.target.value)}
+                          onBlur={() => setBusinessNameTouched(true)}
+                          className={`w-full px-3 py-2 pr-10 border rounded-xl focus:ring-brand-500 focus:border-brand-500 dark:bg-gray-900 dark:text-gray-100 ${
+                            businessNameTouched && !isBusinessNameValid
                               ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
                               : 'border-gray-300 dark:border-gray-700'
                           }`}
-                          placeholder="ferremax"
+                          placeholder="Ferretería El Martillo"
                         />
-                        <span className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
-                          {slugStatus === 'checking' && (
-                            <Loader2 className="h-5 w-5 text-brand-500 animate-spin" />
-                          )}
-                          {slugStatus === 'available' && tenantSlug && (
-                            <CheckCircle className="h-5 w-5 text-emerald-500" />
-                          )}
-                          {(slugStatus === 'taken' || slugStatus === 'invalid') && tenantSlug && (
-                            <XCircle className="h-5 w-5 text-red-500" />
-                          )}
-                        </span>
+                        {businessNameTouched && businessName && (
+                          <span className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
+                            {isBusinessNameValid ? (
+                              <CheckCircle className="h-5 w-5 text-emerald-500" />
+                            ) : (
+                              <XCircle className="h-5 w-5 text-red-500" />
+                            )}
+                          </span>
+                        )}
                       </div>
+                      {businessNameTouched && !isBusinessNameValid && (
+                        <p className="text-sm text-red-500 dark:text-red-400">
+                          El nombre del negocio debe tener al menos 4 caracteres.
+                        </p>
+                      )}
                     </div>
-                    {slugStatus === 'invalid' && tenantSlug && (
-                      <p className="text-sm text-red-500 dark:text-red-400">
-                        Usa al menos 4 caracteres en minúsculas, números o guiones.
-                      </p>
-                    )}
-                    {slugStatus === 'taken' && (
-                      <p className="text-sm text-red-500 dark:text-red-400">
-                        Ese nombre ya está en uso. Intenta con otra variación.
-                      </p>
-                    )}
-                  </div>
-                  <p className="text-xs text-gray-500 mt-1">Solo minúsculas, números y guiones</p>
-                </div>
+                  )}
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-800 dark:text-gray-200 mb-1">
-                    Email
-                  </label>
-                  <div className="space-y-3">
-                    <div className="relative">
-                      <input
-                        name="email"
-                        type="email"
-                        required
-                        value={email}
-                        className={`w-full px-3 py-2 pr-10 border rounded-xl focus:ring-brand-500 focus:border-brand-500 dark:bg-gray-900 dark:text-gray-100 ${
-                          emailError ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 dark:border-gray-700'
-                        }`}
-                        placeholder="tu@email.com"
-                        onChange={(event) => {
-                          const value = event.target.value
-                          setEmail(value)
-                          const hasAt = value.includes('@')
-                          const domainPart = (value.split('@')[1] ?? '').toLowerCase()
-                          const matchesPrefix = domainPart
-                            ? allowedDomainList.some((allowed) => allowed.startsWith(domainPart))
-                            : true
-
-                          if (hasAt && domainPart && !matchesPrefix) {
-                            setEmailError('Solo admitimos correos de Gmail, Outlook (incluye Hotmail/Live/MSN), Yahoo o Apple.')
-                          } else {
-                            setEmailError('')
-                          }
-                        }}
-                      />
-                      <span className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
-                        {emailError && emailHasAt && (
-                          <XCircle className="h-5 w-5 text-red-500" />
+                  {/* Paso 2: Slug */}
+                  {currentStepIndex === 1 && (
+                    <div className="space-y-2">
+                      <label className="block text-sm font-medium text-gray-800 dark:text-gray-200 mb-1">
+                        Slug de tu tienda
+                      </label>
+                      <div className="space-y-2">
+                        <div className="flex">
+                          <span className="inline-flex items-center px-3 rounded-l-xl border border-r-0 border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-300 text-sm">
+                            esdetienda.com/str/
+                          </span>
+                          <div className="relative flex-1">
+                            <input
+                              name="tenantSlug"
+                              type="text"
+                              required
+                              pattern="[a-z0-9-]+"
+                              value={tenantSlug}
+                              onChange={(event) => setTenantSlug(event.target.value.toLowerCase())}
+                              className={`w-full px-3 py-2 pr-10 border rounded-r-xl focus:ring-brand-500 focus:border-brand-500 dark:bg-gray-900 dark:text-gray-100 ${
+                                slugStatus === 'invalid' || slugStatus === 'taken'
+                                  ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
+                                  : 'border-gray-300 dark:border-gray-700'
+                              }`}
+                              placeholder="ferremax"
+                            />
+                            <span className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
+                              {slugStatus === 'checking' && (
+                                <Loader2 className="h-5 w-5 text-brand-500 animate-spin" />
+                              )}
+                              {slugStatus === 'available' && tenantSlug && (
+                                <CheckCircle className="h-5 w-5 text-emerald-500" />
+                              )}
+                              {(slugStatus === 'taken' || slugStatus === 'invalid') && tenantSlug && (
+                                <XCircle className="h-5 w-5 text-red-500" />
+                              )}
+                            </span>
+                          </div>
+                        </div>
+                        {slugStatus === 'invalid' && tenantSlug && (
+                          <p className="text-sm text-red-500 dark:text-red-400">
+                            Usa al menos 4 caracteres en minúsculas, números o guiones.
+                          </p>
                         )}
-                        {!emailError && emailValid && (
-                          <CheckCircle className="h-5 w-5 text-emerald-500" />
+                        {slugStatus === 'taken' && (
+                          <p className="text-sm text-red-500 dark:text-red-400">
+                            Ese nombre ya está en uso. Intenta con otra variación.
+                          </p>
                         )}
-                      </span>
+                      </div>
+                      <p className="text-xs text-gray-500 mt-1">Solo minúsculas, números y guiones</p>
                     </div>
-                    {emailError && (
-                      <div className="animate-slide-up-fade">
-                        <div className="rounded-2xl border border-red-200/80 bg-red-50/90 dark:bg-red-500/10 dark:border-red-500/40 px-4 py-3 shadow-md shadow-red-500/10 backdrop-blur">
-                          <p className="text-sm font-medium text-red-600 dark:text-red-300">
-                            {emailError}
+                  )}
+
+                  {/* Paso 3: Email y contraseña */}
+                  {currentStepIndex === 2 && (
+                    <div className="space-y-6">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-800 dark:text-gray-200 mb-1">
+                          Email
+                        </label>
+                        <div className="space-y-3">
+                          <div className="relative">
+                            <input
+                              name="email"
+                              type="email"
+                              required
+                              value={email}
+                              className={`w-full px-3 py-2 pr-10 border rounded-xl focus:ring-brand-500 focus:border-brand-500 dark:bg-gray-900 dark:text-gray-100 ${
+                                emailError ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 dark:border-gray-700'
+                              }`}
+                              placeholder="tu@email.com"
+                              onChange={(event) => {
+                                const value = event.target.value
+                                setEmail(value)
+                                const hasAt = value.includes('@')
+                                const domainPart = (value.split('@')[1] ?? '').toLowerCase()
+                                const matchesPrefix = domainPart
+                                  ? allowedDomainList.some((allowed) => allowed.startsWith(domainPart))
+                                  : true
+
+                                if (hasAt && domainPart && !matchesPrefix) {
+                                  setEmailError('Solo admitimos correos de Gmail, Outlook (incluye Hotmail/Live/MSN), Yahoo o Apple.')
+                                } else {
+                                  setEmailError('')
+                                }
+                              }}
+                              onBlur={() => setEmailTouched(true)}
+                            />
+                            <span className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
+                              {emailError && emailHasAt && (
+                                <XCircle className="h-5 w-5 text-red-500" />
+                              )}
+                              {!emailError && emailValid && (
+                                <CheckCircle className="h-5 w-5 text-emerald-500" />
+                              )}
+                            </span>
+                          </div>
+                          {emailTouched && (!!emailError || !emailValid) && (
+                            <div className="animate-slide-up-fade">
+                              <div className="rounded-2xl border border-red-200/80 bg-red-50/90 dark:bg-red-500/10 dark:border-red-500/40 px-4 py-3 shadow-md shadow-red-500/10 backdrop-blur">
+                                <p className="text-sm font-medium text-red-600 dark:text-red-300">
+                                  {emailError || 'Ingresa un correo permitido.'}
+                                </p>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-800 dark:text-gray-200 mb-1">
+                          Contraseña
+                        </label>
+                        <div className="relative">
+                          <input
+                            name="password"
+                            type={showPassword ? "text" : "password"}
+                            required
+                            minLength={8}
+                            value={password}
+                            onChange={(event) => {
+                              const value = event.target.value
+                              setPassword(value)
+                              setPasswordStrength(evaluatePassword(value))
+                            }}
+                            onBlur={() => setPasswordTouched(true)}
+                            className="w-full px-3 py-2 pr-16 border border-gray-300 dark:border-gray-700 rounded-xl focus:ring-brand-500 focus:border-brand-500 dark:bg-gray-900 dark:text-gray-100"
+                            placeholder="Mínimo 8 caracteres"
+                          />
+                          <button
+                            type="button"
+                            className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                            onClick={() => setShowPassword(!showPassword)}
+                          >
+                            {showPassword ? (
+                              <EyeOff className="h-5 w-5 text-gray-400" />
+                            ) : (
+                              <Eye className="h-5 w-5 text-gray-400" />
+                            )}
+                          </button>
+                        </div>
+                        <div className="mt-3 space-y-3">
+                          <div className="flex items-center justify-between">
+                            <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-[0.2em]">
+                              Fortaleza
+                            </p>
+                            <button
+                              type="button"
+                              onClick={generatePassword}
+                              className="inline-flex items-center gap-2 text-xs font-semibold text-brand-600 hover:text-brand-700"
+                            >
+                              <RefreshCcw className="h-4 w-4" />
+                              Generar contraseña
+                            </button>
+                          </div>
+                          <div className="h-2 w-full rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden">
+                            <div
+                              className={`h-full rounded-full transition-all duration-300 ${
+                                passwordStrength.score <= 1
+                                  ? 'bg-red-500'
+                                  : passwordStrength.score === 2
+                                  ? 'bg-yellow-500'
+                                  : passwordStrength.score === 3
+                                  ? 'bg-amber-500'
+                                  : passwordStrength.score === 4
+                                  ? 'bg-green-500'
+                                  : 'bg-emerald-500'
+                              }`}
+                              style={{ width: `${Math.min(passwordStrength.score * 20, 100)}%` }}
+                            />
+                          </div>
+                          {passwordTouched && !isPasswordValid && (
+                            <p className="text-sm text-red-500 dark:text-red-400">La contraseña debe tener al menos 8 caracteres.</p>
+                          )}
+                          <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                            {passwordStrength.label}
                           </p>
                         </div>
                       </div>
-                    )}
-                  </div>
-                </div>
+                    </div>
+                  )}
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-800 dark:text-gray-200 mb-1">
-                      Contraseña
-                    </label>
-                    <div className="relative">
-                      <input
-                        name="password"
-                        type={showPassword ? "text" : "password"}
-                        required
-                        minLength={8}
-                        value={password}
-                        onChange={(event) => {
-                          const value = event.target.value
-                          setPassword(value)
-                          setPasswordStrength(evaluatePassword(value))
-                        }}
-                        className="w-full px-3 py-2 pr-16 border border-gray-300 dark:border-gray-700 rounded-xl focus:ring-brand-500 focus:border-brand-500 dark:bg-gray-900 dark:text-gray-100"
-                        placeholder="Mínimo 8 caracteres"
-                      />
+                  {/* Paso 4: Términos y resumen */}
+                  {currentStepIndex === 3 && (
+                    <div className="space-y-6">
+                      <div className="rounded-2xl border border-gray-100 dark:border-gray-800 p-4 bg-gray-50/50 dark:bg-gray-900/50">
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Resumen</p>
+                        <ul className="text-sm text-gray-800 dark:text-gray-200 space-y-1">
+                          <li><span className="font-semibold">Negocio:</span> {businessName || '—'}</li>
+                          <li><span className="font-semibold">Slug:</span> {tenantSlug || '—'}</li>
+                          <li><span className="font-semibold">Email:</span> {email || '—'}</li>
+                        </ul>
+                      </div>
+
+                      <div className="flex items-start">
+                        <input
+                          id="terms"
+                          type="checkbox"
+                          checked={acceptTerms}
+                          onChange={(e) => setAcceptTerms(e.target.checked)}
+                          className="h-4 w-4 text-brand-500 focus:ring-brand-500 border-gray-300 rounded mt-1"
+                        />
+                        <label htmlFor="terms" className="ml-2 text-sm text-gray-700 dark:text-gray-200">
+                          Acepto los{' '}
+                          <Link to="/terminos" target="_blank" rel="noreferrer noopener" className="text-brand-500 hover:text-brand-700">
+                            términos y condiciones
+                          </Link>
+                        </label>
+                      </div>
+                      {termsTouched && !acceptTerms && (
+                        <p className="text-sm text-red-500 dark:text-red-400">Debes aceptar los términos para continuar.</p>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Navegación */}
+                  <div className="mt-8 flex items-center justify-between">
+                    <button
+                      type="button"
+                      onClick={goBack}
+                      disabled={currentStepIndex === 0}
+                      className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg border text-sm font-medium transition-colors ${currentStepIndex === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50 dark:hover:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200'}`}
+                    >
+                      <ArrowLeft className="h-4 w-4" />
+                      Atrás
+                    </button>
+
+                    {currentStepIndex < totalSteps - 1 ? (
                       <button
                         type="button"
-                        className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                        onClick={() => setShowPassword(!showPassword)}
+                        onClick={goNext}
+                        disabled={!stepValidity[currentStepIndex]}
+                        className={`inline-flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-semibold transition-colors ${!stepValidity[currentStepIndex] ? 'bg-brand-300 text-white opacity-60 cursor-not-allowed' : 'bg-brand-900 hover:bg-brand-700 text-white'}`}
                       >
-                        {showPassword ? (
-                          <EyeOff className="h-5 w-5 text-gray-400" />
+                        Siguiente
+                        <ArrowRight className="h-4 w-4" />
+                      </button>
+                    ) : (
+                      <button
+                        type="submit"
+                        disabled={loading || !acceptTerms}
+                        className={`inline-flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-semibold transition-colors ${loading || !acceptTerms ? 'bg-brand-300 text-white opacity-60 cursor-not-allowed' : 'bg-brand-900 hover:bg-brand-700 text-white'}`}
+                      >
+                        {loading ? (
+                          <>
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                            Creando cuenta...
+                          </>
                         ) : (
-                          <Eye className="h-5 w-5 text-gray-400" />
+                          'Crear mi cuenta'
                         )}
                       </button>
-                    </div>
-                    <div className="mt-3 space-y-3">
-                      <div className="flex items-center justify-between">
-                        <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-[0.2em]">
-                          Fortaleza
-                        </p>
-                        <button
-                          type="button"
-                          onClick={generatePassword}
-                          className="inline-flex items-center gap-2 text-xs font-semibold text-brand-600 hover:text-brand-700"
-                        >
-                          <RefreshCcw className="h-4 w-4" />
-                          Generar contraseña
-                        </button>
-                      </div>
-                      <div className="h-2 w-full rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden">
-                        <div
-                          className={`h-full rounded-full transition-all duration-300 ${
-                            passwordStrength.score <= 1
-                              ? 'bg-red-500'
-                              : passwordStrength.score === 2
-                              ? 'bg-yellow-500'
-                              : passwordStrength.score === 3
-                              ? 'bg-amber-500'
-                              : passwordStrength.score === 4
-                              ? 'bg-green-500'
-                              : 'bg-emerald-500'
-                          }`}
-                          style={{ width: `${Math.min(passwordStrength.score * 20, 100)}%` }}
-                        />
-                      </div>
-                      <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                        {passwordStrength.label}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start">
-                    <input
-                      type="checkbox"
-                      required
-                      className="h-4 w-4 text-brand-500 focus:ring-brand-500 border-gray-300 rounded mt-1"
-                    />
-                    <label className="ml-2 text-sm text-gray-700 dark:text-gray-200">
-                      Acepto los{' '}
-                      <Link to="/terminos" target="_blank" rel="noreferrer noopener" className="text-brand-500 hover:text-brand-700">
-                        términos y condiciones
-                      </Link>
-                    </label>
-                  </div>
-
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full bg-brand-900 text-white py-3 rounded-xl font-medium hover:bg-brand-700 disabled:opacity-50 transition-colors"
-                  >
-                    {loading ? (
-                      <div className="flex items-center justify-center">
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                        Creando cuenta...
-                      </div>
-                    ) : (
-                      'Crear mi cuenta'
                     )}
-                  </button>
+                  </div>
                 </form>
               </div>
 
