@@ -173,6 +173,196 @@ products.post('/', async (c) => {
   }
 })
 
+// GET /products/:id - Obtener producto específico
+products.get('/:id', async (c) => {
+  try {
+    const productId = c.req.param('id')
+    const tenantId = c.req.query('tenantId')
+    
+    if (!tenantId) {
+      return c.json({
+        error: 'Tenant requerido'
+      }, 400)
+    }
+    
+    const supabase = c.get('supabase')
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .eq('id', productId)
+      .eq('tenant_id', tenantId)
+      .single()
+
+    if (error || !data) {
+      return c.json({
+        error: 'Producto no encontrado'
+      }, 404)
+    }
+    
+    return c.json({
+      success: true,
+      product: data
+    })
+    
+  } catch (error) {
+    console.error('Get product error:', error)
+    return c.json({
+      error: 'Error al obtener producto'
+    }, 500)
+  }
+})
+
+// PUT /products/:id - Actualizar producto
+products.put('/:id', async (c) => {
+  try {
+    const productId = c.req.param('id')
+    const body = await c.req.json()
+    
+    // Schema para actualización
+    const updateSchema = z.object({
+      tenantId: z.string().uuid('Tenant inválido'),
+      name: z.string().min(2, 'Nombre requerido').optional(),
+      description: z.string().optional(),
+      price: z.number().positive('Precio debe ser positivo').optional(),
+      category: z.string().min(1, 'Categoría requerida').optional(),
+      stock: z.number().int().min(0, 'Stock no puede ser negativo').optional(),
+      status: z.enum(['active', 'inactive', 'out_of_stock']).optional(),
+    })
+    
+    const validatedData = updateSchema.parse(body)
+    
+    // Verificar que el producto pertenece al tenant
+    const supabase = c.get('supabase')
+    const { data: existing, error: existingError } = await supabase
+      .from('products')
+      .select('id')
+      .eq('id', productId)
+      .eq('tenant_id', validatedData.tenantId)
+      .single()
+    
+    if (existingError || !existing) {
+      return c.json({
+        error: 'Producto no encontrado'
+      }, 404)
+    }
+    
+    // Actualizar producto
+    const updateData: any = {
+      updated_at: new Date().toISOString()
+    }
+    
+    if (validatedData.name) updateData.name = validatedData.name
+    if (validatedData.description !== undefined) updateData.description = validatedData.description
+    if (validatedData.price !== undefined) updateData.price = validatedData.price
+    if (validatedData.category) updateData.category = validatedData.category
+    if (validatedData.stock !== undefined) updateData.stock = validatedData.stock
+    if (validatedData.status) updateData.status = validatedData.status
+    
+    const { data, error } = await supabase
+      .from('products')
+      .update(updateData)
+      .eq('id', productId)
+      .eq('tenant_id', validatedData.tenantId)
+      .select('*')
+      .single()
+
+    if (error) {
+      console.error('Supabase update product error:', error)
+      return c.json({
+        error: 'Error al actualizar producto'
+      }, 500)
+    }
+    
+    return c.json({
+      success: true,
+      message: 'Producto actualizado exitosamente',
+      product: data
+    })
+    
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return c.json({
+        error: 'Datos inválidos',
+        details: error.errors
+      }, 400)
+    }
+    
+    console.error('Update product error:', error)
+    return c.json({
+      error: 'Error al actualizar producto'
+    }, 500)
+  }
+})
+
+// DELETE /products/:id - Eliminar producto
+products.delete('/:id', async (c) => {
+  try {
+    const productId = c.req.param('id')
+    const tenantId = c.req.query('tenantId')
+    
+    if (!tenantId) {
+      return c.json({
+        error: 'Tenant requerido'
+      }, 400)
+    }
+    
+    const supabase = c.get('supabase')
+    
+    // Verificar que el producto existe y pertenece al tenant
+    const { data: existing, error: existingError } = await supabase
+      .from('products')
+      .select('id, images')
+      .eq('id', productId)
+      .eq('tenant_id', tenantId)
+      .single()
+    
+    if (existingError || !existing) {
+      return c.json({
+        error: 'Producto no encontrado'
+      }, 404)
+    }
+    
+    // TODO: Eliminar imágenes de R2 si es necesario
+    // if (existing.images && Array.isArray(existing.images)) {
+    //   for (const imageUrl of existing.images) {
+    //     try {
+    //       const key = imageUrl.split('/media/')[1]
+    //       if (key) {
+    //         await c.env.R2.delete(key)
+    //       }
+    //     } catch (r2Error) {
+    //       console.error('Error eliminando imagen de R2:', r2Error)
+    //     }
+    //   }
+    // }
+    
+    // Eliminar producto
+    const { error } = await supabase
+      .from('products')
+      .delete()
+      .eq('id', productId)
+      .eq('tenant_id', tenantId)
+
+    if (error) {
+      console.error('Supabase delete product error:', error)
+      return c.json({
+        error: 'Error al eliminar producto'
+      }, 500)
+    }
+    
+    return c.json({
+      success: true,
+      message: 'Producto eliminado exitosamente'
+    })
+    
+  } catch (error) {
+    console.error('Delete product error:', error)
+    return c.json({
+      error: 'Error al eliminar producto'
+    }, 500)
+  }
+})
+
 // POST /products/import - Importar productos desde CSV/Excel
 products.post('/import', async (c) => {
   try {

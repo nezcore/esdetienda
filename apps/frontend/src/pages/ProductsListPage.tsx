@@ -2,6 +2,8 @@ import { useEffect, useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { api } from '../lib/api'
+import ProductViewModal from '../components/ProductViewModal'
+import ProductEditModal from '../components/ProductEditModal'
 import { 
   Package, 
   Plus, 
@@ -42,7 +44,7 @@ export default function ProductsListPageNew() {
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  
+
   // Vista y filtros
   const [viewMode, setViewMode] = useState<ViewMode>('grid')
   const [searchQuery, setSearchQuery] = useState('')
@@ -59,6 +61,8 @@ export default function ProductsListPageNew() {
   const [productToDelete, setProductToDelete] = useState<Product | null>(null)
   const [showEditModal, setShowEditModal] = useState(false)
   const [productToEdit, setProductToEdit] = useState<Product | null>(null)
+  const [showViewModal, setShowViewModal] = useState(false)
+  const [productToView, setProductToView] = useState<Product | null>(null)
 
   // Cargar productos
   useEffect(() => {
@@ -66,18 +70,18 @@ export default function ProductsListPageNew() {
   }, [tenant?.id])
 
   const loadProducts = async () => {
-    if (!tenant?.id) return
-    setLoading(true)
-    setError(null)
-    try {
+      if (!tenant?.id) return
+      setLoading(true)
+      setError(null)
+      try {
       const response = await api.get<{products: Product[]}>(`/products?tenantId=${tenant.id}`)
       setProducts(response.products || [])
-    } catch (e: any) {
-      setError(e.message || 'Error cargando productos')
-    } finally {
-      setLoading(false)
+      } catch (e: any) {
+        setError(e.message || 'Error cargando productos')
+      } finally {
+        setLoading(false)
+      }
     }
-  }
 
   // Filtros y ordenamiento
   const filteredAndSortedProducts = useMemo(() => {
@@ -141,7 +145,7 @@ export default function ProductsListPageNew() {
   // Acciones CRUD
   const handleDeleteProduct = async (product: Product) => {
     try {
-      await api.delete(`/products/${product.id}`)
+      await api.delete(`/products/${product.id}?tenantId=${tenant?.id}`)
       setProducts(prev => prev.filter(p => p.id !== product.id))
       setShowDeleteModal(false)
       setProductToDelete(null)
@@ -153,7 +157,7 @@ export default function ProductsListPageNew() {
   const handleBulkDelete = async () => {
     try {
       await Promise.all(
-        Array.from(selectedProducts).map(id => api.delete(`/products/${id}`))
+        Array.from(selectedProducts).map(id => api.delete(`/products/${id}?tenantId=${tenant?.id}`))
       )
       setProducts(prev => prev.filter(p => !selectedProducts.has(p.id)))
       setSelectedProducts(new Set())
@@ -161,6 +165,20 @@ export default function ProductsListPageNew() {
     } catch (e: any) {
       setError(e.message || 'Error eliminando productos')
     }
+  }
+
+  const handleViewProduct = (product: Product) => {
+    setProductToView(product)
+    setShowViewModal(true)
+  }
+
+  const handleEditProduct = (product: Product) => {
+    setProductToEdit(product)
+    setShowEditModal(true)
+  }
+
+  const handleSaveProduct = (updatedProduct: Product) => {
+    setProducts(prev => prev.map(p => p.id === updatedProduct.id ? updatedProduct : p))
   }
 
   const formatPrice = (price?: number) => {
@@ -193,7 +211,7 @@ export default function ProductsListPageNew() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
+    <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Productos</h1>
           <p className="text-gray-600 dark:text-gray-400">
             Gestiona tu catálogo de productos ({filteredAndSortedProducts.length} productos)
@@ -204,8 +222,8 @@ export default function ProductsListPageNew() {
             to="/panel/agregar-producto" 
             className="inline-flex items-center gap-2 bg-brand-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-brand-600 transition-colors"
           >
-            <Plus className="h-4 w-4" /> Agregar producto
-          </Link>
+          <Plus className="h-4 w-4" /> Agregar producto
+        </Link>
         </div>
       </div>
 
@@ -368,14 +386,14 @@ export default function ProductsListPageNew() {
                     {/* Acciones hover */}
                     <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
                       <div className="flex gap-1">
-                        <button className="p-2 bg-white/90 dark:bg-gray-900/90 rounded-lg hover:bg-white dark:hover:bg-gray-900 transition-colors">
+                        <button 
+                          onClick={() => handleViewProduct(product)}
+                          className="p-2 bg-white/90 dark:bg-gray-900/90 rounded-lg hover:bg-white dark:hover:bg-gray-900 transition-colors"
+                        >
                           <Eye className="h-4 w-4 text-gray-700 dark:text-gray-300" />
                         </button>
                         <button 
-                          onClick={() => {
-                            setProductToEdit(product)
-                            setShowEditModal(true)
-                          }}
+                          onClick={() => handleEditProduct(product)}
                           className="p-2 bg-white/90 dark:bg-gray-900/90 rounded-lg hover:bg-white dark:hover:bg-gray-900 transition-colors"
                         >
                           <Edit className="h-4 w-4 text-gray-700 dark:text-gray-300" />
@@ -428,10 +446,7 @@ export default function ProductsListPageNew() {
                         <span>Creado: {formatDate(product.created_at)}</span>
                         <div className="flex gap-2">
                           <button 
-                            onClick={() => {
-                              setProductToEdit(product)
-                              setShowEditModal(true)
-                            }}
+                            onClick={() => handleEditProduct(product)}
                             className="text-brand-600 hover:text-brand-700 dark:text-brand-400"
                           >
                             Editar
@@ -537,14 +552,14 @@ export default function ProductsListPageNew() {
                         </td>
                         <td className="px-4 py-3 text-right">
                           <div className="flex items-center justify-end gap-2">
-                            <button className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                            <button 
+                              onClick={() => handleViewProduct(product)}
+                              className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                            >
                               <Eye className="h-4 w-4" />
                             </button>
                             <button 
-                              onClick={() => {
-                                setProductToEdit(product)
-                                setShowEditModal(true)
-                              }}
+                              onClick={() => handleEditProduct(product)}
                               className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                             >
                               <Edit className="h-4 w-4" />
@@ -611,34 +626,29 @@ export default function ProductsListPageNew() {
         </div>
       )}
 
-      {/* Modal de edición (placeholder) */}
+      {/* Modal de vista de producto */}
+      {showViewModal && productToView && (
+        <ProductViewModal
+          product={productToView}
+          isOpen={showViewModal}
+          onClose={() => {
+            setShowViewModal(false)
+            setProductToView(null)
+          }}
+        />
+      )}
+
+      {/* Modal de edición de producto */}
       {showEditModal && productToEdit && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white dark:bg-gray-900 rounded-lg max-w-2xl w-full p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                Editar producto
-              </h3>
-              <button
-                onClick={() => {
-                  setShowEditModal(false)
-                  setProductToEdit(null)
-                }}
-                className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-            <div className="text-center py-8">
-              <p className="text-gray-600 dark:text-gray-400">
-                Formulario de edición en construcción...
-              </p>
-              <p className="text-sm text-gray-500 dark:text-gray-500 mt-2">
-                Por ahora puedes usar la página "Agregar producto" para crear nuevos productos.
-              </p>
-            </div>
-          </div>
-        </div>
+        <ProductEditModal
+          product={productToEdit}
+          isOpen={showEditModal}
+          onClose={() => {
+            setShowEditModal(false)
+            setProductToEdit(null)
+          }}
+          onSave={handleSaveProduct}
+        />
       )}
     </div>
   )
