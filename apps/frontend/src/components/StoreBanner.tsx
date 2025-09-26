@@ -85,22 +85,32 @@ export default function StoreBanner({
                 )}
               </button>
 
-              {/* Menú desplegable */}
-              {showDropdown && isStoreOwner && (
-                <div className="absolute top-full left-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
-                  <div className="py-1">
+              {/* Menú desplegable con animación */}
+              {isStoreOwner && (
+                <div
+                  className={`absolute top-full left-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 z-50 overflow-hidden transform transition-all duration-200 origin-top-left ${
+                    showDropdown
+                      ? 'opacity-100 translate-y-0 scale-100 pointer-events-auto'
+                      : 'opacity-0 -translate-y-2 scale-95 pointer-events-none'
+                  }`}
+                  role="menu"
+                  aria-hidden={!showDropdown}
+                >
+                  <div className="py-2">
                     <button
                       onClick={handleGoToPanel}
-                      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                      className="flex items-center w-full px-5 py-3 text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                      role="menuitem"
                     >
-                      <Settings className="h-4 w-4 mr-3" />
+                      <Settings className="h-5 w-5 mr-3" />
                       Ir al panel
                     </button>
                     <button
                       onClick={handleLogout}
-                      className="flex items-center w-full px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                      className="flex items-center w-full px-5 py-3 text-base font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors"
+                      role="menuitem"
                     >
-                      <LogOut className="h-4 w-4 mr-3" />
+                      <LogOut className="h-5 w-5 mr-3" />
                       Cerrar sesión
                     </button>
                   </div>
