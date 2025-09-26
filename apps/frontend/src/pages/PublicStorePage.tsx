@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useState, useEffect, useCallback } from 'react'
+import { useParams, Link, useSearchParams, useNavigate } from 'react-router-dom'
 import { 
   ShoppingBag, 
   MessageCircle, 
@@ -23,6 +23,7 @@ import { ThemeProvider } from '../components/ThemeProvider'
 import StoreBanner from '../components/StoreBanner'
 import StoreLogo from '../components/StoreLogo'
 import LogoCustomizer from '../components/LogoCustomizer'
+import PublicProductModal from '../components/PublicProductModal'
 import { useAuth } from '../contexts/AuthContext'
 
 interface Product {
@@ -66,6 +67,11 @@ export default function PublicStorePageNew() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [favorites, setFavorites] = useState<Set<string>>(new Set())
   const [showLogoCustomizer, setShowLogoCustomizer] = useState(false)
+  const [searchParams, setSearchParams] = useSearchParams()
+  const [selectedProductId, setSelectedProductId] = useState<string | null>(null)
+  const [modalProduct, setModalProduct] = useState<Product | null>(null)
+  const [modalLoading, setModalLoading] = useState(false)
+  const navigate = useNavigate()
 
   useEffect(() => {
     loadStoreData()
@@ -121,10 +127,16 @@ export default function PublicStorePageNew() {
     }).format(price)
   }
 
-  const sendToWhatsApp = (product: Product) => {
-    const message = `¡Hola! Me interesa el producto "${product.name}" que vi en tu tienda ${store?.business_name}. ¿Podrías darme más información?`
-    const whatsappNumber = store?.whatsappNumber || '18091234567'
-    const whatsappUrl = `https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(message)}`
+  const sendToWhatsApp = (productArg?: Product) => {
+    if (!store) return
+    const targetProduct = productArg || modalProduct
+
+    const baseMessage = targetProduct
+      ? `¡Hola! Me interesa el producto "${targetProduct.name}" que vi en tu tienda ${store.business_name}. ¿Podrías darme más información?`
+      : `¡Hola! Me interesa conocer más sobre ${store.business_name}`
+
+    const whatsappNumber = store.whatsappNumber || '18091234567'
+    const whatsappUrl = `https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(baseMessage)}`
     window.open(whatsappUrl, '_blank')
   }
 
@@ -139,17 +151,66 @@ export default function PublicStorePageNew() {
   }
 
   const shareProduct = (product: Product) => {
+    const productUrl = `${window.location.origin}/str/${store?.slug ?? ''}/producto/${product.id}`
     if (navigator.share) {
       navigator.share({
         title: product.name,
         text: `Mira este producto: ${product.name}`,
-        url: window.location.href
+        url: productUrl
       })
     } else {
-      navigator.clipboard.writeText(window.location.href)
+      navigator.clipboard.writeText(productUrl)
       // TODO: Mostrar toast de "Link copiado"
     }
   }
+
+  const openProductModal = useCallback(async (productId: string, triggeredFromUrl = false) => {
+    if (!store) return
+    try {
+      setModalLoading(true)
+      setSelectedProductId(productId)
+
+      // Mostrar datos existentes rápidamente mientras cargamos detalles
+      const existing = products.find((item) => item.id === productId)
+      if (existing) {
+        setModalProduct(existing)
+      }
+
+      if (!triggeredFromUrl) {
+        const params = new URLSearchParams(searchParams)
+        params.set('product', productId)
+        setSearchParams(params, { replace: false })
+      }
+
+      const response = await api.get<{ success: boolean; product?: Product }>(`/products/${productId}?tenantId=${store.id}`)
+      if (response.success && response.product) {
+        setModalProduct(response.product)
+      }
+      setModalLoading(false)
+    } catch (error) {
+      console.error('Error cargando producto:', error)
+      setModalLoading(false)
+      alert('No se pudo cargar la información del producto.')
+    }
+  }, [products, searchParams, setSearchParams, store])
+
+  const closeProductModal = useCallback(() => {
+    setModalProduct(null)
+    setSelectedProductId(null)
+    const params = new URLSearchParams(searchParams)
+    params.delete('product')
+    setSearchParams(params, { replace: false })
+  }, [searchParams, setSearchParams])
+
+  useEffect(() => {
+    const productParam = searchParams.get('product')
+    if (productParam && store) {
+      openProductModal(productParam, true)
+    } else if (!productParam) {
+      setModalProduct(null)
+      setSelectedProductId(null)
+    }
+  }, [openProductModal, searchParams, store])
 
   // Filtrar productos
   const filteredProducts = products.filter(product => {
@@ -296,12 +357,7 @@ export default function PublicStorePageNew() {
               {/* Solo botón de WhatsApp */}
               <div className="flex justify-center mb-6">
                 <button
-                  onClick={() => {
-                    const message = `¡Hola! Me interesa conocer más sobre ${store.business_name}`
-                    const whatsappNumber = store.whatsappNumber || '18091234567'
-                    const whatsappUrl = `https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(message)}`
-                    window.open(whatsappUrl, '_blank')
-                  }}
+                  onClick={() => sendToWhatsApp()}
                   className="inline-flex items-center px-6 py-3 bg-green-500 text-white rounded-full hover:bg-green-600 transition-all transform hover:scale-105 shadow-lg font-semibold"
                 >
                   <MessageCircle className="h-5 w-5 mr-2" />
@@ -405,14 +461,17 @@ export default function PublicStorePageNew() {
                 : 'grid-cols-1'
             }`}>
               {filteredProducts.map((product) => (
-                <div
+                <article
                   key={product.id}
-                  className="group bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-xl hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-300 transform hover:-translate-y-1 flex flex-col"
+                  className="group flex flex-col bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-xl hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-300"
                 >
-                  {/* Imagen del producto */}
-                  <div className="relative aspect-[4/3] sm:aspect-[3/2] bg-gray-100 dark:bg-gray-700">
+                  <button
+                    onClick={() => openProductModal(product.id)}
+                    className="relative aspect-[4/3] sm:aspect-[3/2] bg-gray-100 dark:bg-gray-700"
+                    aria-label={`Ver detalles de ${product.name}`}
+                  >
                     <img
-                      src={(product.images && product.images.length > 0) ? product.images[0] : '/placeholder-product.jpg'}
+                      src={product.images?.[0] || '/placeholder-product.jpg'}
                       alt={product.name}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       onError={(e) => {
@@ -420,28 +479,36 @@ export default function PublicStorePageNew() {
                         target.src = '/placeholder-product.jpg'
                       }}
                     />
-                    
-                    {/* Botones de acción flotantes */}
+
                     <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button
-                        onClick={() => toggleFavorite(product.id)}
+                        onClick={(event) => {
+                          event.preventDefault()
+                          event.stopPropagation()
+                          toggleFavorite(product.id)
+                        }}
                         className={`p-2 rounded-full backdrop-blur-md shadow-lg transition-colors ${
                           favorites.has(product.id)
                             ? 'bg-red-500 text-white'
                             : 'bg-white/90 text-gray-700 hover:bg-red-50'
                         }`}
+                        aria-label="Agregar a favoritos"
                       >
                         <Heart className={`h-4 w-4 ${favorites.has(product.id) ? 'fill-current' : ''}`} />
                       </button>
                       <button
-                        onClick={() => shareProduct(product)}
+                        onClick={(event) => {
+                          event.preventDefault()
+                          event.stopPropagation()
+                          shareProduct(product)
+                        }}
                         className="p-2 rounded-full bg-white/90 backdrop-blur-md text-gray-700 hover:bg-blue-50 shadow-lg transition-colors"
+                        aria-label="Compartir producto"
                       >
                         <Share2 className="h-4 w-4" />
                       </button>
                     </div>
 
-                    {/* Badge de stock */}
                     {product.stock !== undefined && product.stock <= 5 && product.stock > 0 && (
                       <div className="absolute top-3 left-3">
                         <span className="px-2 py-1 bg-orange-500 text-white text-xs font-medium rounded-full">
@@ -455,19 +522,23 @@ export default function PublicStorePageNew() {
                         <span className="bg-red-500 text-white px-4 py-2 rounded-full font-semibold">Agotado</span>
                       </div>
                     )}
-                  </div>
+                  </button>
 
-                  {/* Información del producto */}
-                  <div className="p-5 sm:p-6 flex flex-col flex-1">
+                  <div className="flex flex-col flex-1 p-5 sm:p-6">
                     <div className="mb-4">
                       {product.category && (
                         <span className="inline-block px-2.5 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs font-medium rounded-full mb-2">
                           {product.category}
                         </span>
                       )}
-                      <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-2 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                        {product.name}
-                      </h3>
+                      <button
+                        onClick={() => openProductModal(product.id)}
+                        className="text-left w-full"
+                      >
+                        <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-2 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                          {product.name}
+                        </h3>
+                      </button>
                       {product.description && (
                         <p className="text-gray-600 dark:text-gray-400 text-sm line-clamp-3">
                           {product.description}
@@ -477,26 +548,34 @@ export default function PublicStorePageNew() {
 
                     <div className="mt-auto space-y-4">
                       <div className="flex items-center justify-between">
-                        <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                        <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                           {formatPrice(product.price)}
-                        </div>
+                        </p>
                         {product.stock !== undefined && product.stock > 5 && (
-                          <div className="text-sm text-green-600 dark:text-green-400 font-medium">
+                          <span className="text-sm text-green-600 dark:text-green-400 font-medium">
                             En stock
-                          </div>
+                          </span>
                         )}
                       </div>
 
-                      <button
-                        onClick={() => sendToWhatsApp(product)}
-                        disabled={product.stock === 0}
-                        className="w-full bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all font-semibold flex items-center justify-center group-hover:shadow-lg transform group-hover:scale-[1.02] text-sm sm:text-base"
-                      >
-                        Consultar por WhatsApp
-                      </button>
+                      <div className="flex flex-col sm:flex-row gap-3">
+                        <button
+                          onClick={() => openProductModal(product.id)}
+                          className="w-full sm:w-auto px-5 py-2.5 border border-blue-500 text-blue-600 dark:text-blue-300 rounded-xl font-semibold hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors"
+                        >
+                          Ver detalles
+                        </button>
+                        <button
+                          onClick={() => sendToWhatsApp(product)}
+                          disabled={product.stock === 0}
+                          className="flex-1 bg-green-500 text-white py-2.5 px-4 rounded-xl hover:bg-green-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all font-semibold group-hover:shadow-lg transform group-hover:scale-[1.02] text-sm sm:text-base"
+                        >
+                          Consultar por WhatsApp
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
+                </article>
               ))}
             </div>
           )}
@@ -593,6 +672,19 @@ export default function PublicStorePageNew() {
             currentIcon={store.icon}
             onSave={handleLogoSave}
             onClose={() => setShowLogoCustomizer(false)}
+          />
+        )}
+
+        {modalProduct && selectedProductId && (
+          <PublicProductModal
+            product={modalProduct}
+            store={store}
+            isOpen={!!selectedProductId}
+            isLoading={modalLoading}
+            onClose={closeProductModal}
+            onShare={() => shareProduct(modalProduct)}
+            onWhatsApp={() => sendToWhatsApp(modalProduct)}
+            onViewFull={() => navigate(`/str/${store.slug}/producto/${modalProduct.id}`)}
           />
         )}
       </div>

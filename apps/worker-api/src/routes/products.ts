@@ -178,13 +178,19 @@ products.get('/:id', async (c) => {
   try {
     const productId = c.req.param('id')
     const tenantId = c.req.query('tenantId')
-    
+
     if (!tenantId) {
       return c.json({
         error: 'Tenant requerido'
       }, 400)
     }
-    
+
+    if (!productId) {
+      return c.json({
+        error: 'Producto requerido'
+      }, 400)
+    }
+
     const supabase = c.get('supabase')
     const { data, error } = await supabase
       .from('products')
@@ -198,12 +204,17 @@ products.get('/:id', async (c) => {
         error: 'Producto no encontrado'
       }, 404)
     }
-    
+
+    if (data.status !== 'active' || (data.stock !== undefined && data.stock <= 0)) {
+      return c.json({
+        error: 'Producto no disponible'
+      }, 404)
+    }
+
     return c.json({
       success: true,
       product: data
     })
-    
   } catch (error) {
     console.error('Get product error:', error)
     return c.json({
