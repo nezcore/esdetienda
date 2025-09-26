@@ -405,9 +405,12 @@ export default function PublicStorePageNew() {
                 : 'grid-cols-1'
             }`}>
               {filteredProducts.map((product) => (
-                <div key={product.id} className="group bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-xl hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-300 transform hover:-translate-y-1">
+                <div
+                  key={product.id}
+                  className="group bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-xl hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-300 transform hover:-translate-y-1 flex flex-col"
+                >
                   {/* Imagen del producto */}
-                  <div className="relative aspect-square bg-gray-100 dark:bg-gray-700">
+                  <div className="relative aspect-[4/3] sm:aspect-[3/2] bg-gray-100 dark:bg-gray-700">
                     <img
                       src={(product.images && product.images.length > 0) ? product.images[0] : '/placeholder-product.jpg'}
                       alt={product.name}
@@ -455,10 +458,10 @@ export default function PublicStorePageNew() {
                   </div>
 
                   {/* Información del producto */}
-                  <div className="p-6">
-                    <div className="mb-3">
+                  <div className="p-5 sm:p-6 flex flex-col flex-1">
+                    <div className="mb-4">
                       {product.category && (
-                        <span className="inline-block px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs font-medium rounded-full mb-2">
+                        <span className="inline-block px-2.5 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs font-medium rounded-full mb-2">
                           {product.category}
                         </span>
                       )}
@@ -466,31 +469,32 @@ export default function PublicStorePageNew() {
                         {product.name}
                       </h3>
                       {product.description && (
-                        <p className="text-gray-600 dark:text-gray-400 text-sm line-clamp-2 mb-3">
+                        <p className="text-gray-600 dark:text-gray-400 text-sm line-clamp-3">
                           {product.description}
                         </p>
                       )}
                     </div>
 
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                        {formatPrice(product.price)}
-                      </div>
-                      {product.stock !== undefined && product.stock > 5 && (
-                        <div className="text-sm text-green-600 dark:text-green-400 font-medium">
-                          En stock
+                    <div className="mt-auto space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                          {formatPrice(product.price)}
                         </div>
-                      )}
-                    </div>
+                        {product.stock !== undefined && product.stock > 5 && (
+                          <div className="text-sm text-green-600 dark:text-green-400 font-medium">
+                            En stock
+                          </div>
+                        )}
+                      </div>
 
-                    <button
-                      onClick={() => sendToWhatsApp(product)}
-                      disabled={product.stock === 0}
-                      className="w-full bg-green-500 text-white py-3 px-4 rounded-xl hover:bg-green-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all font-semibold flex items-center justify-center group-hover:shadow-lg transform group-hover:scale-105"
-                    >
-                      <MessageCircle className="h-5 w-5 mr-2" />
-                      Consultar por WhatsApp
-                    </button>
+                      <button
+                        onClick={() => sendToWhatsApp(product)}
+                        disabled={product.stock === 0}
+                        className="w-full bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all font-semibold flex items-center justify-center group-hover:shadow-lg transform group-hover:scale-[1.02] text-sm sm:text-base"
+                      >
+                        Consultar por WhatsApp
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}
