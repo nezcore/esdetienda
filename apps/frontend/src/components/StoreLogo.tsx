@@ -31,13 +31,17 @@ export default function StoreLogo({
     xl: 'h-12 w-12'
   }
 
+  const isClickable = !!onClick
   const baseClasses = `${sizeClasses[size]} rounded-xl flex items-center justify-center shadow-sm ${className}`
+  const interactiveClasses = isClickable 
+    ? 'cursor-pointer hover:scale-105 transition-transform' 
+    : 'cursor-default'
 
   if (logo) {
     // Imagen personalizada
     return (
       <div 
-        className={`${baseClasses} overflow-hidden cursor-pointer hover:scale-105 transition-transform`}
+        className={`${baseClasses} overflow-hidden ${interactiveClasses}`}
         onClick={onClick}
       >
         <img 
@@ -53,7 +57,7 @@ export default function StoreLogo({
     // Emoji/icono personalizado
     return (
       <div 
-        className={`${baseClasses} bg-gradient-to-br from-blue-500 to-purple-600 cursor-pointer hover:scale-105 transition-transform`}
+        className={`${baseClasses} bg-gradient-to-br from-blue-500 to-purple-600 ${interactiveClasses}`}
         onClick={onClick}
       >
         <span className="text-white font-bold">
@@ -66,7 +70,7 @@ export default function StoreLogo({
   // Fallback - inicial del nombre de la tienda
   return (
     <div 
-      className={`${baseClasses} bg-gradient-to-br from-blue-500 to-purple-600 cursor-pointer hover:scale-105 transition-transform`}
+      className={`${baseClasses} bg-gradient-to-br from-blue-500 to-purple-600 ${interactiveClasses}`}
       onClick={onClick}
     >
       <span className="text-white font-bold">

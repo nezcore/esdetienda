@@ -23,6 +23,7 @@ import { ThemeProvider } from '../components/ThemeProvider'
 import StoreBanner from '../components/StoreBanner'
 import StoreLogo from '../components/StoreLogo'
 import LogoCustomizer from '../components/LogoCustomizer'
+import { useAuth } from '../contexts/AuthContext'
 
 interface Product {
   id: string
@@ -55,6 +56,7 @@ interface Store {
 
 export default function PublicStorePageNew() {
   const { tenantSlug } = useParams<{ tenantSlug: string }>()
+  const { user, tenant, isAuthenticated } = useAuth()
   const [store, setStore] = useState<Store | null>(null)
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
@@ -160,8 +162,22 @@ export default function PublicStorePageNew() {
   // Obtener categorías únicas
   const categories = Array.from(new Set(products.map(p => p.category).filter(Boolean)))
 
+  // Verificar si el usuario actual es propietario de esta tienda
+  const isStoreOwner = () => {
+    if (!isAuthenticated || !user || !store) return false
+    
+    // Verificar si el tenant del usuario autenticado coincide con la tienda actual
+    return tenant?.id === store.id || tenant?.slug === store.slug
+  }
+
   const handleLogoSave = async (logoData: { type: 'icon' | 'image' | 'emoji', value: string }) => {
     if (!store) return
+
+    // Verificar que solo el propietario pueda modificar
+    if (!isStoreOwner()) {
+      alert('❌ Solo el propietario de la tienda puede modificar el logo')
+      return
+    }
 
     try {
       console.log('Guardando logo:', logoData)
@@ -257,8 +273,8 @@ export default function PublicStorePageNew() {
           storeSlug={store.slug}
           storeLogo={store.logo}
           storeIcon={store.icon}
-          showCustomization={true} // TODO: Detectar si es el propietario
-          onLogoClick={() => setShowLogoCustomizer(true)}
+          showCustomization={isStoreOwner()}
+          onLogoClick={isStoreOwner() ? () => setShowLogoCustomizer(true) : undefined}
         />
 
         {/* Espaciador para el banner fijo */}
@@ -280,7 +296,7 @@ export default function PublicStorePageNew() {
                   storeName={store.business_name}
                   size="lg"
                   className="bg-white/10 backdrop-blur-md shadow-xl"
-                  onClick={() => setShowLogoCustomizer(true)}
+                  onClick={isStoreOwner() ? () => setShowLogoCustomizer(true) : undefined}
                 />
               </div>
 
@@ -578,8 +594,8 @@ export default function PublicStorePageNew() {
           </div>
         </footer>
 
-        {/* Logo Customizer */}
-        {showLogoCustomizer && (
+        {/* Logo Customizer - Solo para propietarios */}
+        {showLogoCustomizer && isStoreOwner() && (
           <LogoCustomizer
             currentLogo={store.logo}
             currentIcon={store.icon}
