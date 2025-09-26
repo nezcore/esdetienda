@@ -257,14 +257,33 @@ export default function PublicStorePageNew() {
         // Actualizar estado local con los datos del servidor
         setStore(response.tenant)
         setShowLogoCustomizer(false)
-        alert('¡Logo actualizado y guardado exitosamente!')
+        // Toast inline
+        const container = document.createElement('div')
+        container.className = 'fixed inset-0 z-[9999] pointer-events-none'
+        const toast = document.createElement('div')
+        toast.className = 'pointer-events-auto max-w-sm mx-auto mt-4 bg-emerald-600 text-white px-4 py-3 rounded-xl shadow-lg shadow-emerald-500/20 border border-emerald-400/40 animate-[fadeIn_.2s_ease-out]'
+        toast.textContent = '¡Logo actualizado y guardado exitosamente!'
+        container.appendChild(toast)
+        document.body.appendChild(container)
+        setTimeout(() => {
+          container.remove()
+        }, 2400)
       } else {
         throw new Error(response?.message || 'Error al actualizar')
       }
 
     } catch (error: any) {
       console.error('Error guardando logo:', error)
-      alert(`Error al guardar el logo: ${error.message || 'Error desconocido'}`)
+      const container = document.createElement('div')
+      container.className = 'fixed inset-0 z-[9999] pointer-events-none'
+      const toast = document.createElement('div')
+      toast.className = 'pointer-events-auto max-w-sm mx-auto mt-4 bg-red-600 text-white px-4 py-3 rounded-xl shadow-lg shadow-red-500/20 border border-red-400/40 animate-[fadeIn_.2s_ease-out]'
+      toast.textContent = `Error al guardar el logo: ${error.message || 'Error desconocido'}`
+      container.appendChild(toast)
+      document.body.appendChild(container)
+      setTimeout(() => {
+        container.remove()
+      }, 2600)
     }
   }
 
