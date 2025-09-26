@@ -273,7 +273,6 @@ export default function PublicStorePageNew() {
           storeSlug={store.slug}
           storeLogo={store.logo}
           storeIcon={store.icon}
-          showCustomization={isStoreOwner()}
           onLogoClick={isStoreOwner() ? () => setShowLogoCustomizer(true) : undefined}
         />
 
