@@ -18,16 +18,16 @@ const resolveDefaultApiBaseUrl = () => {
     return import.meta.env.VITE_API_URL
   }
 
-  // Construir usando el host y protocolo actual (para otros dispositivos en la red)
-  const protocol = window.location.protocol
-  const host = window.location.hostname
-
-  // Usar directamente el puerto 8787 donde corre wrangler (accesible desde la red)
-  return `${protocol}//${host}:8787`
+  // Fallback a API desplegada en producción
+  return 'https://api.esdetienda.com'
 }
 
 export const setApiBaseUrl = (url: string) => {
   localStorage.setItem('api_base_url', url)
+}
+
+export const clearApiBaseUrl = () => {
+  localStorage.removeItem('api_base_url')
 }
 
 export const API_BASE_URL = resolveDefaultApiBaseUrl()
