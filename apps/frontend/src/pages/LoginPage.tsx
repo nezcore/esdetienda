@@ -49,7 +49,9 @@ export default function LoginPage() {
       }
     } catch (error: any) {
       console.error('Error en el login:', error)
-      setError(error.message || 'Error al iniciar sesión. Verifica tus credenciales.')
+      // Mostrar el mensaje específico del backend o un mensaje genérico si no hay ninguno
+      const errorMessage = error.message || error.response?.data?.message || 'Error al conectar. Verifica tu conexión.'
+      setError(errorMessage)
       setLoading(false)
     }
   }

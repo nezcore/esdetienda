@@ -3,6 +3,24 @@ import { z } from 'zod'
 import { Env } from '../index'
 import { verifyPasswordPBKDF2, hashPasswordPBKDF2 } from '../utils/password'
 
+// Función para generar mensajes de error aleatorios de autenticación
+function getRandomAuthErrorMessage(): string {
+  const messages = [
+    'Correo/contraseña errónea',
+    'Revisa nuevamente tus credenciales',
+    'Ups, colocaste algo mal, revisa nuevamente',
+    'Espera, lo estás escribiendo mal. Revisa',
+    'Parece que hay un error en tus datos',
+    'Credenciales incorrectas, verifica bien',
+    'Mmm... algo no cuadra, revisa de nuevo',
+    'Datos incorrectos, intenta otra vez',
+    'Oops, revisa tu email y contraseña',
+    'Algo está mal, ¿puedes verificar?'
+  ]
+  
+  return messages[Math.floor(Math.random() * messages.length)]
+}
+
 const auth = new Hono<{ Bindings: Env }>()
 
 // Schema de validación para login
@@ -54,7 +72,7 @@ auth.post('/login', async (c) => {
       console.error('Supabase user lookup error:', userError)
       return c.json({
         error: 'Error de autenticación',
-        message: 'Email o contraseña incorrectos'
+        message: getRandomAuthErrorMessage()
       }, 401)
     }
 
@@ -62,7 +80,7 @@ auth.post('/login', async (c) => {
     if (!user || !user.tenants || user.tenants.status !== 'active') {
       return c.json({
         error: 'Error de autenticación',
-        message: 'Email o contraseña incorrectos'
+        message: getRandomAuthErrorMessage()
       }, 401)
     }
 
@@ -77,7 +95,7 @@ auth.post('/login', async (c) => {
     if (!passwordOk) {
       return c.json({
         error: 'Error de autenticación',
-        message: 'Email o contraseña incorrectos'
+        message: getRandomAuthErrorMessage()
       }, 401)
     }
 
@@ -112,7 +130,7 @@ auth.post('/login', async (c) => {
     console.error('Login error:', error)
     return c.json({
       error: 'Error de autenticación',
-      message: 'Email o contraseña incorrectos'
+      message: getRandomAuthErrorMessage()
     }, 401)
   }
 })

@@ -3,6 +3,22 @@ import { z } from 'zod'
 import { Env } from '../index'
 import { verifyPasswordPBKDF2 } from '../utils/password'
 
+// Función para generar mensajes de error aleatorios de autenticación admin
+function getRandomAdminAuthErrorMessage(): string {
+  const messages = [
+    'Acceso denegado, verifica tus credenciales',
+    'Datos incorrectos para acceso administrativo',
+    'Error de autenticación de superadmin',
+    'Credenciales de administrador incorrectas',
+    'Ups, acceso no autorizado. Revisa tus datos',
+    'No tienes permisos o tus datos son incorrectos',
+    'Acceso restringido, verifica tu información',
+    'Error de validación de administrador'
+  ]
+  
+  return messages[Math.floor(Math.random() * messages.length)]
+}
+
 const admin = new Hono<{ Bindings: Env }>()
 
 const adminLoginSchema = z.object({
@@ -24,11 +40,19 @@ admin.post('/login', async (c) => {
       .maybeSingle()
 
     if (error || !adminUser || adminUser.status !== 'active') {
-      return c.json({ error: 'Credenciales inválidas' }, 401)
+      return c.json({ 
+        error: 'Error de autenticación',
+        message: getRandomAdminAuthErrorMessage()
+      }, 401)
     }
     // Verificar contraseña
     const ok = await verifyPasswordPBKDF2(data.password, adminUser.password_hash)
-    if (!ok) return c.json({ error: 'Credenciales inválidas' }, 401)
+    if (!ok) {
+      return c.json({ 
+        error: 'Error de autenticación',
+        message: getRandomAdminAuthErrorMessage()
+      }, 401)
+    }
 
     // TODO: Generar JWT separado para admins
     const token = `admin_${adminUser.id}_${Date.now()}`
@@ -40,7 +64,10 @@ admin.post('/login', async (c) => {
     })
   } catch (err) {
     if (err instanceof z.ZodError) return c.json({ error: 'Datos inválidos', details: err.errors }, 400)
-    return c.json({ error: 'Error de autenticación' }, 500)
+    return c.json({ 
+      error: 'Error de autenticación',
+      message: getRandomAdminAuthErrorMessage()
+    }, 500)
   }
 })
 

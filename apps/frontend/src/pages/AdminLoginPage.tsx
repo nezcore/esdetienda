@@ -33,10 +33,13 @@ export default function AdminLoginPage() {
         login(res.token, res.admin as any)
         navigate('/superadmin', { replace: true })
       } else {
-        setError('Credenciales inválidas')
+        // Si la respuesta no indica éxito, usar el mensaje específico si está disponible
+        setError(res.message || 'Acceso denegado')
       }
     } catch (err: any) {
-      setError(err.message || 'Error al iniciar sesión')
+      // Mostrar el mensaje específico del backend o un mensaje genérico si no hay ninguno
+      const errorMessage = err.message || err.response?.data?.message || 'Error al conectar. Verifica tu conexión.'
+      setError(errorMessage)
     } finally {
       setLoading(false)
     }

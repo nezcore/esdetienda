@@ -76,7 +76,10 @@ class ApiClient {
         console.error('Error details:', errorData)
         
         let errorMessage = `HTTP ${response.status}: ${response.statusText}`
-        if (errorData.error) {
+        // Priorizar el mensaje específico sobre el error genérico
+        if (errorData.message) {
+          errorMessage = errorData.message
+        } else if (errorData.error) {
           errorMessage = errorData.error
         }
         if (errorData.details) {
