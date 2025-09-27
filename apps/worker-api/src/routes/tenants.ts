@@ -301,7 +301,30 @@ tenants.put('/slug', async (c) => {
       .eq('id', user.tenant_id)
       .single()
 
-    if (tenantError || !currentTenant) {
+    if (tenantError) {
+      console.error('Error al obtener tenant:', tenantError)
+      // Si el error es por columna inexistente, continuar sin restricción de tiempo
+      if (tenantError.message?.includes('last_slug_change')) {
+        console.log('Campo last_slug_change no existe, continuando sin restricción temporal')
+        // Obtener tenant sin el campo problemático
+        const { data: fallbackTenant, error: fallbackError } = await supabase
+          .from('tenants')
+          .select('id, slug')
+          .eq('id', user.tenant_id)
+          .single()
+        
+        if (fallbackError || !fallbackTenant) {
+          console.error('Error al obtener tenant (fallback):', fallbackError)
+          return c.json({ error: 'Tienda no encontrada' }, 404)
+        }
+        // Usar tenant sin campos de fecha
+        currentTenant = { ...fallbackTenant, last_slug_change: null }
+      } else {
+        return c.json({ error: 'Tienda no encontrada' }, 404)
+      }
+    }
+
+    if (!currentTenant) {
       return c.json({ error: 'Tienda no encontrada' }, 404)
     }
 
@@ -357,23 +380,49 @@ tenants.put('/slug', async (c) => {
 
     // Actualizar el slug del tenant
     const now = new Date().toISOString()
-    const { data: updatedTenant, error: updateError } = await supabase
-      .from('tenants')
-      .update({ 
-        slug: validatedData.newSlug,
-        last_slug_change: now,
-        updated_at: now
-      })
-      .eq('id', user.tenant_id)
-      .select()
-      .single()
-
-    if (updateError) {
-      console.error('Error actualizando slug:', updateError)
+    
+    // Intentar actualizar con el campo de fecha primero, luego sin él si falla
+    let updatedTenant
+    try {
+      const { data, error } = await supabase
+        .from('tenants')
+        .update({ 
+          slug: validatedData.newSlug,
+          last_slug_change: now,
+          updated_at: now
+        })
+        .eq('id', user.tenant_id)
+        .select()
+        .single()
+      
+      if (error && error.message?.includes('last_slug_change')) {
+        console.log('Campo last_slug_change no existe, actualizando sin él')
+        const { data: fallbackData, error: fallbackError } = await supabase
+          .from('tenants')
+          .update({ 
+            slug: validatedData.newSlug,
+            updated_at: now
+          })
+          .eq('id', user.tenant_id)
+          .select()
+          .single()
+        
+        if (fallbackError) {
+          console.error('Error actualizando slug:', fallbackError)
+          return c.json({ error: 'Error al actualizar la URL de la tienda' }, 500)
+        }
+        updatedTenant = fallbackData
+      } else if (error) {
+        console.error('Error actualizando slug:', error)
+        return c.json({ error: 'Error al actualizar la URL de la tienda' }, 500)
+      } else {
+        updatedTenant = data
+      }
+    } catch (error) {
+      console.error('Error general actualizando slug:', error)
       return c.json({ error: 'Error al actualizar la URL de la tienda' }, 500)
     }
 
-    // Verificar si realmente se actualizó algo
     if (!updatedTenant) {
       return c.json({ error: 'Tienda no encontrada' }, 404)
     }
@@ -435,7 +484,30 @@ tenants.put('/name', async (c) => {
       .eq('id', user.tenant_id)
       .single()
 
-    if (tenantError || !currentTenant) {
+    if (tenantError) {
+      console.error('Error al obtener tenant:', tenantError)
+      // Si el error es por columna inexistente, continuar sin restricción de tiempo
+      if (tenantError.message?.includes('last_name_change')) {
+        console.log('Campo last_name_change no existe, continuando sin restricción temporal')
+        // Obtener tenant sin el campo problemático
+        const { data: fallbackTenant, error: fallbackError } = await supabase
+          .from('tenants')
+          .select('id, business_name')
+          .eq('id', user.tenant_id)
+          .single()
+        
+        if (fallbackError || !fallbackTenant) {
+          console.error('Error al obtener tenant (fallback):', fallbackError)
+          return c.json({ error: 'Tienda no encontrada' }, 404)
+        }
+        // Usar tenant sin campos de fecha
+        currentTenant = { ...fallbackTenant, last_name_change: null }
+      } else {
+        return c.json({ error: 'Tienda no encontrada' }, 404)
+      }
+    }
+
+    if (!currentTenant) {
       return c.json({ error: 'Tienda no encontrada' }, 404)
     }
 
@@ -472,23 +544,49 @@ tenants.put('/name', async (c) => {
 
     // Actualizar el nombre del tenant
     const now = new Date().toISOString()
-    const { data: updatedTenant, error: updateError } = await supabase
-      .from('tenants')
-      .update({ 
-        business_name: validatedData.newName.trim(),
-        last_name_change: now,
-        updated_at: now
-      })
-      .eq('id', user.tenant_id)
-      .select()
-      .single()
-
-    if (updateError) {
-      console.error('Error actualizando nombre:', updateError)
+    
+    // Intentar actualizar con el campo de fecha primero, luego sin él si falla
+    let updatedTenant
+    try {
+      const { data, error } = await supabase
+        .from('tenants')
+        .update({ 
+          business_name: validatedData.newName.trim(),
+          last_name_change: now,
+          updated_at: now
+        })
+        .eq('id', user.tenant_id)
+        .select()
+        .single()
+      
+      if (error && error.message?.includes('last_name_change')) {
+        console.log('Campo last_name_change no existe, actualizando sin él')
+        const { data: fallbackData, error: fallbackError } = await supabase
+          .from('tenants')
+          .update({ 
+            business_name: validatedData.newName.trim(),
+            updated_at: now
+          })
+          .eq('id', user.tenant_id)
+          .select()
+          .single()
+        
+        if (fallbackError) {
+          console.error('Error actualizando nombre:', fallbackError)
+          return c.json({ error: 'Error al actualizar el nombre de la tienda' }, 500)
+        }
+        updatedTenant = fallbackData
+      } else if (error) {
+        console.error('Error actualizando nombre:', error)
+        return c.json({ error: 'Error al actualizar el nombre de la tienda' }, 500)
+      } else {
+        updatedTenant = data
+      }
+    } catch (error) {
+      console.error('Error general actualizando nombre:', error)
       return c.json({ error: 'Error al actualizar el nombre de la tienda' }, 500)
     }
 
-    // Verificar si realmente se actualizó algo
     if (!updatedTenant) {
       return c.json({ error: 'Tienda no encontrada' }, 404)
     }
@@ -547,7 +645,25 @@ tenants.get('/change-status', async (c) => {
       .eq('id', user.tenant_id)
       .single()
 
-    if (tenantError || !tenant) {
+    if (tenantError) {
+      console.error('Error al obtener tenant para status:', tenantError)
+      // Si el error es por columnas inexistentes, devolver estado disponible
+      if (tenantError.message?.includes('last_name_change') || tenantError.message?.includes('last_slug_change')) {
+        console.log('Campos de fecha no existen, devolviendo estado disponible')
+        return c.json({
+          nameChangeAvailable: true,
+          slugChangeAvailable: true,
+          nameNextAvailable: null,
+          slugNextAvailable: null,
+          nameHoursRemaining: 0,
+          slugHoursRemaining: 0
+        })
+      } else {
+        return c.json({ error: 'Tienda no encontrada' }, 404)
+      }
+    }
+
+    if (!tenant) {
       return c.json({ error: 'Tienda no encontrada' }, 404)
     }
 
