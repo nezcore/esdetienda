@@ -867,11 +867,6 @@ export default function RegisterPage() {
                             </p>
                           </div>
                         )}
-                        {slugStatus === 'available' && tenantSlug && !generatingSlug && (
-                          <p className="text-sm text-emerald-500 dark:text-emerald-400">
-                            ✅ ¡Perfecto! Tu tienda estará disponible en: esdetienda.com/{tenantSlug}
-                          </p>
-                        )}
                       </div>
                       <p className="text-xs text-gray-500 mt-1">Solo minúsculas, números y guiones</p>
                       <p className="text-xs text-gray-500">Ejemplo: esdetienda.com/str/mi-tienda</p>
