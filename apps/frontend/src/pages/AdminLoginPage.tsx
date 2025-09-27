@@ -33,8 +33,8 @@ export default function AdminLoginPage() {
         login(res.token, res.admin as any)
         navigate('/superadmin', { replace: true })
       } else {
-        // Si la respuesta no indica éxito, usar el mensaje específico si está disponible
-        setError(res.message || 'Acceso denegado')
+        // Si la respuesta no indica éxito, usar un mensaje genérico
+        setError('Acceso denegado')
       }
     } catch (err: any) {
       // Mostrar el mensaje específico del backend o un mensaje genérico si no hay ninguno

@@ -76,15 +76,21 @@ class ApiClient {
         console.error('Error details:', errorData)
         
         let errorMessage = `HTTP ${response.status}: ${response.statusText}`
+        
         // Priorizar el mensaje específico sobre el error genérico
         if (errorData.message) {
           errorMessage = errorData.message
         } else if (errorData.error) {
           errorMessage = errorData.error
         }
-        if (errorData.details) {
+        
+        // Solo agregar detalles técnicos si no hay un mensaje amigable
+        if (errorData.details && !errorData.message) {
           console.error('Validation details:', errorData.details)
           errorMessage += ` - Details: ${JSON.stringify(errorData.details)}`
+        } else if (errorData.details) {
+          // Solo loggear los detalles técnicos en la consola para debugging
+          console.error('Validation details:', errorData.details)
         }
         
         throw new Error(errorMessage)
@@ -164,7 +170,7 @@ export const authApi = {
     return api.post<AuthResponse>('/auth/login', { email, password })
   },
 
-  async adminLogin(email: string, password: string): Promise<{ success: boolean; token: string; admin: { id: string; email: string; role: 'superadmin' } }> {
+  async adminLogin(email: string, password: string): Promise<{ success: boolean; token: string; admin: { id: string; email: string; role: 'superadmin' }; message?: string }> {
     return api.post('/admin/login', { email, password })
   },
 

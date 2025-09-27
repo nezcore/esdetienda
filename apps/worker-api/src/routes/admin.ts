@@ -19,6 +19,33 @@ function getRandomAdminAuthErrorMessage(): string {
   return messages[Math.floor(Math.random() * messages.length)]
 }
 
+// Función para generar mensajes amigables de errores de validación admin
+function getAdminValidationErrorMessage(zodErrors: z.ZodIssue[]): string {
+  const firstError = zodErrors[0]
+  
+  // Manejo específico para diferentes tipos de errores
+  if (firstError.path.includes('password')) {
+    if (firstError.code === 'too_small') {
+      return 'La contraseña de administrador debe tener al menos 8 caracteres'
+    }
+  }
+  
+  if (firstError.path.includes('email')) {
+    if (firstError.code === 'invalid_string') {
+      return 'Por favor ingresa un email de administrador válido'
+    }
+  }
+  
+  // Mensajes genéricos más amigables para admin
+  const friendlyMessages = [
+    'Error en los datos de acceso administrativo',
+    'Verifica la información de administrador',
+    'Hay un problema con los datos ingresados'
+  ]
+  
+  return friendlyMessages[Math.floor(Math.random() * friendlyMessages.length)]
+}
+
 const admin = new Hono<{ Bindings: Env }>()
 
 const adminLoginSchema = z.object({
@@ -63,7 +90,10 @@ admin.post('/login', async (c) => {
       admin: { id: adminUser.id, email: adminUser.email, role: adminUser.role }
     })
   } catch (err) {
-    if (err instanceof z.ZodError) return c.json({ error: 'Datos inválidos', details: err.errors }, 400)
+    if (err instanceof z.ZodError) return c.json({ 
+      error: 'Error de validación', 
+      message: getAdminValidationErrorMessage(err.errors) 
+    }, 400)
     return c.json({ 
       error: 'Error de autenticación',
       message: getRandomAdminAuthErrorMessage()

@@ -21,6 +21,34 @@ function getRandomAuthErrorMessage(): string {
   return messages[Math.floor(Math.random() * messages.length)]
 }
 
+// Función para generar mensajes amigables de errores de validación
+function getValidationErrorMessage(zodErrors: z.ZodIssue[]): string {
+  const firstError = zodErrors[0]
+  
+  // Manejo específico para diferentes tipos de errores
+  if (firstError.path.includes('password')) {
+    if (firstError.code === 'too_small') {
+      return 'Tu contraseña debe tener al menos 8 caracteres'
+    }
+  }
+  
+  if (firstError.path.includes('email')) {
+    if (firstError.code === 'invalid_string') {
+      return 'Por favor ingresa un email válido'
+    }
+  }
+  
+  // Mensajes genéricos más amigables
+  const friendlyMessages = [
+    'Hay un error en los datos que ingresaste',
+    'Algo no está bien, revisa la información',
+    'Verifica que todos los campos estén correctos',
+    'Oops, hay un problema con la información'
+  ]
+  
+  return friendlyMessages[Math.floor(Math.random() * friendlyMessages.length)]
+}
+
 const auth = new Hono<{ Bindings: Env }>()
 
 // Schema de validación para login
@@ -122,8 +150,8 @@ auth.post('/login', async (c) => {
   } catch (error) {
     if (error instanceof z.ZodError) {
       return c.json({
-        error: 'Datos inválidos',
-        details: error.errors
+        error: 'Error de validación',
+        message: getValidationErrorMessage(error.errors)
       }, 400)
     }
     
@@ -230,8 +258,8 @@ auth.post('/register', async (c) => {
   } catch (error) {
     if (error instanceof z.ZodError) {
       return c.json({
-        error: 'Datos inválidos',
-        details: error.errors
+        error: 'Error de validación',
+        message: getValidationErrorMessage(error.errors)
       }, 400)
     }
     
@@ -366,7 +394,10 @@ auth.put('/email', async (c) => {
     return c.json({ success: true, message: 'Email actualizado' })
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return c.json({ error: 'Datos inválidos', details: error.errors }, 400)
+      return c.json({ 
+        error: 'Error de validación', 
+        message: getValidationErrorMessage(error.errors) 
+      }, 400)
     }
     return c.json({ error: 'Error al actualizar email' }, 500)
   }
@@ -418,7 +449,10 @@ auth.put('/password', async (c) => {
     return c.json({ success: true, message: 'Contraseña actualizada' })
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return c.json({ error: 'Datos inválidos', details: error.errors }, 400)
+      return c.json({ 
+        error: 'Error de validación', 
+        message: getValidationErrorMessage(error.errors) 
+      }, 400)
     }
     return c.json({ error: 'Error al actualizar contraseña' }, 500)
   }
