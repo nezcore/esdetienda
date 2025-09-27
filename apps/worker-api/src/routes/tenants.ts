@@ -237,7 +237,7 @@ tenants.get('/:slug', async (c) => {
 
 // Schema para actualizar tenant
 const updateTenantSchema = z.object({
-  business_name: z.string().min(2, 'Nombre de negocio requerido').optional(),
+  business_name: z.string().min(4, 'El nombre de negocio debe tener al menos 4 caracteres').optional(),
   description: z.string().optional(),
   primary_color: z.string().optional(),
   secondary_color: z.string().optional(),
@@ -254,7 +254,7 @@ const updateSlugSchema = z.object({
 
 // Schema para actualizar nombre del tenant
 const updateNameSchema = z.object({
-  newName: z.string().min(2, 'El nombre debe tener al menos 2 caracteres').max(100, 'El nombre no puede exceder 100 caracteres'),
+  newName: z.string().min(4, 'El nombre debe tener al menos 4 caracteres').max(100, 'El nombre no puede exceder 100 caracteres'),
   currentPassword: z.string().min(8, 'Contraseña requerida')
 })
 
@@ -294,6 +294,36 @@ tenants.put('/slug', async (c) => {
       return c.json({ error: 'Usuario no encontrado' }, 404)
     }
 
+    // Obtener información del tenant para verificar últimos cambios
+    const { data: currentTenant, error: tenantError } = await supabase
+      .from('tenants')
+      .select('id, slug, last_slug_change')
+      .eq('id', user.tenant_id)
+      .single()
+
+    if (tenantError || !currentTenant) {
+      return c.json({ error: 'Tienda no encontrada' }, 404)
+    }
+
+    // Verificar si han pasado 5 días desde el último cambio de URL
+    if (currentTenant.last_slug_change) {
+      const lastChange = new Date(currentTenant.last_slug_change)
+      const now = new Date()
+      const daysSinceLastChange = (now.getTime() - lastChange.getTime()) / (1000 * 60 * 60 * 24)
+      
+      if (daysSinceLastChange < 5) {
+        const nextAvailableDate = new Date(lastChange.getTime() + (5 * 24 * 60 * 60 * 1000))
+        const hoursRemaining = Math.ceil((nextAvailableDate.getTime() - now.getTime()) / (1000 * 60 * 60))
+        
+        return c.json({ 
+          error: 'Cambio no disponible', 
+          message: `Solo puedes cambiar la URL una vez cada 5 días. Próximo cambio disponible en ${hoursRemaining} horas.`,
+          nextAvailable: nextAvailableDate.toISOString(),
+          hoursRemaining
+        }, 429)
+      }
+    }
+
     // Verificar contraseña
     let passwordOk = false
     if (typeof user.password_hash === 'string' && user.password_hash.startsWith('pbkdf2$')) {
@@ -326,11 +356,13 @@ tenants.put('/slug', async (c) => {
     }
 
     // Actualizar el slug del tenant
+    const now = new Date().toISOString()
     const { data: updatedTenant, error: updateError } = await supabase
       .from('tenants')
       .update({ 
         slug: validatedData.newSlug,
-        updated_at: new Date().toISOString()
+        last_slug_change: now,
+        updated_at: now
       })
       .eq('id', user.tenant_id)
       .select()
@@ -396,6 +428,36 @@ tenants.put('/name', async (c) => {
       return c.json({ error: 'Usuario no encontrado' }, 404)
     }
 
+    // Obtener información del tenant para verificar últimos cambios
+    const { data: currentTenant, error: tenantError } = await supabase
+      .from('tenants')
+      .select('id, business_name, last_name_change')
+      .eq('id', user.tenant_id)
+      .single()
+
+    if (tenantError || !currentTenant) {
+      return c.json({ error: 'Tienda no encontrada' }, 404)
+    }
+
+    // Verificar si han pasado 5 días desde el último cambio de nombre
+    if (currentTenant.last_name_change) {
+      const lastChange = new Date(currentTenant.last_name_change)
+      const now = new Date()
+      const daysSinceLastChange = (now.getTime() - lastChange.getTime()) / (1000 * 60 * 60 * 24)
+      
+      if (daysSinceLastChange < 5) {
+        const nextAvailableDate = new Date(lastChange.getTime() + (5 * 24 * 60 * 60 * 1000))
+        const hoursRemaining = Math.ceil((nextAvailableDate.getTime() - now.getTime()) / (1000 * 60 * 60))
+        
+        return c.json({ 
+          error: 'Cambio no disponible', 
+          message: `Solo puedes cambiar el nombre una vez cada 5 días. Próximo cambio disponible en ${hoursRemaining} horas.`,
+          nextAvailable: nextAvailableDate.toISOString(),
+          hoursRemaining
+        }, 429)
+      }
+    }
+
     // Verificar contraseña
     let passwordOk = false
     if (typeof user.password_hash === 'string' && user.password_hash.startsWith('pbkdf2$')) {
@@ -409,11 +471,13 @@ tenants.put('/name', async (c) => {
     }
 
     // Actualizar el nombre del tenant
+    const now = new Date().toISOString()
     const { data: updatedTenant, error: updateError } = await supabase
       .from('tenants')
       .update({ 
         business_name: validatedData.newName.trim(),
-        updated_at: new Date().toISOString()
+        last_name_change: now,
+        updated_at: now
       })
       .eq('id', user.tenant_id)
       .select()
@@ -450,6 +514,82 @@ tenants.put('/name', async (c) => {
     }
     
     return c.json({ error: 'Error al actualizar el nombre' }, 500)
+  }
+})
+
+// GET /tenants/change-status - Obtener estado de disponibilidad de cambios
+tenants.get('/change-status', async (c) => {
+  try {
+    // Obtener ID del usuario del token
+    const userId = getUserIdFromAuthHeader(c)
+    if (!userId) {
+      return c.json({ error: 'No autorizado' }, 401)
+    }
+
+    const supabase = c.get('supabase')
+
+    // Obtener información del usuario
+    const { data: user, error: userError } = await supabase
+      .from('users')
+      .select('tenant_id')
+      .eq('id', userId)
+      .eq('status', 'active')
+      .single()
+
+    if (userError || !user) {
+      return c.json({ error: 'Usuario no encontrado' }, 404)
+    }
+
+    // Obtener información del tenant
+    const { data: tenant, error: tenantError } = await supabase
+      .from('tenants')
+      .select('last_name_change, last_slug_change')
+      .eq('id', user.tenant_id)
+      .single()
+
+    if (tenantError || !tenant) {
+      return c.json({ error: 'Tienda no encontrada' }, 404)
+    }
+
+    const now = new Date()
+    const result = {
+      nameChangeAvailable: true,
+      slugChangeAvailable: true,
+      nameNextAvailable: null,
+      slugNextAvailable: null,
+      nameHoursRemaining: 0,
+      slugHoursRemaining: 0
+    }
+
+    // Verificar disponibilidad de cambio de nombre
+    if (tenant.last_name_change) {
+      const lastNameChange = new Date(tenant.last_name_change)
+      const daysSinceNameChange = (now.getTime() - lastNameChange.getTime()) / (1000 * 60 * 60 * 24)
+      
+      if (daysSinceNameChange < 5) {
+        result.nameChangeAvailable = false
+        result.nameNextAvailable = new Date(lastNameChange.getTime() + (5 * 24 * 60 * 60 * 1000)).toISOString()
+        result.nameHoursRemaining = Math.ceil((new Date(result.nameNextAvailable).getTime() - now.getTime()) / (1000 * 60 * 60))
+      }
+    }
+
+    // Verificar disponibilidad de cambio de URL
+    if (tenant.last_slug_change) {
+      const lastSlugChange = new Date(tenant.last_slug_change)
+      const daysSinceSlugChange = (now.getTime() - lastSlugChange.getTime()) / (1000 * 60 * 60 * 24)
+      
+      if (daysSinceSlugChange < 5) {
+        result.slugChangeAvailable = false
+        result.slugNextAvailable = new Date(lastSlugChange.getTime() + (5 * 24 * 60 * 60 * 1000)).toISOString()
+        result.slugHoursRemaining = Math.ceil((new Date(result.slugNextAvailable).getTime() - now.getTime()) / (1000 * 60 * 60))
+      }
+    }
+
+    return c.json(result)
+
+  } catch (error) {
+    console.error('Change status error:', error)
+    return c.json({ error: 'Error al obtener estado de cambios' }, 500)
   }
 })
 

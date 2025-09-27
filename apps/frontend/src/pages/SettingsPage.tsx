@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
-import { CheckCircle, KeyRound, Mail, RefreshCcw, Shield, Link, Loader2, XCircle, Store } from 'lucide-react'
+import { CheckCircle, KeyRound, Mail, RefreshCcw, Shield, Link, Loader2, XCircle, Store, Clock } from 'lucide-react'
 import { authApi } from '../lib/api'
 import { useAuth } from '../contexts/AuthContext'
+import ChangeConfirmationModal from '../components/ChangeConfirmationModal'
 
 export default function SettingsPage() {
   const { user, updateUserEmail, tenant, updateTenant } = useAuth()
@@ -23,6 +24,23 @@ export default function SettingsPage() {
   const [storeName, setStoreName] = useState(tenant?.business_name || '')
   const [currentPasswordForName, setCurrentPasswordForName] = useState('')
   const [loadingName, setLoadingName] = useState(false)
+  
+  // Estados para control de cambios (5 días)
+  const [changeStatus, setChangeStatus] = useState<{
+    nameChangeAvailable: boolean
+    slugChangeAvailable: boolean
+    nameNextAvailable?: string
+    slugNextAvailable?: string
+    nameHoursRemaining: number
+    slugHoursRemaining: number
+  } | null>(null)
+  
+  // Estados para modales de confirmación
+  const [showNameModal, setShowNameModal] = useState(false)
+  const [showUrlModal, setShowUrlModal] = useState(false)
+  
+  // Estados para cuenta regresiva
+  const [countdown, setCountdown] = useState<{ name: string; url: string }>({ name: '', url: '' })
 
   // Actualizar storeUrl cuando cambie el tenant
   useEffect(() => {
@@ -37,6 +55,79 @@ export default function SettingsPage() {
       setStoreName(tenant.business_name)
     }
   }, [tenant?.business_name])
+
+  // Cargar estado de cambios al montar el componente
+  useEffect(() => {
+    const loadChangeStatus = async () => {
+      try {
+        const status = await authApi.getChangeStatus()
+        setChangeStatus(status)
+      } catch (error) {
+        console.error('Error cargando estado de cambios:', error)
+      }
+    }
+    loadChangeStatus()
+  }, [])
+
+  // Actualizar cuenta regresiva cada minuto
+  useEffect(() => {
+    if (!changeStatus) return
+
+    const updateCountdown = () => {
+      const now = new Date()
+      
+      // Calcular tiempo restante para cambio de nombre
+      if (!changeStatus.nameChangeAvailable && changeStatus.nameNextAvailable) {
+        const nextAvailable = new Date(changeStatus.nameNextAvailable)
+        const timeLeft = nextAvailable.getTime() - now.getTime()
+        
+        if (timeLeft > 0) {
+          const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24))
+          const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+          const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60))
+          
+          setCountdown(prev => ({
+            ...prev,
+            name: days > 0 ? `${days}d ${hours}h ${minutes}m` : `${hours}h ${minutes}m`
+          }))
+        } else {
+          setCountdown(prev => ({ ...prev, name: '' }))
+          // Recargar estado si ya debería estar disponible
+          authApi.getChangeStatus().then(setChangeStatus).catch(console.error)
+        }
+      } else {
+        setCountdown(prev => ({ ...prev, name: '' }))
+      }
+      
+      // Calcular tiempo restante para cambio de URL
+      if (!changeStatus.slugChangeAvailable && changeStatus.slugNextAvailable) {
+        const nextAvailable = new Date(changeStatus.slugNextAvailable)
+        const timeLeft = nextAvailable.getTime() - now.getTime()
+        
+        if (timeLeft > 0) {
+          const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24))
+          const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+          const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60))
+          
+          setCountdown(prev => ({
+            ...prev,
+            url: days > 0 ? `${days}d ${hours}h ${minutes}m` : `${hours}h ${minutes}m`
+          }))
+        } else {
+          setCountdown(prev => ({ ...prev, url: '' }))
+          // Recargar estado si ya debería estar disponible
+          authApi.getChangeStatus().then(setChangeStatus).catch(console.error)
+        }
+      } else {
+        setCountdown(prev => ({ ...prev, url: '' }))
+      }
+    }
+
+    updateCountdown()
+    const interval = setInterval(updateCountdown, 60000) // Actualizar cada minuto
+
+    return () => clearInterval(interval)
+  }, [changeStatus])
 
   // Validar URL en tiempo real
   const validateUrl = (value: string) => {
@@ -147,6 +238,17 @@ export default function SettingsPage() {
       return
     }
 
+    // Verificar si el cambio está disponible
+    if (changeStatus && !changeStatus.slugChangeAvailable) {
+      showToast(`No puedes cambiar la URL hasta dentro de ${countdown.url}`, 'error')
+      return
+    }
+
+    // Mostrar modal de confirmación
+    setShowUrlModal(true)
+  }
+
+  const confirmUrlChange = async () => {
     try {
       setLoadingUrl(true)
       const res = await authApi.updateTenantSlug(storeUrl, currentPasswordForUrl)
@@ -155,6 +257,10 @@ export default function SettingsPage() {
         setCurrentPasswordForUrl('')
         // Actualizar el tenant en el contexto con la nueva URL
         updateTenant({ slug: storeUrl })
+        // Recargar estado de cambios
+        const status = await authApi.getChangeStatus()
+        setChangeStatus(status)
+        setShowUrlModal(false)
       } else {
         showToast((res as any).error || 'No se pudo actualizar la URL', 'error')
       }
@@ -168,11 +274,22 @@ export default function SettingsPage() {
   const handleUpdateStoreName = async (e: React.FormEvent) => {
     e.preventDefault()
     
-    if (storeName.trim().length < 2) {
-      showToast('El nombre debe tener al menos 2 caracteres', 'error')
+    if (storeName.trim().length < 4) {
+      showToast('El nombre debe tener al menos 4 caracteres', 'error')
       return
     }
 
+    // Verificar si el cambio está disponible
+    if (changeStatus && !changeStatus.nameChangeAvailable) {
+      showToast(`No puedes cambiar el nombre hasta dentro de ${countdown.name}`, 'error')
+      return
+    }
+
+    // Mostrar modal de confirmación
+    setShowNameModal(true)
+  }
+
+  const confirmNameChange = async () => {
     try {
       setLoadingName(true)
       const res = await authApi.updateTenantName(storeName.trim(), currentPasswordForName)
@@ -181,6 +298,10 @@ export default function SettingsPage() {
         setCurrentPasswordForName('')
         // Actualizar el tenant en el contexto con el nuevo nombre
         updateTenant({ business_name: storeName.trim() })
+        // Recargar estado de cambios
+        const status = await authApi.getChangeStatus()
+        setChangeStatus(status)
+        setShowNameModal(false)
       } else {
         showToast((res as any).error || 'No se pudo actualizar el nombre', 'error')
       }
@@ -280,26 +401,34 @@ export default function SettingsPage() {
         </form>
 
         <form onSubmit={handleUpdateStoreName} className="rounded-3xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 space-y-5">
-          <div className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300">
-            <Store className="h-4 w-4 text-brand-500" /> Cambiar nombre de tienda
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300">
+              <Store className="h-4 w-4 text-brand-500" /> Cambiar nombre de tienda
+            </div>
+            {changeStatus && !changeStatus.nameChangeAvailable && countdown.name && (
+              <div className="flex items-center gap-1 text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 px-2 py-1 rounded-lg">
+                <Clock className="h-3 w-3" />
+                <span>Disponible en {countdown.name}</span>
+              </div>
+            )}
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-800 dark:text-gray-200 mb-1">Nuevo nombre</label>
             <input
               type="text"
               required
-              minLength={2}
+              minLength={4}
               value={storeName}
               onChange={(e) => setStoreName(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-xl focus:ring-brand-500 focus:border-brand-500 dark:bg-gray-900 dark:text-gray-100"
               placeholder="Mi Tienda Increíble"
             />
-            {storeName.trim().length > 0 && storeName.trim().length < 2 && (
+            {storeName.trim().length > 0 && storeName.trim().length < 4 && (
               <p className="text-sm text-red-500 dark:text-red-400 mt-1">
-                El nombre debe tener al menos 2 caracteres
+                El nombre debe tener al menos 4 caracteres
               </p>
             )}
-            {storeName.trim().length >= 2 && storeName !== tenant?.business_name && (
+            {storeName.trim().length >= 4 && storeName !== tenant?.business_name && (
               <p className="text-sm text-emerald-500 dark:text-emerald-400 mt-1">
                 ✅ Nuevo nombre listo para guardar
               </p>
@@ -319,7 +448,13 @@ export default function SettingsPage() {
           <div className="flex justify-end">
             <button
               type="submit"
-              disabled={loadingName || storeName.trim().length < 2 || storeName === tenant?.business_name || !currentPasswordForName}
+              disabled={
+                loadingName || 
+                storeName.trim().length < 4 || 
+                storeName === tenant?.business_name || 
+                !currentPasswordForName ||
+                (changeStatus ? !changeStatus.nameChangeAvailable : false)
+              }
               className="inline-flex items-center gap-2 px-5 py-2 rounded-lg bg-brand-900 hover:bg-brand-700 text-white text-sm font-semibold disabled:opacity-60"
             >
               {loadingName ? <RefreshCcw className="h-4 w-4 animate-spin" /> : <CheckCircle className="h-4 w-4" />}
@@ -329,8 +464,16 @@ export default function SettingsPage() {
         </form>
 
         <form onSubmit={handleUpdateStoreUrl} className="rounded-3xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 space-y-5">
-          <div className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300">
-            <Link className="h-4 w-4 text-brand-500" /> Cambiar URL de tienda
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300">
+              <Link className="h-4 w-4 text-brand-500" /> Cambiar URL de tienda
+            </div>
+            {changeStatus && !changeStatus.slugChangeAvailable && countdown.url && (
+              <div className="flex items-center gap-1 text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 px-2 py-1 rounded-lg">
+                <Clock className="h-3 w-3" />
+                <span>Disponible en {countdown.url}</span>
+              </div>
+            )}
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-800 dark:text-gray-200 mb-1">Nueva URL</label>
@@ -394,7 +537,13 @@ export default function SettingsPage() {
           <div className="flex justify-end">
             <button
               type="submit"
-              disabled={loadingUrl || (urlStatus !== 'available' && storeUrl !== tenant?.slug) || !storeUrl || !currentPasswordForUrl}
+              disabled={
+                loadingUrl || 
+                (urlStatus !== 'available' && storeUrl !== tenant?.slug) || 
+                !storeUrl || 
+                !currentPasswordForUrl ||
+                (changeStatus ? !changeStatus.slugChangeAvailable : false)
+              }
               className="inline-flex items-center gap-2 px-5 py-2 rounded-lg bg-brand-900 hover:bg-brand-700 text-white text-sm font-semibold disabled:opacity-60"
             >
               {loadingUrl ? <RefreshCcw className="h-4 w-4 animate-spin" /> : <CheckCircle className="h-4 w-4" />}
@@ -403,6 +552,28 @@ export default function SettingsPage() {
           </div>
         </form>
       </section>
+
+      {/* Modal de confirmación para cambio de nombre */}
+      <ChangeConfirmationModal
+        isOpen={showNameModal}
+        onClose={() => setShowNameModal(false)}
+        onConfirm={confirmNameChange}
+        type="name"
+        currentValue={tenant?.business_name || ''}
+        newValue={storeName}
+        isLoading={loadingName}
+      />
+
+      {/* Modal de confirmación para cambio de URL */}
+      <ChangeConfirmationModal
+        isOpen={showUrlModal}
+        onClose={() => setShowUrlModal(false)}
+        onConfirm={confirmUrlChange}
+        type="url"
+        currentValue={tenant?.slug || ''}
+        newValue={storeUrl}
+        isLoading={loadingUrl}
+      />
     </div>
   )
 }

@@ -61,7 +61,7 @@ const loginSchema = z.object({
 const registerSchema = z.object({
   email: z.string().email('Email inválido'),
   password: z.string().min(8, 'La contraseña debe tener al menos 8 caracteres'),
-  businessName: z.string().min(2, 'Nombre de negocio requerido'),
+  businessName: z.string().min(4, 'El nombre de negocio debe tener al menos 4 caracteres'),
   tenantSlug: z.string().regex(/^[a-z0-9-]+$/, 'Slug debe contener solo letras minúsculas, números y guiones'),
   plan: z.enum(['esencial', 'pro'])
 })

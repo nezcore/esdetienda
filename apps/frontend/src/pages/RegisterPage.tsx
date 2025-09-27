@@ -644,6 +644,7 @@ export default function RegisterPage() {
                           name="businessName"
                           type="text"
                           required
+                          minLength={4}
                           value={businessName}
                           onChange={(event) => {
                             setBusinessName(event.target.value)
@@ -675,6 +676,10 @@ export default function RegisterPage() {
                           El nombre del negocio debe tener al menos 4 caracteres.
                         </p>
                       )}
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 flex items-center gap-1">
+                        <span>💡</span>
+                        Podrás cambiar este nombre más adelante en configuración si lo deseas.
+                      </p>
                     </div>
                   )}
 

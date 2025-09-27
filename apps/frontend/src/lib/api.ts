@@ -206,6 +206,17 @@ export const authApi = {
     return api.put('/tenants/name', { newName, currentPassword })
   },
 
+  async getChangeStatus(): Promise<{
+    nameChangeAvailable: boolean
+    slugChangeAvailable: boolean
+    nameNextAvailable?: string
+    slugNextAvailable?: string
+    nameHoursRemaining: number
+    slugHoursRemaining: number
+  }> {
+    return api.get('/tenants/change-status')
+  },
+
   async checkSlug(slug: string): Promise<{ available: boolean }> {
     try {
       const response = await api.get<{ available: boolean }>(`/tenants/slug/${slug}`)
