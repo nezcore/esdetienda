@@ -8,7 +8,7 @@ interface TermsStepProps {
   businessName: string
   tenantSlug: string
   email: string
-  selectedPlan: 'esencial' | 'pro'
+  selectedPlan: 'esencial' | 'basico' | 'pro'
   acceptTerms: boolean
   setAcceptTerms: (value: boolean) => void
   termsTouched: boolean

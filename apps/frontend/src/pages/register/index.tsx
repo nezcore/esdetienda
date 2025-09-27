@@ -57,6 +57,21 @@ export default function RegisterPage() {
         '1 usuario invitado'
       ]
     },
+    basico: {
+      name: 'Plan Básico',
+      price: 'RD$990/mes',
+      description: 'Para pequeños negocios',
+      features: [
+        'Catálogo completo (hasta 200 productos)',
+        'Bot personalizable',
+        'IA texto 8,000 turnos/mes',
+        'IA visión 200 imágenes/mes',
+        'Audios→texto 120 min/mes',
+        'Analytics básicos',
+        '2 usuarios admin',
+        'Soporte prioritario'
+      ]
+    },
     pro: {
       name: 'Plan Pro',
       price: 'RD$1,990/mes',
@@ -409,6 +424,7 @@ export default function RegisterPage() {
   const currentStepValid = getStepValidation(currentStepIndex)
   const isLastStep = currentStepIndex === steps.length - 1
   const isSubmitDisabled = !currentStepValid || loading
+  const isPlanStep = currentStepIndex === 3
 
   const submitButtonBaseClass = 'inline-flex items-center gap-2 px-6 py-2.5 text-sm font-semibold rounded-xl border border-transparent transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-gray-900 shadow-lg bg-brand-700 text-white dark:bg-brand-700'
   const submitButtonEnabledClass = 'hover:bg-brand-700 dark:hover:bg-brand-700 active:bg-brand-800 dark:active:bg-brand-800 transform hover:-translate-y-0.5 hover:shadow-xl'
@@ -435,7 +451,7 @@ export default function RegisterPage() {
       </nav>
 
       <main className="flex-1 flex items-center justify-center p-4">
-        <div className="w-full max-w-md">
+        <div className={`w-full ${isPlanStep ? 'max-w-4xl' : 'max-w-md'}`}>
           <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-8 shadow-sm">
             {/* Indicador de progreso */}
             <div className="mb-8">

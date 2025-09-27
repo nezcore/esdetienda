@@ -18,7 +18,7 @@ export interface RegisterFormData {
   password: string
   businessName: string
   tenantSlug: string
-  plan: 'esencial' | 'pro'
+  plan: 'esencial' | 'basico' | 'pro'
 }
 
 export interface FormValidationState {

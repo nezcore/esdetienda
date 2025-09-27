@@ -13,9 +13,9 @@ interface Plan {
 }
 
 interface PlanSelectorProps {
-  selectedPlan: 'esencial' | 'pro'
-  onPlanChange: (plan: 'esencial' | 'pro') => void
-  planDetails: Record<'esencial' | 'pro', Plan>
+  selectedPlan: 'esencial' | 'basico' | 'pro'
+  onPlanChange: (plan: 'esencial' | 'basico' | 'pro') => void
+  planDetails: Record<'esencial' | 'basico' | 'pro', Plan>
 }
 
 const PlanSelector: React.FC<PlanSelectorProps> = ({ 
@@ -34,21 +34,18 @@ const PlanSelector: React.FC<PlanSelectorProps> = ({
         </p>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 lg:gap-8 xl:gap-10">
         {Object.entries(planDetails).map(([planKey, plan]) => {
-          const key = planKey as 'esencial' | 'pro'
+          const key = planKey as 'esencial' | 'basico' | 'pro'
           const isSelected = selectedPlan === key
           const isPro = key === 'pro'
 
           return (
             <div
               key={key}
-              onClick={() => {
-                console.log('Seleccionando plan:', key)
-                onPlanChange(key)
-              }}
+              onClick={() => onPlanChange(key)}
               className={`
-                relative cursor-pointer rounded-xl border-2 p-6 transition-all duration-200 hover:shadow-lg transform hover:-translate-y-1
+                relative cursor-pointer rounded-xl border-2 p-6 md:p-8 lg:p-10 transition-all duration-200 hover:shadow-lg transform hover:-translate-y-1 min-h-[400px] md:min-h-[450px]
                 ${isSelected
                   ? 'border-brand-500 bg-brand-50 dark:bg-brand-900/20 shadow-lg ring-2 ring-brand-500/20'
                   : 'border-gray-200 dark:border-gray-700 hover:border-brand-400 dark:hover:border-brand-500 hover:bg-brand-25 dark:hover:bg-brand-950/10'
@@ -71,11 +68,6 @@ const PlanSelector: React.FC<PlanSelectorProps> = ({
                   <span className="text-3xl font-bold text-brand-600 dark:text-brand-400">
                     {plan.price}
                   </span>
-                  {isPro && (
-                    <span className="text-sm text-gray-500 dark:text-gray-400 ml-1">
-                      /mes
-                    </span>
-                  )}
                 </div>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
                   {plan.description}
