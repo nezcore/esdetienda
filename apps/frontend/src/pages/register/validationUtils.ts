@@ -16,24 +16,6 @@ export function validateSlugPattern(slug: string): boolean {
   return slugPattern.test(slug) && slug.length >= 4 && slug.length <= 50
 }
 
-export function saveToLocalStorage(data: {
-  currentStepIndex: number
-  email: string
-  businessName: string
-  tenantSlug: string
-}) {
-  localStorage.setItem('register_temp_step', data.currentStepIndex.toString())
-  localStorage.setItem('register_temp_email', data.email)
-  localStorage.setItem('register_temp_business', data.businessName)
-  localStorage.setItem('register_temp_slug', data.tenantSlug)
-}
-
-export function clearLocalStorage() {
-  localStorage.removeItem('register_temp_step')
-  localStorage.removeItem('register_temp_email')
-  localStorage.removeItem('register_temp_business')
-  localStorage.removeItem('register_temp_slug')
-}
 
 // Generador de contraseñas seguras
 export function generateSecurePassword(length: number = 16): string {

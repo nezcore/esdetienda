@@ -25,9 +25,7 @@ import {
 import { 
   getDetailedPasswordStrength, 
   validateEmail, 
-  validateBusinessName,
-  saveToLocalStorage,
-  clearLocalStorage
+  validateBusinessName
 } from './validationUtils'
 import { generateAvailableSlug, generateSlugFromBusiness } from './SlugGenerator'
 
@@ -93,17 +91,14 @@ export default function RegisterPage() {
   // Estados principales
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
-  const [currentStepIndex, setCurrentStepIndex] = useState(() => {
-    const saved = localStorage.getItem('register_temp_step')
-    return saved ? parseInt(saved, 10) : 0
-  })
+  const [currentStepIndex, setCurrentStepIndex] = useState(0)
 
   // Datos del formulario
   const [formData, setFormData] = useState<RegisterFormData>({
-    email: localStorage.getItem('register_temp_email') || '',
+    email: '',
     password: '',
-    businessName: localStorage.getItem('register_temp_business') || '',
-    tenantSlug: localStorage.getItem('register_temp_slug') || '',
+    businessName: '',
+    tenantSlug: '',
     plan: 'esencial'
   })
 
@@ -176,15 +171,6 @@ export default function RegisterPage() {
     }
   }
 
-  // Efectos para persistencia
-  useEffect(() => {
-    saveToLocalStorage({
-      currentStepIndex,
-      email: formData.email,
-      businessName: formData.businessName,
-      tenantSlug: formData.tenantSlug
-    })
-  }, [currentStepIndex, formData.email, formData.businessName, formData.tenantSlug])
 
   // Validación de email en tiempo real
   const handleEmailBlur = async () => {
@@ -331,7 +317,6 @@ export default function RegisterPage() {
       })) as AuthResponse
 
       if (response.success) {
-        clearLocalStorage()
         login(response.token, response.user, response.tenant)
         navigate('/panel', { replace: true })
       }
