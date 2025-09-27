@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { CheckCircle, KeyRound, Mail, RefreshCcw, Shield, Link, Loader2, XCircle } from 'lucide-react'
+import { CheckCircle, KeyRound, Mail, RefreshCcw, Shield, Link, Loader2, XCircle, Store } from 'lucide-react'
 import { authApi } from '../lib/api'
 import { useAuth } from '../contexts/AuthContext'
 
@@ -18,6 +18,11 @@ export default function SettingsPage() {
   const [loadingUrl, setLoadingUrl] = useState(false)
   const [urlStatus, setUrlStatus] = useState<'idle' | 'checking' | 'available' | 'taken' | 'invalid'>('idle')
   const [urlCheckTimeout, setUrlCheckTimeout] = useState<NodeJS.Timeout | null>(null)
+  
+  // Estados para cambio de nombre de tienda
+  const [storeName, setStoreName] = useState(tenant?.business_name || '')
+  const [currentPasswordForName, setCurrentPasswordForName] = useState('')
+  const [loadingName, setLoadingName] = useState(false)
 
   // Actualizar storeUrl cuando cambie el tenant
   useEffect(() => {
@@ -25,6 +30,13 @@ export default function SettingsPage() {
       setStoreUrl(tenant.slug)
     }
   }, [tenant?.slug])
+
+  // Actualizar storeName cuando cambie el tenant
+  useEffect(() => {
+    if (tenant?.business_name) {
+      setStoreName(tenant.business_name)
+    }
+  }, [tenant?.business_name])
 
   // Validar URL en tiempo real
   const validateUrl = (value: string) => {
@@ -153,6 +165,32 @@ export default function SettingsPage() {
     }
   }
 
+  const handleUpdateStoreName = async (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    if (storeName.trim().length < 2) {
+      showToast('El nombre debe tener al menos 2 caracteres', 'error')
+      return
+    }
+
+    try {
+      setLoadingName(true)
+      const res = await authApi.updateTenantName(storeName.trim(), currentPasswordForName)
+      if ((res as any).success) {
+        showToast('Nombre de tienda actualizado correctamente', 'success')
+        setCurrentPasswordForName('')
+        // Actualizar el tenant en el contexto con el nuevo nombre
+        updateTenant({ business_name: storeName.trim() })
+      } else {
+        showToast((res as any).error || 'No se pudo actualizar el nombre', 'error')
+      }
+    } catch (error: any) {
+      showToast(error.message || 'No se pudo actualizar el nombre', 'error')
+    } finally {
+      setLoadingName(false)
+    }
+  }
+
   return (
     <div className="space-y-6">
       <header className="rounded-3xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm p-6">
@@ -160,10 +198,10 @@ export default function SettingsPage() {
           <Shield className="h-4 w-4" /> Seguridad de la cuenta
         </div>
         <h1 className="mt-2 text-xl font-bold text-gray-900 dark:text-white">Configuración</h1>
-        <p className="mt-1 text-gray-600 dark:text-gray-400">Actualiza tu correo, contraseña y URL de tu tienda de forma segura.</p>
+        <p className="mt-1 text-gray-600 dark:text-gray-400">Actualiza tu correo, contraseña, nombre y URL de tu tienda de forma segura.</p>
       </header>
 
-      <section className="grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
+      <section className="grid gap-6 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-4">
         <form onSubmit={handleUpdateEmail} className="rounded-3xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 space-y-5">
           <div className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300">
             <Mail className="h-4 w-4 text-brand-500" /> Cambiar correo
@@ -237,6 +275,55 @@ export default function SettingsPage() {
             >
               {loadingPassword ? <RefreshCcw className="h-4 w-4 animate-spin" /> : <CheckCircle className="h-4 w-4" />}
               Guardar contraseña
+            </button>
+          </div>
+        </form>
+
+        <form onSubmit={handleUpdateStoreName} className="rounded-3xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 space-y-5">
+          <div className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300">
+            <Store className="h-4 w-4 text-brand-500" /> Cambiar nombre de tienda
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-800 dark:text-gray-200 mb-1">Nuevo nombre</label>
+            <input
+              type="text"
+              required
+              minLength={2}
+              value={storeName}
+              onChange={(e) => setStoreName(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-xl focus:ring-brand-500 focus:border-brand-500 dark:bg-gray-900 dark:text-gray-100"
+              placeholder="Mi Tienda Increíble"
+            />
+            {storeName.trim().length > 0 && storeName.trim().length < 2 && (
+              <p className="text-sm text-red-500 dark:text-red-400 mt-1">
+                El nombre debe tener al menos 2 caracteres
+              </p>
+            )}
+            {storeName.trim().length >= 2 && storeName !== tenant?.business_name && (
+              <p className="text-sm text-emerald-500 dark:text-emerald-400 mt-1">
+                ✅ Nuevo nombre listo para guardar
+              </p>
+            )}
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-800 dark:text-gray-200 mb-1">Contraseña actual</label>
+            <input
+              type="password"
+              required
+              value={currentPasswordForName}
+              onChange={(e) => setCurrentPasswordForName(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-xl focus:ring-brand-500 focus:border-brand-500 dark:bg-gray-900 dark:text-gray-100"
+              placeholder="••••••••"
+            />
+          </div>
+          <div className="flex justify-end">
+            <button
+              type="submit"
+              disabled={loadingName || storeName.trim().length < 2 || storeName === tenant?.business_name || !currentPasswordForName}
+              className="inline-flex items-center gap-2 px-5 py-2 rounded-lg bg-brand-900 hover:bg-brand-700 text-white text-sm font-semibold disabled:opacity-60"
+            >
+              {loadingName ? <RefreshCcw className="h-4 w-4 animate-spin" /> : <CheckCircle className="h-4 w-4" />}
+              Cambiar nombre
             </button>
           </div>
         </form>
