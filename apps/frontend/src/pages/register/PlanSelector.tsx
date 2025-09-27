@@ -43,12 +43,15 @@ const PlanSelector: React.FC<PlanSelectorProps> = ({
           return (
             <div
               key={key}
-              onClick={() => onPlanChange(key)}
+              onClick={() => {
+                console.log('Seleccionando plan:', key)
+                onPlanChange(key)
+              }}
               className={`
-                relative cursor-pointer rounded-xl border-2 p-6 transition-all hover:shadow-md
+                relative cursor-pointer rounded-xl border-2 p-6 transition-all duration-200 hover:shadow-lg transform hover:-translate-y-1
                 ${isSelected
-                  ? 'border-brand-500 bg-brand-50 dark:bg-brand-900/20 shadow-md'
-                  : 'border-gray-200 dark:border-gray-700 hover:border-brand-300 dark:hover:border-brand-600'
+                  ? 'border-brand-500 bg-brand-50 dark:bg-brand-900/20 shadow-lg ring-2 ring-brand-500/20'
+                  : 'border-gray-200 dark:border-gray-700 hover:border-brand-400 dark:hover:border-brand-500 hover:bg-brand-25 dark:hover:bg-brand-950/10'
                 }
               `}
             >
@@ -92,14 +95,31 @@ const PlanSelector: React.FC<PlanSelectorProps> = ({
 
               {isSelected && (
                 <div className="absolute top-4 right-4">
-                  <div className="w-6 h-6 bg-brand-500 rounded-full flex items-center justify-center">
-                    <Check className="h-4 w-4 text-white" />
+                  <div className="w-7 h-7 bg-brand-500 rounded-full flex items-center justify-center shadow-lg ring-2 ring-white dark:ring-gray-900">
+                    <Check className="h-4 w-4 text-white font-bold" strokeWidth={3} />
                   </div>
                 </div>
+              )}
+              
+              {/* Indicador de selección adicional */}
+              {isSelected && (
+                <div className="absolute inset-0 rounded-xl bg-brand-500/5 pointer-events-none"></div>
               )}
             </div>
           )
         })}
+      </div>
+      
+      {/* Mensaje de confirmación de selección */}
+      <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl">
+        <div className="text-center">
+          <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
+            ✅ Plan seleccionado: <span className="font-bold">{planDetails[selectedPlan].name}</span>
+          </p>
+          <p className="text-xs text-blue-700 dark:text-blue-300 mt-1">
+            Precio: {planDetails[selectedPlan].price} {selectedPlan === 'pro' && ''}
+          </p>
+        </div>
       </div>
     </div>
   )

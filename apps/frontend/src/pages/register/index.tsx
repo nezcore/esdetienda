@@ -128,7 +128,7 @@ export default function RegisterPage() {
   // Configuración de plan desde URL
   type PlanKey = keyof typeof planDetails
   const planParam = searchParams.get('plan') as PlanKey | null
-  const selectedPlan: PlanKey = planParam && planDetails[planParam] ? planParam : 'esencial'
+  const [selectedPlan, setSelectedPlan] = useState<PlanKey>(planParam && planDetails[planParam] ? planParam : 'esencial')
 
   // Dominios permitidos
   const allowedDomainList = [
@@ -394,7 +394,10 @@ export default function RegisterPage() {
         return (
           <PlanSelector
             selectedPlan={selectedPlan}
-            onPlanChange={(plan) => setFormData(prev => ({ ...prev, plan }))}
+            onPlanChange={(plan) => {
+              setSelectedPlan(plan)
+              setFormData(prev => ({ ...prev, plan }))
+            }}
             planDetails={planDetails}
           />
         )
@@ -452,12 +455,12 @@ export default function RegisterPage() {
             </div>
 
             {/* Navegación */}
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between pt-2">
               <button
                 type="button"
                 onClick={prevStep}
                 disabled={currentStepIndex === 0}
-                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-gray-800 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 hover:border-gray-300 dark:hover:border-gray-500 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed shadow-sm"
               >
                 <ArrowLeft className="h-4 w-4" />
                 Anterior
@@ -466,7 +469,7 @@ export default function RegisterPage() {
               <button
                 type="submit"
                 disabled={!currentStepValid || loading}
-                className="inline-flex items-center gap-2 px-6 py-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                className="inline-flex items-center gap-2 px-6 py-2.5 bg-brand-600 hover:bg-brand-700 active:bg-brand-800 text-white text-sm font-semibold rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
               >
                 {loading ? (
                   <RefreshCcw className="h-4 w-4 animate-spin" />
