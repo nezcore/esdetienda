@@ -3,6 +3,11 @@
 export interface PasswordStrength {
   score: number
   label: string
+  color: string
+  bgColor: string
+  textColor: string
+  percentage: number
+  suggestions: string[]
 }
 
 export type SlugStatus = 'idle' | 'checking' | 'available' | 'taken' | 'invalid'

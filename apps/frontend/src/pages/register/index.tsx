@@ -23,7 +23,7 @@ import {
   EmailStatus
 } from './types'
 import { 
-  validatePasswordStrength, 
+  getDetailedPasswordStrength, 
   validateEmail, 
   validateBusinessName,
   saveToLocalStorage,
@@ -103,7 +103,15 @@ export default function RegisterPage() {
 
   // Estados específicos
   const [emailStatus, setEmailStatus] = useState<EmailStatus>('idle')
-  const [passwordStrength, setPasswordStrength] = useState<PasswordStrength>({ score: 0, label: 'Muy débil' })
+  const [passwordStrength, setPasswordStrength] = useState<PasswordStrength>({
+    score: 0,
+    label: 'Muy débil',
+    color: 'bg-red-500',
+    bgColor: 'bg-red-50 dark:bg-red-900/20',
+    textColor: 'text-red-600 dark:text-red-400',
+    percentage: 0,
+    suggestions: []
+  })
   const [acceptTerms, setAcceptTerms] = useState(false)
 
   // Estados de slug
@@ -199,7 +207,7 @@ export default function RegisterPage() {
   // Validación de contraseña
   const handlePasswordChange = (password: string) => {
     setFormData(prev => ({ ...prev, password }))
-    setPasswordStrength(validatePasswordStrength(password))
+    setPasswordStrength(getDetailedPasswordStrength(password))
   }
 
   // Validación de slug

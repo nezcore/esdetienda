@@ -1,9 +1,9 @@
 // Primer paso del registro: información básica (negocio, email, contraseña)
 
-import React from 'react'
-import { CheckCircle, XCircle, Eye, EyeOff } from 'lucide-react'
+import React, { useState } from 'react'
+import { CheckCircle, XCircle, Eye, EyeOff, RefreshCcw, Copy, Check } from 'lucide-react'
 import { PasswordStrength, EmailStatus } from './types'
-import { validateEmail, validateBusinessName } from './validationUtils'
+import { validateEmail, validateBusinessName, generateSecurePassword } from './validationUtils'
 
 interface BasicInfoStepProps {
   // Estados del formulario
@@ -61,21 +61,34 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
 }) => {
   const isBusinessNameValid = validateBusinessName(businessName)
   const isEmailValid = validateEmail(email)
+  
+  // Estados para generación de contraseñas
+  const [isGenerating, setIsGenerating] = useState(false)
+  const [justCopied, setJustCopied] = useState(false)
 
-  const getPasswordStrengthColor = (score: number) => {
-    if (score <= 1) return 'bg-red-500'
-    if (score === 2) return 'bg-yellow-500'
-    if (score === 3) return 'bg-blue-500'
-    if (score === 4) return 'bg-green-500'
-    return 'bg-green-600'
+  // Función para generar contraseña automáticamente
+  const handleGeneratePassword = () => {
+    setIsGenerating(true)
+    setTimeout(() => {
+      const newPassword = generateSecurePassword(14) // 14 caracteres para balance seguridad/usabilidad
+      setPassword(newPassword)
+      onPasswordChange(newPassword)
+      setPasswordTouched(true)
+      setIsGenerating(false)
+    }, 300) // Pequeña animación para mejor UX
   }
 
-  const getPasswordStrengthTextColor = (score: number) => {
-    if (score <= 1) return 'text-red-500 dark:text-red-400'
-    if (score === 2) return 'text-yellow-500 dark:text-yellow-400'
-    if (score === 3) return 'text-blue-500 dark:text-blue-400'
-    if (score === 4) return 'text-green-500 dark:text-green-400'
-    return 'text-green-600 dark:text-green-500'
+  // Función para copiar contraseña al portapapeles
+  const handleCopyPassword = async () => {
+    if (password) {
+      try {
+        await navigator.clipboard.writeText(password)
+        setJustCopied(true)
+        setTimeout(() => setJustCopied(false), 2000)
+      } catch (error) {
+        console.error('Error copiando contraseña:', error)
+      }
+    }
   }
 
   return (
@@ -176,10 +189,48 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
       </div>
 
       {/* Contraseña */}
-      <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-800 dark:text-gray-200 mb-1">
-          Contraseña
-        </label>
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <label className="block text-sm font-medium text-gray-800 dark:text-gray-200">
+            Contraseña
+          </label>
+          <div className="flex items-center gap-2">
+            {password && (
+              <button
+                type="button"
+                onClick={handleCopyPassword}
+                className="inline-flex items-center gap-1 text-xs text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300 transition-colors"
+                title="Copiar contraseña"
+              >
+                {justCopied ? (
+                  <>
+                    <Check className="h-3 w-3" />
+                    Copiado
+                  </>
+                ) : (
+                  <>
+                    <Copy className="h-3 w-3" />
+                    Copiar
+                  </>
+                )}
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={handleGeneratePassword}
+              disabled={isGenerating}
+              className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300 border border-brand-200 dark:border-brand-700 rounded-lg hover:bg-brand-50 dark:hover:bg-brand-900/20 transition-all disabled:opacity-50"
+            >
+              {isGenerating ? (
+                <RefreshCcw className="h-3 w-3 animate-spin" />
+              ) : (
+                <RefreshCcw className="h-3 w-3" />
+              )}
+              Generar
+            </button>
+          </div>
+        </div>
+        
         <div className="relative">
           <input
             name="password"
@@ -191,13 +242,13 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
               onPasswordChange(e.target.value)
             }}
             onBlur={() => setPasswordTouched(true)}
-            className="w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-700 rounded-xl focus:ring-brand-500 focus:border-brand-500 dark:bg-gray-900 dark:text-gray-100"
+            className="w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-700 rounded-xl focus:ring-brand-500 focus:border-brand-500 dark:bg-gray-900 dark:text-gray-100 font-mono text-sm"
             placeholder="••••••••"
           />
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+            className="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
           >
             {showPassword ? (
               <EyeOff className="h-5 w-5" />
@@ -207,34 +258,58 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
           </button>
         </div>
 
+        {/* Barra de fortaleza mejorada */}
         {passwordTouched && password && (
-          <div className="space-y-2">
-            <div className="flex justify-between text-xs">
-              <span className={getPasswordStrengthTextColor(passwordStrength.score)}>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between text-sm">
+              <span className={`font-medium ${passwordStrength.textColor}`}>
                 {passwordStrength.label}
               </span>
-              <span className="text-gray-500 dark:text-gray-400">
-                {passwordStrength.score}/5
+              <span className="text-gray-500 dark:text-gray-400 text-xs">
+                {passwordStrength.score}/7
               </span>
             </div>
-            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+            
+            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
               <div
-                className={`h-2 rounded-full transition-all duration-300 ${getPasswordStrengthColor(passwordStrength.score)}`}
-                style={{ width: `${(passwordStrength.score / 5) * 100}%` }}
+                className={`h-full rounded-full transition-all duration-500 ease-out ${passwordStrength.color}`}
+                style={{ width: `${passwordStrength.percentage}%` }}
               ></div>
             </div>
+            
+            {/* Sugerencias de mejora */}
+            {passwordStrength.suggestions.length > 0 && (
+              <div className={`p-3 rounded-xl border ${passwordStrength.bgColor} border-gray-200 dark:border-gray-700`}>
+                <p className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  💡 Para mejorar tu contraseña:
+                </p>
+                <ul className="space-y-1">
+                  {passwordStrength.suggestions.slice(0, 3).map((suggestion, index) => (
+                    <li key={index} className="text-xs text-gray-600 dark:text-gray-400 flex items-center gap-1">
+                      <span className="w-1 h-1 bg-gray-400 rounded-full flex-shrink-0"></span>
+                      {suggestion}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
         )}
         
-        <div className="text-xs text-gray-500 dark:text-gray-400 space-y-1">
-          <p>Tu contraseña debe tener al menos 8 caracteres e incluir:</p>
-          <ul className="list-disc list-inside space-y-0.5 ml-2">
-            <li>Una letra minúscula</li>
-            <li>Una letra mayúscula</li>
-            <li>Un número</li>
-            <li>Un carácter especial</li>
-          </ul>
-        </div>
+        {/* Información sobre contraseñas seguras */}
+        {!passwordTouched && (
+          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-3">
+            <p className="text-xs font-medium text-blue-800 dark:text-blue-200 mb-2">
+              🔒 Contraseña segura
+            </p>
+            <ul className="text-xs text-blue-700 dark:text-blue-300 space-y-1">
+              <li>• Al menos 8 caracteres (recomendado: 12+)</li>
+              <li>• Combina letras, números y símbolos</li>
+              <li>• Evita palabras comunes o datos personales</li>
+              <li>• Usa nuestro generador para máxima seguridad</li>
+            </ul>
+          </div>
+        )}
       </div>
     </div>
   )
