@@ -198,6 +198,10 @@ export const authApi = {
     return api.put('/auth/password', { currentPassword, newPassword })
   },
 
+  async updateTenantSlug(newSlug: string, currentPassword: string): Promise<{ success: boolean; message?: string; error?: string }> {
+    return api.put('/tenants/slug', { newSlug, currentPassword })
+  },
+
   async checkSlug(slug: string): Promise<{ available: boolean }> {
     try {
       const response = await api.get<{ available: boolean }>(`/tenants/slug/${slug}`)

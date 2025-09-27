@@ -4,6 +4,7 @@ import { Eye, EyeOff, Check, CheckCircle, Loader2, RefreshCcw, XCircle, ArrowLef
 import { authApi, type AuthResponse } from '../lib/api'
 import { useAuth } from '../contexts/AuthContext'
 import ThemeToggle from '../components/ThemeToggle'
+import Logo from '../components/Logo'
 
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false)
@@ -583,8 +584,8 @@ export default function RegisterPage() {
       <nav className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-b border-brand-100/50 dark:border-gray-800/50 sticky top-0 z-40">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <Link to="/" className="text-2xl font-bold bg-brand-gradient bg-clip-text text-transparent">
-              EsDeTienda
+            <Link to="/" className="flex items-center">
+              <Logo size="md" />
             </Link>
             <div className="flex items-center gap-4">
               <ThemeToggle />

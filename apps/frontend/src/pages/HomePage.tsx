@@ -3,6 +3,7 @@ import { ArrowRight, CheckCircle, MessageCircle, ShoppingBag, Bot, BarChart3, Me
 import { useState, useEffect } from 'react'
 import ThemeToggle from '../components/ThemeToggle'
 import { useAuth } from '../contexts/AuthContext'
+import Logo from '../components/Logo'
 
 export default function HomePage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -89,12 +90,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-20">
             <div className="flex items-center">
-              <div className="relative">
-                <span className="text-3xl font-bold bg-brand-gradient bg-clip-text text-transparent drop-shadow-sm">
-                  EsDeTienda
-                </span>
-                <div className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-brand-500 to-brand-900 rounded-full transform scale-x-0 group-hover:scale-x-100 transition-transform"></div>
-              </div>
+              <Logo size="lg" />
             </div>
             
             {/* Desktop Navigation */}
@@ -539,8 +535,8 @@ export default function HomePage() {
       <footer className="bg-brand-900 dark:bg-gray-950 text-white py-8 md:py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <div className="text-xl md:text-2xl font-bold mb-4 bg-brand-gradient bg-clip-text text-transparent">
-              EsDeTienda
+            <div className="mb-4 flex justify-center">
+              <Logo size="lg" />
             </div>
             <div className="flex flex-col sm:flex-row justify-center items-center space-y-3 sm:space-y-0 sm:space-x-6 md:space-x-8 mb-6">
               <a 

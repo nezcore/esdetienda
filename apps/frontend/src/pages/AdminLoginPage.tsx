@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Eye, EyeOff, Shield } from 'lucide-react'
 import { authApi } from '../lib/api'
 import { useAdminAuth } from '../contexts/AdminAuthContext'
+import Logo from '../components/Logo'
 
 export default function AdminLoginPage() {
   const [showPassword, setShowPassword] = useState(false)
@@ -50,7 +51,7 @@ export default function AdminLoginPage() {
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
         <div className="flex items-center justify-center gap-2">
           <Shield className="h-7 w-7 text-brand-500" />
-          <span className="text-3xl font-bold bg-brand-gradient bg-clip-text text-transparent">EsDeTienda</span>
+          <Logo size="lg" />
         </div>
         <h2 className="mt-4 text-center text-2xl font-bold text-gray-900 dark:text-white">
           Acceso Superadmin

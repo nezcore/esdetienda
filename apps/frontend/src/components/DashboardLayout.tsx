@@ -18,6 +18,7 @@ import {
 } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import ThemeToggle from './ThemeToggle'
+import Logo from './Logo'
 import PlanModal from './PlanModal'
 
 export default function DashboardLayout() {
@@ -126,9 +127,7 @@ export default function DashboardLayout() {
       >
         <div className="h-16 flex items-center justify-between px-4 border-b border-gray-200 dark:border-gray-800">
           <div className="flex items-center space-x-3">
-            <span className="text-xl font-bold bg-brand-gradient bg-clip-text text-transparent dark:text-white">
-                EsDeTienda
-              </span>
+            <Logo size="md" />
             <span className="px-2 py-1 text-xs font-semibold rounded-full bg-brand-100 text-brand-700 dark:bg-gray-800 dark:text-brand-300">
               Panel
             </span>

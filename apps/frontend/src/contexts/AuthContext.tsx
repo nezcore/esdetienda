@@ -25,6 +25,7 @@ interface AuthContextType {
   logout: () => void
   checkAuth: () => void
   updateUserEmail: (newEmail: string) => void
+  updateTenant: (updatedTenant: Partial<Tenant>) => void
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -102,6 +103,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }
 
+  const updateTenant = (updatedTenant: Partial<Tenant>) => {
+    if (tenant) {
+      const newTenant = { ...tenant, ...updatedTenant }
+      setTenant(newTenant)
+      localStorage.setItem('tenant_data', JSON.stringify(newTenant))
+    }
+  }
+
   const value: AuthContextType = {
     user,
     tenant,
@@ -111,7 +120,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     login,
     logout,
     checkAuth,
-    updateUserEmail
+    updateUserEmail,
+    updateTenant
   }
 
   return (

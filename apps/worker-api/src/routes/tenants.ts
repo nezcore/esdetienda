@@ -1,6 +1,7 @@
 import { Hono } from 'hono'
 import { z } from 'zod'
 import { Env } from '../index'
+import { verifyPasswordPBKDF2 } from '../utils/password'
 
 const tenants = new Hono<{ Bindings: Env }>()
 
@@ -243,6 +244,156 @@ const updateTenantSchema = z.object({
   whatsapp_number: z.string().optional(),
   logo: z.string().optional(),
   icon: z.string().optional()
+})
+
+// Schema para actualizar slug del tenant
+const updateSlugSchema = z.object({
+  newSlug: z.string().regex(/^[a-z0-9-]+$/, 'Slug debe contener solo letras minúsculas, números y guiones').min(4, 'El slug debe tener al menos 4 caracteres'),
+  currentPassword: z.string().min(8, 'Contraseña requerida')
+})
+
+// Función para obtener userId del header de autorización
+function getUserIdFromAuthHeader(c: any): string | null {
+  const auth = c.req.header('Authorization')
+  console.log('🔧 [getUserIdFromAuthHeader] Authorization header:', auth ? auth.substring(0, 20) + '...' : 'NO AUTH')
+  
+  if (!auth || !auth.startsWith('Bearer ')) {
+    console.log('❌ [getUserIdFromAuthHeader] No Bearer token')
+    return null
+  }
+  
+  const token = auth.slice('Bearer '.length)
+  console.log('🔧 [getUserIdFromAuthHeader] Token extraído:', token.substring(0, 20) + '...')
+  
+  if (!token.startsWith('jwt_')) {
+    console.log('❌ [getUserIdFromAuthHeader] Token no comienza con jwt_')
+    return null
+  }
+  
+  const parts = token.split('_')
+  const userId = parts.length >= 3 ? parts[1] : null
+  console.log('🔧 [getUserIdFromAuthHeader] UserId extraído:', userId)
+  
+  return userId
+}
+
+// PUT /tenants/slug - Actualizar slug del tenant (requiere autenticación y contraseña)
+tenants.put('/slug', async (c) => {
+  try {
+    const body = await c.req.json()
+    const validatedData = updateSlugSchema.parse(body)
+    
+    console.log('🔧 [PUT /tenants/slug] Body recibido:', body)
+    
+    // Obtener ID del usuario del token
+    const userId = getUserIdFromAuthHeader(c)
+    console.log('🔧 [PUT /tenants/slug] UserId extraído:', userId)
+    
+    if (!userId) {
+      console.log('❌ [PUT /tenants/slug] No se pudo obtener userId del token')
+      return c.json({ error: 'No autorizado' }, 401)
+    }
+
+    const supabase = c.get('supabase')
+
+    // Obtener información del usuario y verificar contraseña
+    console.log('🔧 [PUT /tenants/slug] Buscando usuario con ID:', userId)
+    const { data: user, error: userError } = await supabase
+      .from('users')
+      .select('id, email, password_hash, tenant_id')
+      .eq('id', userId)
+      .eq('status', 'active')
+      .single()
+
+    console.log('🔧 [PUT /tenants/slug] Usuario encontrado:', user ? 'SÍ' : 'NO', userError ? 'ERROR:' + JSON.stringify(userError) : '')
+
+    if (userError || !user) {
+      console.log('❌ [PUT /tenants/slug] Usuario no encontrado')
+      return c.json({ error: 'Usuario no encontrado' }, 404)
+    }
+
+    console.log('🔧 [PUT /tenants/slug] Usuario tiene tenant_id:', user.tenant_id)
+
+    // Verificar contraseña
+    let passwordOk = false
+    if (typeof user.password_hash === 'string' && user.password_hash.startsWith('pbkdf2$')) {
+      passwordOk = await verifyPasswordPBKDF2(validatedData.currentPassword, user.password_hash)
+    } else {
+      passwordOk = user.password_hash === validatedData.currentPassword
+    }
+
+    if (!passwordOk) {
+      return c.json({ error: 'Contraseña incorrecta' }, 400)
+    }
+
+    // Verificar que el nuevo slug esté disponible
+    const { data: existingTenant, error: slugCheckError } = await supabase
+      .from('tenants')
+      .select('id')
+      .eq('slug', validatedData.newSlug)
+      .maybeSingle()
+
+    if (slugCheckError) {
+      console.error('Error verificando slug:', slugCheckError)
+      return c.json({ error: 'Error al verificar disponibilidad del slug' }, 500)
+    }
+
+    if (existingTenant) {
+      console.log('❌ [PUT /tenants/slug] Slug ya existe:', validatedData.newSlug)
+      return c.json({ 
+        error: 'Slug no disponible', 
+        message: 'La URL ya está en uso por otra tienda'
+      }, 409)
+    }
+
+    console.log('✅ [PUT /tenants/slug] Slug disponible, actualizando tenant_id:', user.tenant_id)
+
+    // Actualizar el slug del tenant
+    const { data: updatedTenant, error: updateError } = await supabase
+      .from('tenants')
+      .update({ 
+        slug: validatedData.newSlug,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', user.tenant_id)
+      .select()
+      .single()
+
+    console.log('🔧 [PUT /tenants/slug] Resultado actualización:', updatedTenant ? 'ÉXITO' : 'FALLO', updateError ? 'ERROR:' + JSON.stringify(updateError) : '')
+
+    if (updateError) {
+      console.error('❌ [PUT /tenants/slug] Error actualizando slug:', updateError)
+      return c.json({ error: 'Error al actualizar la URL de la tienda' }, 500)
+    }
+
+    // Verificar si realmente se actualizó algo
+    if (!updatedTenant) {
+      console.log('❌ [PUT /tenants/slug] No se encontró el tenant para actualizar')
+      return c.json({ error: 'Tienda no encontrada' }, 404)
+    }
+
+    return c.json({
+      success: true,
+      message: 'URL de tienda actualizada correctamente',
+      tenant: {
+        id: updatedTenant.id,
+        slug: updatedTenant.slug,
+        business_name: updatedTenant.business_name
+      }
+    })
+
+  } catch (error) {
+    console.error('Update slug error:', error)
+    
+    if (error instanceof z.ZodError) {
+      return c.json({
+        error: 'Datos inválidos',
+        message: error.errors[0]?.message || 'Datos inválidos'
+      }, 400)
+    }
+    
+    return c.json({ error: 'Error al actualizar la URL' }, 500)
+  }
 })
 
 // PUT /tenants/:slug - Actualizar configuración del tenant (solo owner)
