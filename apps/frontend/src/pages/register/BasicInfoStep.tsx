@@ -92,9 +92,9 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
   }
 
   return (
-    <div className="space-y-6 sm:space-y-6">
+    <div className="space-y-6 sm:space-y-6 w-full max-w-none">
       {/* Información del negocio */}
-      <div className="space-y-2">
+      <div className="space-y-2 w-full">
         <label className="block text-base sm:text-sm font-medium text-gray-800 dark:text-gray-200 mb-2 sm:mb-1">
           ¿Cómo llamaremos tu negocio?
         </label>
@@ -142,7 +142,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
       </div>
 
       {/* Email */}
-      <div className="space-y-2">
+      <div className="space-y-2 w-full">
         <label className="block text-base sm:text-sm font-medium text-gray-800 dark:text-gray-200 mb-2 sm:mb-1">
           Email
         </label>
@@ -189,7 +189,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
       </div>
 
       {/* Contraseña */}
-      <div className="space-y-3">
+      <div className="space-y-3 w-full">
         <div className="flex items-center justify-between">
           <label className="block text-base sm:text-sm font-medium text-gray-800 dark:text-gray-200">
             Contraseña

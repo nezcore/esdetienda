@@ -26,7 +26,7 @@ const TermsStep: React.FC<TermsStepProps> = ({
   setTermsTouched
 }) => {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 w-full max-w-none">
       <div className="text-center">
         <div className="flex items-center justify-center gap-2 mb-3">
           <Sparkles className="h-6 w-6 text-brand-500" />
@@ -40,7 +40,7 @@ const TermsStep: React.FC<TermsStepProps> = ({
       </div>
 
       {/* Resumen de la información */}
-      <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-5 sm:p-4 space-y-4 sm:space-y-3">
+      <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-5 sm:p-4 space-y-4 sm:space-y-3 w-full">
         <h3 className="font-medium text-base sm:text-sm text-gray-900 dark:text-white mb-3">Resumen de tu tienda</h3>
         <div className="space-y-3 sm:space-y-2 text-base sm:text-sm">
           <div className="flex justify-between items-center">
@@ -71,7 +71,7 @@ const TermsStep: React.FC<TermsStepProps> = ({
       </div>
 
       {/* Términos y condiciones */}
-      <div className="space-y-4">
+      <div className="space-y-4 w-full">
         <div className="flex items-start space-x-3">
           <div className="flex items-center h-5">
             <input

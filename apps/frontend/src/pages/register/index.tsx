@@ -31,13 +31,29 @@ import { generateAvailableSlug, generateSlugFromBusiness } from './SlugGenerator
 
 export default function RegisterPage() {
   const navigate = useNavigate()
-  const { login, isAuthenticated } = useAuth()
+  const { login, isAuthenticated, user } = useAuth()
   const [searchParams] = useSearchParams()
   
   // Redirigir si ya está autenticado
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      console.log('👤 Usuario ya está logueado, redirigiendo al panel...')
+      navigate('/panel', { replace: true })
+    }
+  }, [isAuthenticated, user, navigate])
+
+  // Mostrar loading mientras se verifica la autenticación
   if (isAuthenticated) {
-    navigate('/panel', { replace: true })
-    return null
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin h-8 w-8 border-2 border-brand-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p className="text-gray-600 dark:text-gray-400">
+            Ya tienes una sesión iniciada, redirigiendo a tu tienda...
+          </p>
+        </div>
+      </div>
+    )
   }
 
   // Configuración de planes
@@ -449,7 +465,7 @@ export default function RegisterPage() {
             </Link>
           </div>
           
-          <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 sm:p-8 shadow-sm">
+          <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-4 sm:p-8 shadow-sm">
             {/* Indicador de progreso */}
             <div className="mb-8">
               <div className="flex items-center justify-between mb-3 sm:mb-2">

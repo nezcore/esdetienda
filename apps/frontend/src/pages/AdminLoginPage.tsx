@@ -10,14 +10,28 @@ export default function AdminLoginPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const navigate = useNavigate()
-  const { login, isAuthenticated } = useAdminAuth()
+  const { login, isAuthenticated, admin } = useAdminAuth()
 
   useEffect(() => {
-    if (isAuthenticated) {
-      const from = '/panel'
-      navigate(from, { replace: true })
+    if (isAuthenticated && admin) {
+      console.log('👨‍💼 Admin ya está logueado, redirigiendo...')
+      navigate('/superadmin', { replace: true })
     }
-  }, [isAuthenticated, navigate])
+  }, [isAuthenticated, admin, navigate])
+
+  // Mostrar loading mientras se verifica la autenticación
+  if (isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin h-8 w-8 border-2 border-brand-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p className="text-gray-600 dark:text-gray-400">
+            Ya tienes una sesión de administrador iniciada, redirigiendo...
+          </p>
+        </div>
+      </div>
+    )
+  }
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()

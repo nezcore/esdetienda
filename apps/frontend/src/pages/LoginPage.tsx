@@ -12,14 +12,29 @@ export default function LoginPage() {
   const [error, setError] = useState('')
   const navigate = useNavigate()
   const location = useLocation()
-  const { login, isAuthenticated } = useAuth()
+  const { login, isAuthenticated, user } = useAuth()
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && user) {
+      console.log('👤 Usuario ya está logueado, redirigiendo...')
       const from = location.state?.from?.pathname || '/panel'
       navigate(from, { replace: true })
     }
-  }, [isAuthenticated, navigate, location.state])
+  }, [isAuthenticated, user, navigate, location.state])
+
+  // Mostrar loading mientras se verifica la autenticación
+  if (isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin h-8 w-8 border-2 border-brand-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p className="text-gray-600 dark:text-gray-400">
+            Ya tienes una sesión iniciada, redirigiendo...
+          </p>
+        </div>
+      </div>
+    )
+  }
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()

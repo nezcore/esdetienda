@@ -84,7 +84,7 @@ const SlugStep: React.FC<SlugStepProps> = ({
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 w-full max-w-none">
       <div className="text-center">
         <h2 className="text-xl sm:text-lg font-semibold text-gray-900 dark:text-white mb-3 sm:mb-2">
           Dirección de tu tienda
@@ -94,7 +94,7 @@ const SlugStep: React.FC<SlugStepProps> = ({
         </p>
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-2 w-full">
         <label className="block text-base sm:text-sm font-medium text-gray-800 dark:text-gray-200 mb-2 sm:mb-1">
           URL de tu tienda
         </label>

@@ -51,7 +51,7 @@ const PlanSelector: React.FC<PlanSelectorProps> = ({
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 w-full max-w-none">
       <div className="text-center">
         <h2 className="text-xl sm:text-lg font-semibold text-gray-900 dark:text-white mb-3 sm:mb-2">
           ¡Casi listo! Elige tu plan
@@ -61,7 +61,7 @@ const PlanSelector: React.FC<PlanSelectorProps> = ({
         </p>
       </div>
 
-      <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 lg:gap-8 xl:gap-10">
+      <div className="grid gap-4 sm:gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 lg:gap-8 xl:gap-10 w-full">
         {/* En tablet (md): 2 tarjetas arriba, 1 abajo. En desktop (lg+): 3 en una fila */}
         {Object.entries(planDetails).map(([planKey, plan], index) => {
           const key = planKey as 'esencial' | 'basico' | 'pro'
@@ -74,7 +74,7 @@ const PlanSelector: React.FC<PlanSelectorProps> = ({
               key={key}
               onClick={() => onPlanChange(key)}
               className={`
-                relative cursor-pointer rounded-xl border-2 p-6 md:p-8 lg:p-10 xl:p-12 transition-all duration-200 hover:shadow-lg transform hover:-translate-y-1 min-h-[400px] md:min-h-[450px] lg:min-h-[480px]
+                relative cursor-pointer rounded-xl border-2 p-5 sm:p-6 md:p-8 lg:p-10 xl:p-12 transition-all duration-200 hover:shadow-lg transform hover:-translate-y-1 min-h-[400px] md:min-h-[450px] lg:min-h-[480px] w-full
                 ${getCardStyles(key, isSelected)}
                 ${isLastCard ? 'md:col-span-2 md:mx-auto md:max-w-md lg:col-span-1 lg:max-w-none lg:mx-0' : ''}
               `}
