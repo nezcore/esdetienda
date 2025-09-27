@@ -429,8 +429,8 @@ export default function RegisterPage() {
         </div>
       </nav>
 
-      <main className="flex-1 flex items-center justify-center p-4">
-        <div className={`w-full ${isPlanStep ? 'max-w-6xl' : 'max-w-md'}`}>
+      <main className="flex-1 flex items-center justify-center p-2 sm:p-4">
+        <div className={`w-full ${isPlanStep ? 'max-w-6xl' : 'max-w-full sm:max-w-md'}`}>
           {/* Link elegante encima del modal */}
           <div className="flex justify-center mb-6">
             <Link 
@@ -449,14 +449,14 @@ export default function RegisterPage() {
             </Link>
           </div>
           
-          <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-8 shadow-sm">
+          <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 sm:p-8 shadow-sm">
             {/* Indicador de progreso */}
             <div className="mb-8">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-gray-900 dark:text-white">
+              <div className="flex items-center justify-between mb-3 sm:mb-2">
+                <span className="text-base sm:text-sm font-medium text-gray-900 dark:text-white">
                   Paso {currentStepIndex + 1} de {steps.length}
                 </span>
-                <span className="text-sm text-gray-500 dark:text-gray-400">
+                <span className="text-base sm:text-sm text-gray-500 dark:text-gray-400">
                   {steps[currentStepIndex]}
                 </span>
               </div>

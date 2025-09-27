@@ -30,19 +30,19 @@ const TermsStep: React.FC<TermsStepProps> = ({
       <div className="text-center">
         <div className="flex items-center justify-center gap-2 mb-3">
           <Sparkles className="h-6 w-6 text-brand-500" />
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+          <h2 className="text-xl sm:text-lg font-semibold text-gray-900 dark:text-white">
             ¡Todo listo para empezar!
           </h2>
         </div>
-        <p className="text-sm text-gray-600 dark:text-gray-400">
+        <p className="text-base sm:text-sm text-gray-600 dark:text-gray-400">
           Revisa los detalles y acepta los términos para crear tu tienda
         </p>
       </div>
 
       {/* Resumen de la información */}
-      <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-4 space-y-3">
-        <h3 className="font-medium text-gray-900 dark:text-white mb-3">Resumen de tu tienda</h3>
-        <div className="space-y-2 text-sm">
+      <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-5 sm:p-4 space-y-4 sm:space-y-3">
+        <h3 className="font-medium text-base sm:text-sm text-gray-900 dark:text-white mb-3">Resumen de tu tienda</h3>
+        <div className="space-y-3 sm:space-y-2 text-base sm:text-sm">
           <div className="flex justify-between items-center">
             <span className="text-gray-600 dark:text-gray-400">Nombre del negocio:</span>
             <span className="font-medium text-gray-900 dark:text-white">

@@ -92,10 +92,10 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 sm:space-y-6">
       {/* Información del negocio */}
       <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-800 dark:text-gray-200 mb-1">
+        <label className="block text-base sm:text-sm font-medium text-gray-800 dark:text-gray-200 mb-2 sm:mb-1">
           ¿Cómo llamaremos tu negocio?
         </label>
         <div className="relative">
@@ -113,7 +113,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
               }
             }}
             onBlur={() => setBusinessNameTouched(true)}
-            className={`w-full px-3 py-2 pr-10 border rounded-xl focus:ring-brand-500 focus:border-brand-500 dark:bg-gray-900 dark:text-gray-100 ${
+            className={`w-full px-4 py-3 sm:px-3 sm:py-2 pr-12 sm:pr-10 border rounded-xl focus:ring-brand-500 focus:border-brand-500 dark:bg-gray-900 dark:text-gray-100 text-base sm:text-sm ${
               businessNameTouched && !isBusinessNameValid
                 ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
                 : 'border-gray-300 dark:border-gray-700'
@@ -143,7 +143,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
 
       {/* Email */}
       <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-800 dark:text-gray-200 mb-1">
+        <label className="block text-base sm:text-sm font-medium text-gray-800 dark:text-gray-200 mb-2 sm:mb-1">
           Email
         </label>
         <div className="relative">
@@ -157,7 +157,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
               setEmailTouched(true)
               onEmailBlur()
             }}
-            className={`w-full px-3 py-2 pr-10 border rounded-xl focus:ring-brand-500 focus:border-brand-500 dark:bg-gray-900 dark:text-gray-100 ${
+            className={`w-full px-4 py-3 sm:px-3 sm:py-2 pr-12 sm:pr-10 border rounded-xl focus:ring-brand-500 focus:border-brand-500 dark:bg-gray-900 dark:text-gray-100 text-base sm:text-sm ${
               emailTouched && (!isEmailValid || emailError)
                 ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
                 : emailStatus === 'available'
@@ -191,7 +191,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
       {/* Contraseña */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <label className="block text-sm font-medium text-gray-800 dark:text-gray-200">
+          <label className="block text-base sm:text-sm font-medium text-gray-800 dark:text-gray-200">
             Contraseña
           </label>
           <div className="flex items-center gap-2">
@@ -242,7 +242,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
               onPasswordChange(e.target.value)
             }}
             onBlur={() => setPasswordTouched(true)}
-            className="w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-700 rounded-xl focus:ring-brand-500 focus:border-brand-500 dark:bg-gray-900 dark:text-gray-100 font-mono text-sm"
+            className="w-full px-4 py-3 sm:px-3 sm:py-2 pr-12 sm:pr-10 border border-gray-300 dark:border-gray-700 rounded-xl focus:ring-brand-500 focus:border-brand-500 dark:bg-gray-900 dark:text-gray-100 font-mono text-base sm:text-sm"
             placeholder="••••••••"
           />
           <button
