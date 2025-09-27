@@ -425,18 +425,30 @@ export default function RegisterPage() {
           </Link>
           <div className="flex items-center gap-4">
             <ThemeToggle />
-            <Link 
-              to="/login" 
-              className="text-sm text-gray-600 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400"
-            >
-              ¿Ya tienes cuenta? Inicia sesión
-            </Link>
           </div>
         </div>
       </nav>
 
       <main className="flex-1 flex items-center justify-center p-4">
         <div className={`w-full ${isPlanStep ? 'max-w-6xl' : 'max-w-md'}`}>
+          {/* Link elegante encima del modal */}
+          <div className="flex justify-center mb-6">
+            <Link 
+              to="/login" 
+              className="group relative inline-flex flex-col items-center text-center bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl border border-gray-200/60 dark:border-gray-700/60 px-6 py-4 shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1 hover:bg-white dark:hover:bg-gray-800 hover:border-brand-300 dark:hover:border-brand-600"
+            >
+              <span className="text-sm font-bold text-gray-700 dark:text-gray-300 group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">
+                ¿Ya tienes cuenta?
+              </span>
+              <span className="text-base font-bold text-brand-600 dark:text-brand-400 group-hover:text-brand-700 dark:group-hover:text-brand-300 transition-colors mt-1">
+                Inicia sesión
+              </span>
+              
+              {/* Decoración sutil */}
+              <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-brand-500/5 to-brand-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            </Link>
+          </div>
+          
           <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-8 shadow-sm">
             {/* Indicador de progreso */}
             <div className="mb-8">
