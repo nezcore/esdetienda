@@ -66,7 +66,6 @@ const PlanSelector: React.FC<PlanSelectorProps> = ({
         {Object.entries(planDetails).map(([planKey, plan], index) => {
           const key = planKey as 'esencial' | 'basico' | 'pro'
           const isSelected = selectedPlan === key
-          const isPro = key === 'pro'
           const isLastCard = index === Object.entries(planDetails).length - 1
 
           return (
