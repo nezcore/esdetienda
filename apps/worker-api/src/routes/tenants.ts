@@ -295,7 +295,8 @@ tenants.put('/slug', async (c) => {
     }
 
     // Obtener información del tenant para verificar últimos cambios
-    const { data: currentTenant, error: tenantError } = await supabase
+    let currentTenant
+    const { data: tenantData, error: tenantError } = await supabase
       .from('tenants')
       .select('id, slug, last_slug_change')
       .eq('id', user.tenant_id)
@@ -322,6 +323,8 @@ tenants.put('/slug', async (c) => {
       } else {
         return c.json({ error: 'Tienda no encontrada' }, 404)
       }
+    } else {
+      currentTenant = tenantData
     }
 
     if (!currentTenant) {
@@ -478,7 +481,8 @@ tenants.put('/name', async (c) => {
     }
 
     // Obtener información del tenant para verificar últimos cambios
-    const { data: currentTenant, error: tenantError } = await supabase
+    let currentTenant
+    const { data: tenantData, error: tenantError } = await supabase
       .from('tenants')
       .select('id, business_name, last_name_change')
       .eq('id', user.tenant_id)
@@ -505,6 +509,8 @@ tenants.put('/name', async (c) => {
       } else {
         return c.json({ error: 'Tienda no encontrada' }, 404)
       }
+    } else {
+      currentTenant = tenantData
     }
 
     if (!currentTenant) {
