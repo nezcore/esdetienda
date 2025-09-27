@@ -451,7 +451,7 @@ export default function RegisterPage() {
       </nav>
 
       <main className="flex-1 flex items-center justify-center p-4">
-        <div className={`w-full ${isPlanStep ? 'max-w-4xl' : 'max-w-md'}`}>
+        <div className={`w-full ${isPlanStep ? 'max-w-6xl' : 'max-w-md'}`}>
           <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-8 shadow-sm">
             {/* Indicador de progreso */}
             <div className="mb-8">
