@@ -408,6 +408,12 @@ export default function RegisterPage() {
 
   const currentStepValid = getStepValidation(currentStepIndex)
   const isLastStep = currentStepIndex === steps.length - 1
+  const isSubmitDisabled = !currentStepValid || loading
+
+  const submitButtonBaseClass = 'inline-flex items-center gap-2 px-6 py-2.5 text-sm font-semibold rounded-xl border border-transparent transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-gray-900 shadow-lg bg-brand-700 text-white dark:bg-brand-700'
+  const submitButtonEnabledClass = 'hover:bg-brand-700 dark:hover:bg-brand-700 active:bg-brand-800 dark:active:bg-brand-800 transform hover:-translate-y-0.5 hover:shadow-xl'
+  const submitButtonDisabledClass = 'bg-brand-400 dark:bg-brand-500 text-white/80 cursor-not-allowed shadow-none transform-none hover:shadow-none hover:-translate-y-0'
+  const submitButtonClassName = `${submitButtonBaseClass} ${isSubmitDisabled ? submitButtonDisabledClass : submitButtonEnabledClass}`
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col">
@@ -468,8 +474,8 @@ export default function RegisterPage() {
 
               <button
                 type="submit"
-                disabled={!currentStepValid || loading}
-                className="inline-flex items-center gap-2 px-6 py-2.5 bg-brand-600 hover:bg-brand-700 active:bg-brand-800 text-white text-sm font-semibold rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                disabled={isSubmitDisabled}
+                className={submitButtonClassName}
               >
                 {loading ? (
                   <RefreshCcw className="h-4 w-4 animate-spin" />
